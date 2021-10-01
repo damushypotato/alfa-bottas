@@ -22,8 +22,8 @@ export const command: Command = {
         const user = client.users.cache.get(delMsgDB.authorID);
         
         const snipedEmbed = new MessageEmbed()
-            .setAuthor(delMsgDB.authorTag, user.displayAvatarURL())
-            .setTitle(`${user.username} said:`)
+            .setAuthor(delMsgDB.authorTag, user?.displayAvatarURL())
+            .setTitle(`${user?.username || delMsgDB.authorTag} said:`)
             .setTimestamp(delMsgDB.createdAt)
             .setDescription(delMsgDB.content)
             .setColor(client.config.color)
@@ -31,7 +31,7 @@ export const command: Command = {
             
         delMsgDB.attachments.forEach(a => snipedEmbed.addField('Attachment:', a));
 
-        snipedEmbed.addField('\u200B', user.toString())
+        snipedEmbed.addField('\u200B', `<@${delMsgDB.authorID}>`);
 
         sent.edit({ embeds: [snipedEmbed] });
     }

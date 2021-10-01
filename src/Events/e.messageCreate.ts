@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { GuildMember, Guild ,Message, PermissionString } from "discord.js";
 import { Event } from "../Interfaces";
 import { Command_Data } from "../Interfaces/Command_Data";
 import * as DB from '../MongoDB';
@@ -23,7 +23,7 @@ export const event: Event = {
         //Check if message starts with the prefix
         if (!message.content.toLowerCase().startsWith(prefix)) {
             // if directly pinged
-            if (message.content === `<@!${message.client.user.id}>` || message.content === `<@${message.client.user.id}>`) {
+            if (message.content === `<@!${message.client.user?.id}>` || message.content === `<@${message.client.user?.id}>`) {
                 return message.channel.send(
                     `What? btw the prefix is \'${prefix}\'.`
                 );
@@ -33,8 +33,8 @@ export const event: Event = {
 
         //Checking if the message is a command
         const args = message.content.slice(prefix.length).trim().split(/ +/g);
-        const commandName = args.shift().toLowerCase();
-        const command = client.commands.get(commandName) || client.commands.find(c => c.aliases && c.aliases.includes(commandName));
+        const commandName = args.shift()?.toLowerCase() as string;
+        const command = client.commands.get(commandName) || client.commands.find(c => c.aliases?.includes(commandName) || false);
 
         //If it isn't a command then return
         if (!command) return;
@@ -62,10 +62,10 @@ export const event: Event = {
             return;
         }
 
-        let userPerms = [];
+        let userPerms: PermissionString[] = [];
         //Checking for members permission
         command.memberPerms?.forEach((perm) => {
-            if (message.channel.type == 'GUILD_TEXT' && !message.channel.permissionsFor(message.member).has(perm)) {
+            if (message.channel.type == 'GUILD_TEXT' && !message.channel.permissionsFor(message.member as GuildMember).has(perm)) {
                 userPerms.push(perm);
             }
         });
@@ -78,10 +78,10 @@ export const event: Event = {
             );
         }
 
-        let clientPerms = [];
+        let clientPerms: PermissionString[] = [];
         //Checking for client permissions
         command.clientPerms?.forEach((perm) => {
-            if (message.channel.type == 'GUILD_TEXT' && !message.channel.permissionsFor(message.guild.me).has(perm)) {
+            if (message.channel.type == 'GUILD_TEXT' && !message.channel.permissionsFor((message.guild as Guild).me as GuildMember).has(perm)) {
                 clientPerms.push(perm);
             }
         });

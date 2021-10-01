@@ -1,19 +1,25 @@
 {
     "compilerOptions": {
-      "module": "CommonJS",
-      "outDir": "dist",
-      "removeComments": true,
-      "target": "ESNext",
-      "sourceMap": true,
-      "moduleResolution": "Node",
-      "lib": ["ESNext"],
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
-      "skipLibCheck": true,
-      "skipDefaultLibCheck": true,
-      "declaration": true,
-      "resolveJsonModule": true
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "ESNext",
+        "lib": ["ESNext"],
+        "outDir": "dist",
+        "rootDir": "src",
+        "types": ["node"],
+        "typeRoots": [
+            "node_modules/@types",
+            "node_modules/discord.js/typings"
+        ],
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "resolveJsonModule": true
     },
-    "include": ["src"],
-    "exclude": ["node_modules", "dev"]
-  }
+    "exclude": [
+        "node_modules",
+        "dev"
+    ],
+    "include": [
+        "src"
+    ]
+}

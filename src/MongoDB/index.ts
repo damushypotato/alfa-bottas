@@ -95,14 +95,14 @@ export async function fetchMultiDB(member: GuildMember) {
 
 //Create new deleted message db
 export async function createDeletedMessage(message: Message) {
-    const { member } = await fetchMultiDB(message.member);
+    const { member } = await fetchMultiDB(message.member as GuildMember);
 
     const delMsgDB = new DeletedMessageModel({
         member: member._id,
         authorTag: message.author.tag,
         authorID: message.author.id,
-        guildName: message.guild.name,
-        guildID: message.guild.id,
+        guildName: message.guild?.id,
+        guildID: message.guild?.id,
         channelName: (message.channel as TextChannel).name,
         channelID: message.channelId,
         content: message.content || '`Message had no text.`',

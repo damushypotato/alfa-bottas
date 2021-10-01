@@ -3,7 +3,7 @@ import { Message, PermissionString } from 'discord.js';
 import { Command_Data } from '.';
 
 interface Run {
-    (client: Client, message: Message, args: string[], data: Command_Data)
+    (client: Client, message: Message, args: string[], data: Command_Data): void
 }
 
 export interface Command {

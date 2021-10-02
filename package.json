@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node .",
-    "build": "tsc -p .",
+    "build": "tsc",
     "dev": "ts-node-dev --respawn --transpile-only --poll src/index.ts"
   },
   "repository": {
@@ -23,12 +23,12 @@
     "dotenv": "^10.0.0",
     "html-entities": "^2.3.2",
     "mongoose": "^6.0.8",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "typescript": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^16.10.2",
     "ts-node": "^10.2.1",
-    "ts-node-dev": "^1.1.8",
-    "typescript": "^4.4.3"
+    "ts-node-dev": "^1.1.8"
   }
 }

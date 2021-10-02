@@ -14,11 +14,12 @@ export const event: Event = {
         // only text channels
         if (!(message.channel.type == 'GUILD_TEXT')) return;
 
-        //Get multi database
-        const guildDB = await DB.fetchGuildDB(message.guild);
+        //Get guild database
+        // const guildDB = await DB.fetchGuildDB(message.guild);
 
         //Get prefix from guild else get from config file
-        let prefix = guildDB.prefix || client.config.prefix;
+        // let prefix = guildDB.prefix || client.config.prefix;
+        const prefix = client.config.prefix;
 
         //Check if message starts with the prefix
         if (!message.content.toLowerCase().startsWith(prefix)) {
@@ -39,11 +40,18 @@ export const event: Event = {
         //If it isn't a command then return
         if (!command) return;
 
-        //Get the user database
-        const userDB = await DB.fetchUserDB(message.author);
 
-        //get member database
-        const memberDB = await DB.fetchMemberDB(userDB._id, guildDB._id);
+        // //Get the user database
+        // const u_db = await DB.fetchUserDB(message.author);
+
+
+        // //get member database
+        // const memberDB = await DB.fetchMemberDB(userDB._id, guildDB._id);
+
+        const { userDB, guildDB, memberDB } = await DB.fetchMultiDB(message.member);
+
+
+
 
         const data: Command_Data = {
             userDB,

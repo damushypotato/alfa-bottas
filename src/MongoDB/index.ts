@@ -74,9 +74,9 @@ export async function fetchMemberDB(user_id: ObjectId, guild_id: ObjectId) {
 //get all databases for normal message event in one
 
 export interface MultiDB {
-    user: UserDoc;
-    guild: GuildDoc;
-    member: MemberDoc;
+    userDB: UserDoc;
+    guildDB: GuildDoc;
+    memberDB: MemberDoc;
 }
 
 export async function fetchMultiDB(member: GuildMember) {
@@ -85,9 +85,9 @@ export async function fetchMultiDB(member: GuildMember) {
     const memberDB = await fetchMemberDB(userDB._id, guildDB._id);
 
     const multiDB: MultiDB = {
-        user: userDB,
-        guild: guildDB,
-        member: memberDB
+        userDB,
+        guildDB,
+        memberDB
     }
 
     return multiDB;
@@ -95,10 +95,10 @@ export async function fetchMultiDB(member: GuildMember) {
 
 //Create new deleted message db
 export async function createDeletedMessage(message: Message) {
-    const { member } = await fetchMultiDB(message.member as GuildMember);
+    const { memberDB } = await fetchMultiDB(message.member as GuildMember);
 
     const delMsgDB = new DeletedMessageModel({
-        member: member._id,
+        member: memberDB._id,
         authorTag: message.author.tag,
         authorID: message.author.id,
         guildName: message.guild?.id,

@@ -3,7 +3,7 @@ import { clientIntents } from './intents';
 import { connect as DB_Connect } from 'mongoose';
 import { join as joinPath } from 'path';
 import { readdirSync, existsSync } from 'fs';
-import { Command, Event, Config, Secrets } from '../Interfaces';
+import { Command, Event, Config, Secrets, API_Keys } from '../Interfaces';
 import * as configJson from '../config.json';
 import { config as envConfig } from 'dotenv';
 
@@ -16,7 +16,7 @@ const secrets: Secrets = {
     CLIENT_TOKEN: process.env.CLIENT_TOKEN as string,
     MONGO_URI: process.env.MONGO_URI as string,
     OWNER_ID: process.env.OWNER_ID as string,
-    API_KEYS: process.env.API_KEYS as string,
+    API_KEYS: JSON.parse(process.env.API_KEYS) as API_Keys,
 };
 
 class ExtendedClient extends Client {

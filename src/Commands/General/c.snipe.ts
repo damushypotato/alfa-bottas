@@ -1,11 +1,18 @@
+import { constants } from 'buffer';
 import { MessageEmbed } from 'discord.js'
 import { Command } from '../../Interfaces';
 import * as DB from '../../MongoDB'
 
 export const command: Command = {
     name: 'snipe',
+    usage: 'snipe <num: max=10, default=1>',
     async run(client, message, args, data) {
-        const db_req = DB.fetchDeletedMessage(message.channelId);
+
+        const max = 10;
+
+        const numOfMsgs = Math.min(max, Math.max(1, parseInt(args[0]))) || 1;
+
+        const db_req = DB.fetchDeletedMessages(message.channelId, numOfMsgs);
 
         const fetchingEmbed = new MessageEmbed()
         .setTitle('Fetching...')

@@ -114,9 +114,9 @@ export async function createDeletedMessage(message: Message) {
     return delMsgDB;
 };
 
-export async function fetchDeletedMessage(channel_id: string) {
-    const delMsgDB = await DeletedMessageModel.findOne({ channelID: channel_id }, {}, { sort: { deletedAt: -1 }});
-    return delMsgDB;
+export async function fetchDeletedMessages(channel_id: string, number: number) {
+    const delMsgDB = await DeletedMessageModel.find({ channelID: channel_id }, {}, { sort: { deletedAt: -1 }, limit: number });
+    return delMsgDB.at(-1);
 }
 
 //Create error log

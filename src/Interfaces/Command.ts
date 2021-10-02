@@ -6,13 +6,18 @@ interface Run {
     (client: Client, message: Message, args: string[], data: Command_Data): void
 }
 
+interface ReturnUsage {
+    (message: Message, usage: string)
+}
+
 export interface Command {
-    name: string,
-    description?: string,
-    aliases?: string[],
-    memberPerms?: PermissionString[],
-    clientPerms?: PermissionString[],
-    ownerOnly?: boolean,
-    opOnly?: boolean,
+    name: string;
+    description?: string;
+    aliases?: string[];
+    usage: string;
+    memberPerms?: PermissionString[];
+    clientPerms?: PermissionString[];
+    ownerOnly?: boolean;
+    opOnly?: boolean;
     run: Run;
 }

@@ -40,18 +40,12 @@ export const event: Event = {
         //If it isn't a command then return
         if (!command) return;
 
-
         // //Get the user database
         // const u_db = await DB.fetchUserDB(message.author);
-
-
         // //get member database
         // const memberDB = await DB.fetchMemberDB(userDB._id, guildDB._id);
 
         const { userDB, guildDB, memberDB } = await DB.fetchMultiDB(message.member);
-
-
-
 
         const data: Command_Data = {
             userDB,

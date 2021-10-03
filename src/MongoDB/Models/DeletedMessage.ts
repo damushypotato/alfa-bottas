@@ -14,8 +14,6 @@ export interface DeletedMessageDB {
     attachments: string[];
 }
 
-export type StringArray = string[];
-
 const schema = new Schema<DeletedMessageDB>({
     member: { type: Schema.Types.ObjectId, ref: 'Member', required: true },
     authorTag: { type: String, required: true },

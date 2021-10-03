@@ -1,6 +1,6 @@
 import { Intents } from 'discord.js';
 const { FLAGS: infl } = Intents;
-export const clientIntents: number[] = [
+export const clientIntents = [
     infl.GUILDS,
     infl.GUILD_MEMBERS,
     infl.GUILD_BANS,

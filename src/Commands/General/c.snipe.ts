@@ -37,11 +37,8 @@ export const command: Command = {
             
         delMsgDB.attachments.forEach(a => snipedEmbed.addField('Attachment:', a));
 
-        snipedEmbed.addFields([
-            { name: '\u200B', value: '\u200B' },
-            { name: `Sniped from ${numOfMsgs} message${numOfMsgs > 1 ? 's' : ''} in the past.`, value:`<@${delMsgDB.authorID}>` },
-        ]);
+        snipedEmbed.addField('\u200B', `<@${delMsgDB.authorID}>`);
 
-        sent.edit({ embeds: [snipedEmbed] });
+        sent.edit({ content: `Sniped from ${numOfMsgs} message${numOfMsgs > 1 ? 's' : ''} in the past.`, embeds: [snipedEmbed] });
     }
 }

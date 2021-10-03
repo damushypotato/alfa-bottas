@@ -32,13 +32,13 @@ export const command: Command = {
             { name: 'Losses', value: profile.losses.toString(), inline: false },
             { name: 'Three Crown Wins', value: profile.threeCrownWins.toString(), inline: false },
             { name: 'Total Donations', value: profile.totalDonations.toString(), inline: false },
-            { name: `Clan`, value: `${profile.clan.name} - ${profile.role}`, inline: false },
+            { name: `Clan`, value: profile.clan ? `${profile.clan?.name} - ${profile.role}` : 'No clan.', inline: false },
             { name: 'Deck', value: profile.currentDeck.map(x => x.name).join(' - '), inline: false },
-            { name: 'Favourite card', value: profile.currentFavouriteCard.name, inline: false },
+            { name: 'Favourite card', value: profile.currentFavouriteCard?.name || 'None.', inline: false },
         ];
 
         const profileEmbed = new MessageEmbed()
-            .setTitle(`Stats for ${profile.name}`)
+            .setTitle(`Stats for ${profile.name || profile.tag}`)
             .setURL(`https://royaleapi.com/player/${encodeURIComponent(profile.tag)}`)
             .addFields(fields)
             .setColor(client.config.color)

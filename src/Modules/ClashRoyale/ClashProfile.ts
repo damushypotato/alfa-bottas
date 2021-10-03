@@ -81,7 +81,7 @@ interface PlayerData {
     challengeMaxWins: number;
     tournamentCardsWon: number;
     tournamentBattleCount: number;
-    role: string;
+    role?: string;
     donations: number;
     donationsReceived: number;
     totalDonations: number;
@@ -89,12 +89,12 @@ interface PlayerData {
     clanCardsCollected: number;
     clan?: Clan;
     arena: Arena;
-    leagueStatistics: LeagueStatistics;
+    leagueStatistics?: LeagueStatistics;
     badges: Badge[];
     achievements: Achievement[];
     cards: Card[];
     currentDeck: Card[];
-    currentFavouriteCard: CurrentFavouriteCard;
+    currentFavouriteCard?: CurrentFavouriteCard;
 }
 
 export async function ClashProfile(tag: string, token: string) {

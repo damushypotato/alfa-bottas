@@ -25,7 +25,7 @@ export const command: Command = {
 
         const [war, sent] = await Promise.all([api_req, send_fetchingEmbed]);
 
-        if (!war) return sent.edit({ embeds: [new MessageEmbed(fetchingEmbed).setTitle('Unable to find clan.')] });
+        if (!war) return sent.edit({ embeds: [new MessageEmbed(fetchingEmbed).setTitle('Unable to find clan war data.')] });
 
         const warEmbed = new MessageEmbed()
             .setTitle(`Current war for ${war.clan.name}`)

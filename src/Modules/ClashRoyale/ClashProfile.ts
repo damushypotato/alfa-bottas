@@ -87,7 +87,7 @@ interface PlayerData {
     totalDonations: number;
     warDayWins: number;
     clanCardsCollected: number;
-    clan: Clan;
+    clan?: Clan;
     arena: Arena;
     leagueStatistics: LeagueStatistics;
     badges: Badge[];

@@ -3,6 +3,7 @@ import { UserModel } from './Models/User';
 import { GuildModel } from './Models/Guild';
 import { MemberModel } from './Models/Member';
 import { DeletedMessageModel } from './Models/DeletedMessage';
+import { EditedMessageModel } from './Models/EditedMessage';
 import { LogModel } from './Models/Log';
 import { ObjectId } from 'mongoose';
 import { UserDoc, GuildDoc, MemberDoc } from '../Types/Database'
@@ -101,8 +102,8 @@ export async function createDeletedMessage(message: Message) {
         member: memberDB._id,
         authorTag: message.author.tag,
         authorID: message.author.id,
-        guildName: message.guild?.id,
-        guildID: message.guild?.id,
+        guildName: message.guild.name,
+        guildID: message.guildId,
         channelName: (message.channel as TextChannel).name,
         channelID: message.channelId,
         content: message.content || '`Message had no text.`',
@@ -117,6 +118,33 @@ export async function createDeletedMessage(message: Message) {
 export async function fetchDeletedMessages(channel_id: string, number: number) {
     const delMsgDB = await DeletedMessageModel.find({ channelID: channel_id }, {}, { sort: { deletedAt: -1 }, limit: number });
     return delMsgDB.at(-1);
+}
+
+//Create new edited message db
+export async function createEditedMessage(oldMessage: Message, newMessage: Message) {
+    const { memberDB } = await fetchMultiDB(newMessage.member as GuildMember);
+
+    const edtMsgDB = new EditedMessageModel({
+        member: memberDB._id,
+        messageID: oldMessage.id,
+        authorTag: newMessage.author.tag,
+        authorID: newMessage.author.id,
+        guildName: newMessage.guild.name,
+        guildID: newMessage.guildId,
+        channelName: (newMessage.channel as TextChannel).name,
+        channelID: newMessage.channelId,
+        oldContent: oldMessage.content,
+        newContent: newMessage.content,
+        createdAt: oldMessage.createdTimestamp,
+        editedAt: Date.now(),
+    });
+    await edtMsgDB.save();
+    return edtMsgDB;
+};
+
+export async function fetchEditedMessages(channel_id: string, number: number) {
+    const edtMsgDB = await EditedMessageModel.find({ channelID: channel_id }, {}, { sort: { editedAt: -1 }, limit: number });
+    return edtMsgDB.at(-1);
 }
 
 //Create error log

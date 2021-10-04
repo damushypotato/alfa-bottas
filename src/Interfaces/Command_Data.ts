@@ -1,10 +1,8 @@
 import { Command } from '.';
-import { UserDoc, GuildDoc, MemberDoc } from '../Types/Database';
+import { GuildCache, UserCache } from '../MongoDB/Cache';
 
 export interface Command_Data {
-    userDB: UserDoc;
-    guildDB: GuildDoc;
-    memberDB: MemberDoc;
-    command: Command;
     prefix: string;
+    userCache: UserCache;
+    guildCache: GuildCache;
 }

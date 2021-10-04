@@ -22,23 +22,22 @@ export const slashCommand: SlashCommand = {
     async run(client, interaction, [ prefixOption, addSpaceOption ], data) {
         let prefix = (prefixOption.value as string).toLowerCase();
         const addSpace = addSpaceOption?.value as boolean;
-
-        const { guildDB } = data;
-
+        
         const maxLength = 8
-
+        
         if (prefix.length > maxLength) {
             return interaction.followUp(`Prefix must be shorter than ${maxLength} characters!`)
         }
-
+        
         if (addSpace) prefix += ' ';
 
+        if (prefix == data.guildCache.prefix) return interaction.followUp(`Prefix already set!`);
+        
+        const guildDB = await client.database.fetchGuildDB(interaction.guild);
         guildDB.prefix = prefix;
-
         await guildDB.save();
-        client.database.cache.updateGuild(guildDB);
+        client.database.cache.fetchAndUpdateGuild(guildDB);
 
         interaction.followUp(`The new prefix is set to \`${prefix}\` !`);
-
     }
 }

@@ -1,6 +1,5 @@
 import { Client, Collection } from 'discord.js';
 import { clientIntents } from './intents';
-import { connect as DB_Connect } from 'mongoose';
 import { join as joinPath } from 'path';
 import { readdirSync, existsSync } from 'fs';
 import { Command, SlashCommand, Event, Config, Secrets, API_Keys } from '../Interfaces';
@@ -87,14 +86,8 @@ class ExtendedClient extends Client {
             }
         })
 
-        console.log('Attempting connection to MongoDB Database...')
-        try {
-            await DB_Connect(this.secrets.MONGO_URI);
-        }
-        catch (e) {
-            console.log('MongoDB DataBase connection error:', e)
-        }
-        console.log('Successfully connected to MongoDB Database.')
+        // connect to database
+        await this.database.connect();
 
         // Login
         this.login(this.secrets.CLIENT_TOKEN);

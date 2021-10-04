@@ -1,6 +1,7 @@
 import { GuildMember, Guild, Interaction, PermissionString, CommandInteractionOption, TextChannel } from "discord.js";
 import { Event } from "../Interfaces";
 import { SlashCommand_Data } from "../Interfaces/";
+import { UserDoc } from "../Types/Database";
 
 export const event: Event = {
     name: 'interactionCreate',
@@ -21,14 +22,17 @@ export const event: Event = {
         }
         interaction.member = interaction.guild.members.cache.get(interaction.user.id);
 
-        const data: SlashCommand_Data = await client.database.fetchMultiDB(interaction.member);
+        const data: SlashCommand_Data = {
+            userCache: await client.database.cache.fetchUserCache(interaction.user),
+            guildCache: await client.database.cache.fetchGuildCache(interaction.guild),
+        }
 
         //If command is owner only and author isn't owner return
         if (slashCommand.ownerOnly && interaction.user.id !== client.secrets.OWNER_ID) {
             return;
         }
         //If command is op only and author isn't op return
-        if (slashCommand.opOnly && !data.userDB.OP) {
+        if (slashCommand.opOnly && !data.userCache.OP) {
             return;
         }
 

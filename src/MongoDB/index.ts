@@ -1,13 +1,8 @@
 import { User, Guild, GuildMember, Message, TextChannel } from 'discord.js';
-import { UserModel } from './Models/User';
-import { GuildModel } from './Models/Guild';
-import { MemberModel } from './Models/Member';
-import { DeletedMessageModel } from './Models/DeletedMessage';
-import { EditedMessageModel } from './Models/EditedMessage';
-import { LogModel } from './Models/Log';
-import { ObjectId } from 'mongoose';
+import { UserModel, GuildModel, LogModel, MemberModel, DeletedMessageModel, EditedMessageModel } from './Models'
+import { ObjectId, connect } from 'mongoose';
 import { UserDoc, GuildDoc, MemberDoc } from '../Types/Database';
-import Cache from './Cache';
+import CacheManager from './Cache';
 import Client from '../Client';
 
 export interface MultiDB {
@@ -18,19 +13,35 @@ export interface MultiDB {
 
 export default class Database {
     constructor(client: Client) {
-        this.cache = new Cache(client);
+        this.client = client;
+        this.cache = new CacheManager(this.client);
     }
 
-    public cache: Cache;
+    public client: Client;
+    public cache: CacheManager;
+
+    public async connect() {
+        console.log('Attempting connection to MongoDB Database...')
+        try {
+            await connect(this.client.secrets.MONGO_URI);
+            console.log('Successfully connected to MongoDB Database.')
+        }
+        catch (e) {
+            console.log('MongoDB DataBase connection error:', e)
+            process.exit(0);
+        }
+    }
+
     public async fetchUserDB(user: User) {
         const userDB = await UserModel.findOne({ id: user.id });
     
+        let db: UserDoc;
         if (userDB) {
             if (user.tag != userDB.tag) {
                 userDB.tag = user.tag;
                 await userDB.save();
             }
-            return userDB;
+            db = userDB;
         }
         else {
             const newUser = new UserModel({
@@ -40,8 +51,10 @@ export default class Database {
                 registeredTime: Date.now(),
             })
             await newUser.save();
-            return newUser;
+            db = newUser;
         }
+        this.cache.fetchAndUpdateUser(db);
+        return db;
     };
 
     public async fetchGuildDB(guild: Guild) {
@@ -66,7 +79,7 @@ export default class Database {
             await newGuild.save();
             db = newGuild;
         }
-        this.cache.updateGuild(db);
+        this.cache.fetchAndUpdateGuild(db);
         return db;
     };
 

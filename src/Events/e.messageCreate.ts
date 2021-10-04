@@ -1,7 +1,6 @@
 import { GuildMember, Guild ,Message, PermissionString } from "discord.js";
 import { Event } from "../Interfaces";
 import { Command_Data } from "../Interfaces/Command_Data";
-import { GuildDoc } from "../Types/Database";
 
 export const event: Event = {
     name: 'messageCreate',
@@ -15,18 +14,9 @@ export const event: Event = {
         if (!(message.channel.type == 'GUILD_TEXT')) return;
 
         //Get cached guild prefix
-        const guildCache = client.database.cache.guildCache.get(message.guildId);
+        const guildCache = await client.database.cache.fetchGuildCache(message.guild);
 
-        let prefix: string;
-
-        let guildDB: GuildDoc;
-        if (!guildCache) {
-            guildDB = await client.database.fetchGuildDB(message.guild);
-            prefix = guildDB.prefix || client.config.prefix;
-        }
-        else {
-            prefix = guildCache.prefix;
-        }
+        let prefix = guildCache.prefix;
 
         //Check if message starts with the prefix
         if (!message.content.toLowerCase().startsWith(prefix)) {
@@ -47,29 +37,18 @@ export const event: Event = {
         //If it isn't a command then return
         if (!command) return;
 
-        if (!guildDB) {
-            guildDB = await client.database.fetchGuildDB(message.guild);
-        }
-
-        //Get the user database
-        const userDB = await client.database.fetchUserDB(message.author);
-        //get member database
-        const memberDB = await client.database.fetchMemberDB(userDB._id, guildDB._id);
-
         const data: Command_Data = {
-            userDB,
-            guildDB,
-            memberDB,
-            command,
+            userCache: await client.database.cache.fetchUserCache(message.author),
+            guildCache,
             prefix
         };
-
+        
         //If command is owner only and author isn't owner return
         if (command.ownerOnly && message.author.id !== client.secrets.OWNER_ID) {
             return;
         }
         //If command is op only and author isn't op return
-        if (command.opOnly && !userDB.OP) {
+        if (command.opOnly && !data.userCache.OP) {
             return;
         }
 

@@ -71,7 +71,7 @@ class ExtendedClient extends Client {
             //     .commands.set(slashCommandsArray);
 
             // Register for all the guilds the bot is in
-            await this.application.commands.set(slashCommandsArray);
+            // await this.application.commands.set(slashCommandsArray);
         });
 
         // Events

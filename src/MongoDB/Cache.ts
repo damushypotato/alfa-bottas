@@ -12,20 +12,20 @@ class BaseCache<T> {
 }
 
 export class GuildCache extends BaseCache<GuildDoc> {
-    constructor(guildDB: GuildDoc) {
+    constructor(guildDB: GuildDoc, client: Client) {
         super(guildDB);
 
-        this.prefix = guildDB.prefix;
+        this.prefix = guildDB.prefix || client.config.prefix;
     }
 
     public prefix: string;
 }
 
 export class UserCache extends BaseCache<UserDoc> {
-    constructor(userDB: UserDoc) {
+    constructor(userDB: UserDoc, client: Client) {
         super(userDB);
 
-        this.OP = userDB.OP;
+        this.OP = userDB.OP || false;
     }
 
     public OP: boolean;
@@ -41,7 +41,7 @@ export default class CacheManager {
     public userCache: Collection<string, UserCache> = new Collection();
 
     public fetchAndUpdateGuild(guildDB: GuildDoc) {
-        const cache = new GuildCache(guildDB)
+        const cache = new GuildCache(guildDB, this.client)
         this.guildCache.set(guildDB.id, cache);
         return cache;
     }
@@ -51,7 +51,7 @@ export default class CacheManager {
     }
 
     public fetchAndUpdateUser(userDB: UserDoc) {
-        const cache = new UserCache(userDB)
+        const cache = new UserCache(userDB, this.client)
         this.userCache.set(userDB.id, cache);
         return cache;
     }

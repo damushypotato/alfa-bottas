@@ -67,7 +67,6 @@ export default class Database {
             db = newGuild;
         }
         this.cache.updateGuild(db);
-        console.log('db read')
         return db;
     };
 

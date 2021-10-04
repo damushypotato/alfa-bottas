@@ -8,7 +8,8 @@ import { config as envConfig } from 'dotenv';
 import Database from '../MongoDB';
 
 const devPath = joinPath(__dirname, '..', '..', 'dev');
-if (existsSync(devPath)) {
+const dev = existsSync(devPath);
+if (dev) {
     envConfig({ path: joinPath(devPath, 'dev.env'), });
 }
 
@@ -30,6 +31,7 @@ class ExtendedClient extends Client {
     public config: Config = configJson;
     public secrets = secrets;
     public database = new Database(this);
+    public dev = dev;
 
     public async init() {
         // Commands
@@ -61,16 +63,14 @@ class ExtendedClient extends Client {
             }
         })
         this.once('ready', async () => {
-
-            const slashCommandsArray = this.slashCommands.map(slashCommand => slashCommand);
-
-            // Register for a single guild
-            // await this.guilds.cache
-            //     .get(process.env.DEV_GUILD_ID)
-            //     .commands.set(slashCommandsArray);
-
-            // Register for all the guilds the bot is in
-            // await this.application.commands.set(slashCommandsArray);
+            if (this.dev) {
+                // Register for a single guild
+                await this.registerAllSlashGuild(process.env.DEV_GUILD_ID);
+            }
+            else {
+                // Register for all the guilds the bot is in
+                await this.registerAllSlashGlobal();
+            }
         });
 
         // Events
@@ -91,6 +91,23 @@ class ExtendedClient extends Client {
 
         // Login
         this.login(this.secrets.CLIENT_TOKEN);
+    }
+    //slash commands
+    public async registerAllSlashGuild(guildId: string) {
+        await this.guilds.cache.get(guildId).commands.set(
+            this.slashCommands.map(slashCommand => slashCommand)
+        );
+    }
+    public async registerAllSlashGlobal() {
+        await this.application.commands.set(
+            this.slashCommands.map(slashCommand => slashCommand)
+        );
+    }
+    public async unregisterAllSlashGuild(guildId: string) {
+        await this.guilds.cache.get(guildId).commands.set([]);
+    }
+    public async unregisterAllSlashGlobal() {
+        await this.application.commands.set([]);
     }
 }
 

@@ -12,35 +12,36 @@ export const command: Command = {
             return message.channel.send('Usage: '+data.prefix+this.usage);
         }
 
-        const sent = await message.channel.send(`In progress...`)
+        const embed = new MessageEmbed()
+            .setColor(client.config.color)
+            .setFooter(client.config.embed_footer)
+            .setTitle('In progress...')
 
-        const allCommands = client.slashCommands.map(s => s);
+        const sent = await message.channel.send({ embeds: [embed] });
 
         try {
             if (scope == 'global') {
-                const { commands } = client.application;
                 if (action == 'unregister') {
-                    await commands.set([]);
+                    await client.unregisterAllSlashGlobal();
                 }
                 else {
-                    await commands.set(allCommands);
+                    await client.registerAllSlashGlobal();
                 }
             }
             else {
-                const { commands } = client.guilds.cache.get(message.guildId);
                 if (action == 'unregister') {
-                    await commands.set([]);
+                    await client.unregisterAllSlashGuild(message.guildId);
                 }
                 else {
-                    await commands.set(allCommands);
+                    await client.registerAllSlashGuild(message.guildId);
                 }
             }
         }
         catch {
-            return sent.edit('Unsuccessful: error occured');
+            return sent.edit({ embeds: [new MessageEmbed(embed).setTitle('Unsuccessful: error occured')] });
         }
 
-        sent.edit('Done!');
+        sent.edit({ embeds: [new MessageEmbed(embed).setTitle('Done!')] });
 
     }
 }

@@ -1,6 +1,5 @@
 import { Message } from 'discord.js';
 import { Event } from '../Interfaces';
-import * as DB from '../MongoDB'
 
 export const event: Event = {
     name: 'messageUpdate',
@@ -8,6 +7,7 @@ export const event: Event = {
     async run(client, oldMessage: Message, newMessage: Message) {
         if (newMessage.author.bot) return;
         if (newMessage.channel.type != 'GUILD_TEXT') return;
-        await DB.createEditedMessage(oldMessage, newMessage);
+        if (oldMessage.content == newMessage.content) return;
+        await client.database.createEditedMessage(oldMessage, newMessage);
     }
 }

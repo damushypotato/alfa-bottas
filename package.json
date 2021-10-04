@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node .",
     "build": "tsc",
-    "dev": "ts-node-dev --respawn --transpile-only --poll src/index.ts"
+    "dev": "tsnd --respawn --transpile-only --rs src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,6 @@
   },
   "devDependencies": {
     "@types/node": "^16.10.2",
-    "ts-node": "^10.2.1",
     "ts-node-dev": "^1.1.8"
   }
 }

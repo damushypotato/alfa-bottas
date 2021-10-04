@@ -41,7 +41,7 @@ interface PeriodLog {
     items: Item[];
 }
 
-interface WarWeekData {
+export interface WarWeekData {
     state: string;
     clan: Clan;
     clans: Clan[];

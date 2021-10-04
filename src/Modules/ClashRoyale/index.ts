@@ -1,6 +1,6 @@
-export { ClashProfile } from './ClashProfile';
-export { ClashChests } from './ClashChests';
-export { ClashWarWeek } from './ClashWarWeek';
+export { ClashProfile, PlayerData } from './ClashProfile';
+export { ClashChests, UpcomingChestData } from './ClashChests';
+export { ClashWarWeek, WarWeekData } from './ClashWarWeek';
 
 import fetch from 'node-fetch';
 

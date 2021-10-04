@@ -1,6 +1,5 @@
 import { MessageEmbed } from 'discord.js'
 import { Command } from '../../Interfaces';
-import * as DB from '../../MongoDB'
 
 export const command: Command = {
     name: 'snipe',
@@ -11,7 +10,7 @@ export const command: Command = {
 
         const numOfMsgs = Math.min(max, Math.max(1, parseInt(args[0]))) || 1;
 
-        const db_req = DB.fetchDeletedMessages(message.channelId, numOfMsgs);
+        const db_req = client.database.fetchDeletedMessages(message.channelId, numOfMsgs);
 
         const fetchingEmbed = new MessageEmbed()
         .setTitle('Fetching...')

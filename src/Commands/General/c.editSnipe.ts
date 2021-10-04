@@ -1,6 +1,5 @@
-import { MessageEmbed, MessageOptions, ReplyMessageOptions } from 'discord.js'
+import { MessageEmbed, MessageOptions, ReplyMessageOptions, Message } from 'discord.js'
 import { Command } from '../../Interfaces';
-import * as DB from '../../MongoDB'
 
 export const command: Command = {
     name: 'editsnipe',
@@ -12,7 +11,7 @@ export const command: Command = {
 
         const numOfMsgs = Math.min(max, Math.max(1, parseInt(args[0]))) || 1;
 
-        const db_req = DB.fetchEditedMessages(message.channelId, numOfMsgs);
+        const db_req = client.database.fetchEditedMessages(message.channelId, numOfMsgs);
 
         const fetchingEmbed = new MessageEmbed()
         .setTitle('Fetching...')
@@ -26,7 +25,7 @@ export const command: Command = {
             return await sent.edit({ embeds: [new MessageEmbed().setTitle('Theres nothing to snipe here.').setColor(client.config.color)] })
         }
 
-        let msg;
+        let msg: Message;
         try {
             msg = await message.channel.messages.fetch(edtMsgDB.messageID);
         }
@@ -39,7 +38,7 @@ export const command: Command = {
         const headerEmbed = new MessageEmbed()
             .setAuthor(edtMsgDB.authorTag, user?.displayAvatarURL())
             .setColor(client.config.color)
-            .setDescription(`<@${edtMsgDB.authorID}>`)
+            .setDescription(`<@${edtMsgDB.authorID}>${!msg || msg?.deleted ? ' (Message has been deleted)' : ''}`)
             .setFooter(client.config.embed_footer);
 
         const oldMsgEmbed = new MessageEmbed()

@@ -1,19 +1,12 @@
 import { MessageEmbed } from 'discord.js';
-import { Command } from '../../Interfaces';
+import { SlashCommand } from '../../Interfaces';
 
-export const command: Command = {
+export const slashCommand: SlashCommand = {
     name: 'ping',
-    usage: 'ping',
-    async run(client, message, args, data) {
-
-        const pingingEmbed =  new MessageEmbed()
-            .setTitle('Pinging...')
-            .setColor(client.config.color);
-
-        const time = Date.now();
-        const sent = await message.channel.send({ embeds: [pingingEmbed] });
-
-        let latencyPing = Math.floor(time - message.createdTimestamp);
+    description: 'Shows the bot\'s ping',
+    type: 'CHAT_INPUT',
+    async run(client, interaction, options, data) {
+        const latencyPing = Math.floor(Date.now() - interaction.createdTimestamp);
 
         const pingEmbed = new MessageEmbed()
             .setColor(client.config.color)
@@ -24,6 +17,6 @@ export const command: Command = {
             )
             .setFooter(client.config.embed_footer);
 
-        sent.edit({ embeds: [pingEmbed] });
+        interaction.followUp({ embeds: [pingEmbed] });
     }
 }

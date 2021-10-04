@@ -67,7 +67,7 @@ interface CurrentFavouriteCard {
     iconUrls: IconUrls;
 }
 
-interface PlayerData {
+export interface PlayerData {
     tag: string;
     name: string;
     expLevel: number;

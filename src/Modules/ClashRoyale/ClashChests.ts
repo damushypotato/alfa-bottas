@@ -5,7 +5,7 @@ interface Chest {
     name: string;
 }
 
-interface UpcomingChestData {
+export interface UpcomingChestData {
     items: Chest[];
 }
 

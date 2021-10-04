@@ -1,12 +1,11 @@
-import { MessageEmbed } from 'discord.js'
-import { Command } from '../../Interfaces';
+import { MessageEmbed } from 'discord.js';
+import { SlashCommand } from '../../Interfaces';
 
-export const command: Command = {
+export const slashCommand: SlashCommand = {
     name: 'invite',
-    aliases: ['link', 'invitelink'],
-    usage: 'invite',
-    async run(client, message, args, data) {
-
+    description: 'The bot\'s invite link',
+    type: 'CHAT_INPUT',
+    async run(client, interaction, options, data) {
         const inviteURL = `https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands`
 
         const body = `To Invite Me To Your Other Server, [Click Here!](${inviteURL})`;
@@ -17,6 +16,6 @@ export const command: Command = {
             .setFooter(client.config.embed_footer)
             .setColor(client.config.color);
 
-        message.channel.send({ embeds: [embed] });
+        interaction.followUp({ embeds: [embed] });
     }
 }

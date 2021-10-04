@@ -17,6 +17,13 @@ export const command: Command = {
 
         if (!quote) msg.edit({ embeds: [new MessageEmbed().setColor(client.config.color).setTitle('API Unavailable.')] });
 
-        msg.edit({ files: [quote], embeds: [] });
+        const embed = new MessageEmbed()
+            .setColor(client.config.color)
+            .setFooter(client.config.embed_footer)
+            .setTitle('An AI-Generated Quote')
+            .setURL('https://inspirobot.me')
+            .setImage(quote);
+
+        msg.edit({ embeds: [embed] });
     }
 }

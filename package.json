@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node .",
     "build": "tsc",
-    "dev": "tsnd --respawn --transpile-only --rs src/index.ts"
+    "dev": "tsnd --respawn --transpile-only --rs src/index.ts",
+    "testbuild": "npm run build && npm start"
   },
   "repository": {
     "type": "git",

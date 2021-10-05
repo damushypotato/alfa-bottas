@@ -8,6 +8,7 @@ export const event: Event = {
         if (newMessage.author.bot) return;
         if (newMessage.channel.type != 'GUILD_TEXT') return;
         if (oldMessage.content == newMessage.content) return;
+        if (!client.services.editSnipe) return;
         await client.database.createEditedMessage(oldMessage, newMessage);
     }
 }

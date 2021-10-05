@@ -1,19 +1,20 @@
-import { GuildMember, Guild, Interaction, PermissionString, CommandInteractionOption, TextChannel } from "discord.js";
-import { Event } from "../Interfaces";
-import { SlashCommand_Data } from "../Interfaces/";
-import { UserDoc } from "../Types/Database";
+import { GuildMember, Guild, Interaction, PermissionString, CommandInteractionOption, TextChannel } from 'discord.js';
+import { Event, SlashCommand_Data } from '../Interfaces';
 
 export const event: Event = {
     name: 'interactionCreate',
     async run(client, interaction: Interaction) {
         // Slash Command Handling
-        
         if (!interaction.isCommand()) return;
 
         await interaction.deferReply({ ephemeral: false }).catch(() => {});
 
         const slashCommand = client.slashCommands.get(interaction.commandName);
-        if (!slashCommand) return interaction.followUp({ content: 'An error occurred.' });
+        if (!slashCommand) return interaction.followUp({ content: 'Unknown command.' });
+
+        if (!client.services.slashCommands) {
+            return interaction.followUp('This feature is currently out of service.');
+        }
 
         const options: CommandInteractionOption[] = [];
 
@@ -47,7 +48,7 @@ export const event: Event = {
         //If user permissions arraylist length is more than zero return error
         if (userPerms.length > 0) {
             return interaction.followUp(
-                "Looks like you're missing the following permissions:\n" +
+                'Looks like you\'re missing the following permissions:\n' +
                     userPerms.map((p) => `\`${p}\``).join(', ')
             );
         }
@@ -63,7 +64,7 @@ export const event: Event = {
         //If client permissions arraylist length is more than zero return error
         if (clientPerms.length > 0) {
             return interaction.followUp(
-                "Looks like I'm missing the following permissions:\n" +
+                'Looks like I\'m missing the following permissions:\n' +
                     clientPerms.map((p) => `\`${p}\``).join(', ')
             );
         }

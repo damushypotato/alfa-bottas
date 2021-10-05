@@ -1,7 +1,7 @@
 import { User, Guild, GuildMember, Message, TextChannel } from 'discord.js';
 import { UserModel, GuildModel, LogModel, MemberModel, DeletedMessageModel, EditedMessageModel } from './Models'
 import { ObjectId, connect } from 'mongoose';
-import { UserDoc, GuildDoc, MemberDoc } from '../Types/Database';
+import { UserDoc, GuildDoc, MemberDoc } from '../Types';
 import CacheManager from './Cache';
 import Client from '../Client';
 

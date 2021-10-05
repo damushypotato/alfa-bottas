@@ -2,7 +2,7 @@ import { Client, Collection } from 'discord.js';
 import { clientIntents } from './intents';
 import { join as joinPath } from 'path';
 import { readdirSync, existsSync } from 'fs';
-import { Command, SlashCommand, Event, Config, Secrets, API_Keys } from '../Interfaces';
+import { Command, SlashCommand, Event, Config, Secrets, API_Keys, ClientServices } from '../Interfaces';
 import * as configJson from '../config.json';
 import { config as envConfig } from 'dotenv';
 import Database from '../MongoDB';
@@ -13,13 +13,6 @@ if (dev) {
     envConfig({ path: joinPath(devPath, 'dev.env'), });
 }
 
-const secrets: Secrets = {
-    CLIENT_TOKEN: process.env.CLIENT_TOKEN as string,
-    MONGO_URI: process.env.MONGO_URI as string,
-    OWNER_ID: process.env.OWNER_ID as string,
-    API_KEYS: JSON.parse(process.env.API_KEYS) as API_Keys,
-};
-
 class ExtendedClient extends Client {
     public constructor() {
         super({ intents: clientIntents })
@@ -29,7 +22,18 @@ class ExtendedClient extends Client {
     public slashCommands: Collection<string, SlashCommand> = new Collection();
     public events: Collection<string, Event> = new Collection();
     public config: Config = configJson;
-    public secrets = secrets;
+    public secrets: Secrets = {
+        CLIENT_TOKEN: process.env.CLIENT_TOKEN as string,
+        MONGO_URI: process.env.MONGO_URI as string,
+        OWNER_ID: process.env.OWNER_ID as string,
+        API_KEYS: JSON.parse(process.env.API_KEYS) as API_Keys,
+    };
+    public services: ClientServices = {
+        commands: true,
+        slashCommands: true,
+        snipe: true,
+        editSnipe: true,
+    };
     public database = new Database(this);
     public dev = dev;
 

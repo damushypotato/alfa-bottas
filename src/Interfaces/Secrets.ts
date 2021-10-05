@@ -1,4 +1,4 @@
-import { API_Keys } from ".";
+import { API_Keys } from '.';
 
 export interface Secrets {
     CLIENT_TOKEN: string,

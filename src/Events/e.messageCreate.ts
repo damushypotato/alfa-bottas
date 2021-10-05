@@ -1,6 +1,5 @@
-import { GuildMember, Guild ,Message, PermissionString } from "discord.js";
-import { Event } from "../Interfaces";
-import { Command_Data } from "../Interfaces/Command_Data";
+import { GuildMember, Guild ,Message, PermissionString } from 'discord.js';
+import { Event, Command_Data } from '../Interfaces';
 
 export const event: Event = {
     name: 'messageCreate',
@@ -37,6 +36,12 @@ export const event: Event = {
         //If it isn't a command then return
         if (!command) return;
 
+        if (!client.services.commands) {
+            if (command.name != 'services') {
+                return message.channel.send('This feature is currently out of service.');
+            }
+        }
+
         const data: Command_Data = {
             userCache: await client.database.cache.fetchUserCache(message.author),
             guildCache,
@@ -63,7 +68,7 @@ export const event: Event = {
         //If user permissions arraylist length is more than zero return error
         if (userPerms.length > 0) {
             return message.channel.send(
-                "Looks like you're missing the following permissions:\n" +
+                'Looks like you\'re missing the following permissions:\n' +
                     userPerms.map((p) => `\`${p}\``).join(', ')
             );
         }
@@ -79,7 +84,7 @@ export const event: Event = {
         //If client permissions arraylist length is more than zero return error
         if (clientPerms.length > 0) {
             return message.channel.send(
-                "Looks like I'm missing the following permissions:\n" +
+                'Looks like I\'m missing the following permissions:\n' +
                     clientPerms.map((p) => `\`${p}\``).join(', ')
             );
         }

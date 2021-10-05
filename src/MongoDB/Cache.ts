@@ -1,6 +1,6 @@
 import Client from '../Client';
 import { Collection, Guild, User } from 'discord.js';
-import { GuildDoc, UserDoc } from '../Types/Database';
+import { GuildDoc, UserDoc } from '../Types';
 import { Document, ObjectId } from 'mongoose';
 
 class BaseCache<T> {

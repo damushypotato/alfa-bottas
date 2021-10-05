@@ -48,6 +48,7 @@ class ExtendedClient extends Client {
             for (const file of commands) {
                 const filePath = joinPath(dirPath, file)
                 const command: Command = require(filePath).command;
+                command.category ||= dir;
                 this.commands.set(command.name, command);
             }
         })
@@ -63,6 +64,7 @@ class ExtendedClient extends Client {
                 const filePath = joinPath(dirPath, file)
                 const slashCommand: SlashCommand = require(filePath).slashCommand;
                 if (['MESSAGE', 'USER'].includes(slashCommand.type)) delete slashCommand.description;
+                slashCommand.category ||= dir;
                 this.slashCommands.set(slashCommand.name, slashCommand);
             }
         })

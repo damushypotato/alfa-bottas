@@ -3,6 +3,7 @@ import { Command } from '../../Interfaces';
 
 export const command: Command = {
     name: 'snipe',
+    description: 'Snipe deleted messages',
     usage: 'snipe <num: max=10, default=1>',
     async run(client, message, args, data) {
 

@@ -4,6 +4,7 @@ import { GetQuote } from '../../Modules/Quote';
 
 export const command: Command = {
     name: 'quote',
+    description: 'An AI Generated quote',
     usage: 'quote',
     async run(client, message, args, data) {
 

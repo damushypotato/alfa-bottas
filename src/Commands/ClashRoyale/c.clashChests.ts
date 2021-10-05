@@ -4,6 +4,7 @@ import { ClashChests } from './../../Modules/ClashRoyale'
 
 export const command: Command = {
     name: 'crchests',
+    description: 'Upcoming chests for clash royale',
     aliases: ['crchest'],
     usage: 'crchest <#PLAYER_TAG>',
     async run(client, message, args, data) {

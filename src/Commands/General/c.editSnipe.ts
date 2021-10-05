@@ -3,6 +3,7 @@ import { Command } from '../../Interfaces';
 
 export const command: Command = {
     name: 'editsnipe',
+    description: 'Snipe edited messages',
     aliases: ['esnipe'],
     usage: 'snipe <num: max=10, default=1>',
     async run(client, message, args, data) {

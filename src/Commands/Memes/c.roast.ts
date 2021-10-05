@@ -4,6 +4,7 @@ import { GetRoast } from '../../Modules/Roast';
 
 export const command: Command = {
     name: 'roast',
+    description: 'u suck',
     usage: 'insult',
     async run(client, message, args, data) {
 

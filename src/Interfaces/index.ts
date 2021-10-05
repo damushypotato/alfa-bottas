@@ -7,3 +7,4 @@ export { Config } from './Config';
 export { Secrets } from './Secrets';
 export { API_Keys } from './API_Keys';
 export { ClientServices } from './ClientServices';
+export { Command_Category } from './Command_Category';

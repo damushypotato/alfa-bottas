@@ -3,6 +3,7 @@ import { Command } from '../../Interfaces';
 
 export const command: Command = {
     name: 'ping',
+    description: 'Show the bot\'s ping',
     usage: 'ping',
     async run(client, message, args, data) {
 

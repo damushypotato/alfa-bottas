@@ -4,6 +4,7 @@ import { ClashWarWeek } from './../../Modules/ClashRoyale'
 
 export const command: Command = {
     name: 'crwarweek',
+    description: 'Clash royale clan war standings',
     aliases: ['crwar', 'crrace', 'crriverrace'],
     usage: 'crwarweek <#CLAN_TAG>',
     async run(client, message, args, data) {

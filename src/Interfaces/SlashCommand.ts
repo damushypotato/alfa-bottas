@@ -16,5 +16,6 @@ export interface SlashCommand {
     clientPerms?: PermissionString[];
     ownerOnly?: boolean;
     opOnly?: boolean;
+    category?: string;
     run: Run;
 }

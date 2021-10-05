@@ -3,6 +3,7 @@ import { Command } from '../../Interfaces';
 
 export const command: Command = {
     name: 'services',
+    description: 'Edit services',
     ownerOnly: true,
     usage: 'services [<service> <on | off>] | [--list] ',
     async run(client, message, [ service, status ], data) {
@@ -15,7 +16,6 @@ export const command: Command = {
                 .setColor(client.config.color)
                 .setFooter(client.config.embed_footer)
                 .addFields(keys.map(s => {
-                    console.log(s);
                     return {
                         name: `*${s.toUpperCase()}*`,
                         value: client.services[s] ? '`ON`' : '`OFF`',

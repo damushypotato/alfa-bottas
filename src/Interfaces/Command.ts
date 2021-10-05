@@ -8,12 +8,13 @@ interface Run {
 
 export interface Command {
     name: string;
-    description?: string;
+    description: string;
     aliases?: string[];
     usage: string;
     memberPerms?: PermissionString[];
     clientPerms?: PermissionString[];
     ownerOnly?: boolean;
     opOnly?: boolean;
+    category?: string;
     run: Run;
 }

@@ -3,6 +3,7 @@ import { Command } from '../../Interfaces';
 
 export const command: Command = {
     name: 'slash',
+    description: 'Manage slash commands',
     ownerOnly: true,
     usage: 'slash <register/unregister> <guild/global>',
     async run(client, message, [ action, scope ], data) {

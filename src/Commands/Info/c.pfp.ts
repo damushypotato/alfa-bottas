@@ -3,6 +3,7 @@ import { Command } from '../../Interfaces';
 
 export const command: Command = {
     name: 'pfp',
+    description: 'Show a user\'s profile picture',
     aliases: ['avatar'],
     usage: 'invite',
     async run(client, message, args, data) {

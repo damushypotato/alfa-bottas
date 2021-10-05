@@ -4,6 +4,7 @@ import { ClashProfile } from '../../Modules/ClashRoyale';
 
 export const command: Command = {
     name: 'crprofile',
+    description: 'Clash royale profile',
     aliases: ['crstats'],
     usage: 'crstats <#PLAYER_TAG>',
     async run(client, message, args, data) {

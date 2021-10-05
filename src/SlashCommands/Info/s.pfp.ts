@@ -14,7 +14,7 @@ export const slashCommand: SlashCommand = {
         }
     ],
     async run(client, interaction, [ userOption ], data) {
-        const target = client.users.cache.get(userOption?.value as string) || interaction.user;
+        const target = userOption?.user || interaction.user;
 
         const embed = new MessageEmbed()
             .setTitle(`heres ur pfp`)

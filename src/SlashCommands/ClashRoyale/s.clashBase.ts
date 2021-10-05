@@ -3,44 +3,57 @@ import { SlashCommand } from '../../Interfaces';
 import { ClashProfile, ClashChests, ClashWarWeek } from '../../Modules/ClashRoyale';
 
 export const slashCommand: SlashCommand = {
-    name: 'clash',
+    name: 'clashstats',
     description: 'Clash royale commands',
     type: 'CHAT_INPUT',
     options: [
         {
-            type: 'STRING',
-            name: 'stats',
-            description: 'Which stats do you want',
-            choices: [
+            type: 'SUB_COMMAND',
+            name: 'player',
+            description: 'Gets CR stats for a player',
+            options: [
                 {
-                    name: 'Player Profile',
-                    value: 'player'
-                },
-                {
-                    name: 'Upcoming Chests',
-                    value: 'chests'
-                },
-                {
-                    name: 'Clan War',
-                    value: 'war'
-                },
+                    type: 'STRING',
+                    name: 'tag',
+                    description: 'The player #TAG',
+                    required: true
+                }
             ],
-            required: true
         },
         {
-            type: 'STRING',
-            name: 'tag',
-            description: 'The player/clan #TAG ($ for Daddy Hasbulla)',
-            required: true
-        }
+            type: 'SUB_COMMAND',
+            name: 'chests',
+            description: 'Gets CR upcoming chests for a player',
+            options: [
+                {
+                    type: 'STRING',
+                    name: 'tag',
+                    description: 'The player #TAG',
+                    required: true
+                }
+            ],
+        },
+        {
+            type: 'SUB_COMMAND',
+            name: 'war',
+            description: 'Gets CR clan war standings',
+            options: [
+                {
+                    type: 'STRING',
+                    name: 'tag',
+                    description: 'The clan #TAG (type \'$\' for Daddy Hasbulla)',
+                    required: true
+                }
+            ],
+        },
     ],
-    async run(client, interaction, [ statOption, tagOption ], data) {
+    async run(client, interaction, [ command ], data) {
 
-        let tag = (tagOption.value as string).toUpperCase();
+        const stat = command.name;
+
+        let tag = (command.options[0].value as string).toUpperCase();
         
         if (!tag.startsWith('#') && tag != '$') tag = '#' + tag;
-
-        const stat = statOption.value as string;
 
         if (stat == 'war') {
 

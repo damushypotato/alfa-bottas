@@ -34,8 +34,8 @@ export const command: Command = {
             { name: 'Three Crown Wins', value: profile.threeCrownWins.toString(), inline: false },
             { name: 'Total Donations', value: profile.totalDonations.toString(), inline: false },
             { name: `Clan`, value: profile.clan ? `${profile.clan?.name} - ${profile.role}` : 'No clan.', inline: false },
-            { name: 'Deck', value: profile.currentDeck.map(x => x.name).join(' - '), inline: false },
-            { name: 'Favourite card', value: profile.currentFavouriteCard?.name || 'None.', inline: false },
+            { name: 'Deck', value: profile.currentDeck.map(x => x.name).join(' - ') || 'None', inline: false },
+            { name: 'Favourite card', value: profile.currentFavouriteCard?.name || 'None', inline: false },
         ];
 
         const profileEmbed = new MessageEmbed()

@@ -52,15 +52,17 @@ export const slashCommand: SlashCommand = {
         const stat = options.getSubcommand();
 
         let tag = options.getString('tag').toUpperCase();
-        
-        if (!tag.startsWith('#')) tag = '#' + tag;
+
         
         if (tag != '$') {
+            tag = '#' + HashtagHelper.normalizeHashtag(tag);
+
             if (!HashtagHelper.isValidHashtag(tag)) {
                 return interaction.followUp('Thats not a real hashtag yo');
             }
         }
-
+        
+        
         if (stat == 'war') {
 
             if (tag == '$') tag = '#L2JL9YUR';
@@ -114,8 +116,8 @@ export const slashCommand: SlashCommand = {
                 { name: 'Losses', value: profile.losses.toString(), inline: false },
                 { name: 'Three Crown Wins', value: profile.threeCrownWins.toString(), inline: false },
                 { name: 'Total Donations', value: profile.totalDonations.toString(), inline: false },
-                { name: `Clan`, value: profile.clan ? `${profile.clan?.name} - ${profile.role}` : 'No clan.', inline: false },
-                { name: 'Deck', value: profile.currentDeck.map(x => x.name).join(' - '), inline: false },
+                { name: 'Clan', value: profile.clan ? `${profile.clan?.name} - ${profile.role}` : 'No clan.', inline: false },
+                { name: 'Deck', value: profile.currentDeck.map(x => x.name).join(' - ') || 'None.', inline: false },
                 { name: 'Favourite card', value: profile.currentFavouriteCard?.name || 'None.', inline: false },
             ];
     

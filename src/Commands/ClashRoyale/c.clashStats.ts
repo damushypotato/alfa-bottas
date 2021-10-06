@@ -4,7 +4,7 @@ import { Profile, Chests, War, HashtagHelper } from './../../Modules/ClashRoyale
 
 export const command: Command = {
     name: 'clashstats',
-    description: 'Upcoming chests for clash royale',
+    description: 'stats for clash royale',
     aliases: ['crstats'],
     usage: 'clashstats <player / chests / war> #TAG',
     async run(client, message, args, data) {

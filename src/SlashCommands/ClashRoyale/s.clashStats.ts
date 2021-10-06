@@ -1,6 +1,6 @@
 import { MessageEmbed, EmbedFieldData } from 'discord.js';
 import { SlashCommand } from '../../Interfaces';
-import { ClashProfile, ClashChests, ClashWarWeek, HashtagHelper } from '../../Modules/ClashRoyale';
+import { Profile, War, Chests, HashtagHelper } from '../../Modules/ClashRoyale';
 
 export const slashCommand: SlashCommand = {
     name: 'clashstats',
@@ -52,7 +52,6 @@ export const slashCommand: SlashCommand = {
         const stat = options.getSubcommand();
 
         let tag = options.getString('tag').toUpperCase();
-
         
         if (tag != '$') {
             tag = '#' + HashtagHelper.normalizeHashtag(tag);
@@ -62,100 +61,21 @@ export const slashCommand: SlashCommand = {
             }
         }
         
+        const token = client.secrets.API_KEYS.CR;
+        const { config } = client;
         
         if (stat == 'war') {
-
-            if (tag == '$') tag = '#L2JL9YUR';
-
-            const war = await ClashWarWeek(tag, client.secrets.API_KEYS.CR);
-
-            if (!war) return interaction.followUp({ embeds: [new MessageEmbed()
-                .setTitle('Unable to find clan war data.')
-                .setColor(client.config.color)
-            ]});
-
-            const warEmbed = new MessageEmbed()
-                .setTitle(`Current war for ${war.clan.name}`)
-                .setURL(`https://royaleapi.com/clan/${encodeURIComponent(war.clan.tag)}`)
-                .setColor(client.config.color)
-                .setFooter(client.config.embed_footer);
-
-            const clanStandings = war.clans.sort((a, b) => b.fame - a.fame);
-
-            if (war.periodType == 'colosseum') {
-                warEmbed.addFields(clanStandings.map((c, i) => {
-                    return {
-                        name: `#${i+1} - ${c.name}`,
-                        value: `${c.fame} points`
-                    } as EmbedFieldData;
-                }))
-            }
-            else {
-                warEmbed.addFields(clanStandings.map((c, i) => {
-                    return {
-                        name: `#${i+1} - ${c.name} - ${c.fame} points`,
-                        value: `${c.periodPoints} medals today`
-                    } as EmbedFieldData;
-                }))
-            }
-            return interaction.followUp({ embeds: [warEmbed] });
+            interaction.followUp({ embeds: [await War.getEmbed(tag, token, config)] });
         }
         else if (stat == 'player') {
-
-            const profile = await ClashProfile(tag, client.secrets.API_KEYS.CR);
-
-            if (!profile) return interaction.followUp({ embeds: [new MessageEmbed()
-                .setTitle('Unable to find profile data.')
-                .setColor(client.config.color)
-            ]});
-
-            const fields: EmbedFieldData[] = [
-                { name: `Level`, value: profile.expLevel.toString(), inline: false },
-                { name: `${profile.trophies} Trophies`, value: profile.arena.name, inline: false },
-                { name: 'Wins', value: profile.wins.toString(), inline: false },
-                { name: 'Losses', value: profile.losses.toString(), inline: false },
-                { name: 'Three Crown Wins', value: profile.threeCrownWins.toString(), inline: false },
-                { name: 'Total Donations', value: profile.totalDonations.toString(), inline: false },
-                { name: 'Clan', value: profile.clan ? `${profile.clan?.name} - ${profile.role}` : 'No clan.', inline: false },
-                { name: 'Deck', value: profile.currentDeck.map(x => x.name).join(' - ') || 'None.', inline: false },
-                { name: 'Favourite card', value: profile.currentFavouriteCard?.name || 'None.', inline: false },
-            ];
-    
-            const profileEmbed = new MessageEmbed()
-                .setTitle(`Stats for ${profile.name || profile.tag}`)
-                .setURL(`https://royaleapi.com/player/${encodeURIComponent(profile.tag)}`)
-                .addFields(fields)
-                .setColor(client.config.color)
-                .setFooter(client.config.embed_footer);
-
-            return interaction.followUp({ embeds: [profileEmbed] });
+            interaction.followUp({ embeds: [await Profile.getEmbed(tag, token, config)] });
         }
         else if (stat == 'chests') {
-
-            const chests = await ClashChests(tag, client.secrets.API_KEYS.CR);
-
-            if (!chests) return interaction.followUp({ embeds: [new MessageEmbed()
-                .setTitle('Unable to find chest data.')
-                .setColor(client.config.color)
-            ]});
-
-            const chestsEmbed = new MessageEmbed()
-            .setTitle(`Upcoming chests for ${tag}`)
-            .setURL(`https://royaleapi.com/player/${encodeURIComponent(tag)}`)
-            .addFields(chests.items.map(c => {
-                return {
-                    name: c.name,
-                    value: c.index == 0 ? 'Next' : `+${c.index}`
-                } as EmbedFieldData;
-            }))
-            .setColor(client.config.color)
-            .setFooter(client.config.embed_footer)
-
-            return interaction.followUp({ embeds: [chestsEmbed] });
+            interaction.followUp({ embeds: [await Chests.getEmbed(tag, token, config)] });
         }
         else {
             return interaction.followUp({ embeds: [new MessageEmbed()
-                .setTitle('Unknown stat type.')
+                .setTitle('Unknown stat.')
                 .setColor(client.config.color)
             ]});
         }

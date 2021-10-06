@@ -9,3 +9,4 @@ export { API_Keys } from './API_Keys';
 export { ClientServices } from './ClientServices';
 export { Command_Category } from './Command_Category';
 export { SlashCommand_Category } from './SlashCommand_Category';
+export { ClashEmbed } from './ClashEmbed';

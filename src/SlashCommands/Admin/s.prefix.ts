@@ -19,9 +19,12 @@ export const slashCommand: SlashCommand = {
             required: false
         }
     ],
-    async run(client, interaction, [ prefixOption, addSpaceOption ], data) {
-        let prefix = (prefixOption.value as string).toLowerCase();
-        const addSpace = addSpaceOption?.value as boolean;
+    async run(client, interaction, options, data) {
+
+        const prefixInput = options.getString('prefix');
+        const addSpace = options.getBoolean('addspace');
+
+        let prefix = prefixInput.toLowerCase();
         
         const maxLength = 8
         

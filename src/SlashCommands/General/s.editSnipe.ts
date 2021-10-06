@@ -13,10 +13,10 @@ export const slashCommand: SlashCommand = {
             required: false
         }
     ],
-    async run(client, interaction, [ num ], data) {
+    async run(client, interaction, options, data) {
         const max = 10;
 
-        const numOfMsgs = Math.floor(Math.min(max, Math.max(1, num?.value as number )) || 1);
+        const numOfMsgs = Math.floor(Math.min(max, Math.max(1, options.getNumber('num') )) || 1);
 
         const edtMsgDB = await client.database.fetchEditedMessages(interaction.channelId, numOfMsgs);
 

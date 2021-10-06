@@ -13,8 +13,8 @@ export const slashCommand: SlashCommand = {
             required: false
         }
     ],
-    async run(client, interaction, [ userOption ], data) {
-        const target = userOption?.user || interaction.user;
+    async run(client, interaction, options, data) {
+        const target = options.getUser('target') || interaction.user;
 
         const embed = new MessageEmbed()
             .setTitle(`heres ur pfp`)

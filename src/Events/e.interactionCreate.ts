@@ -16,16 +16,17 @@ export const event: Event = {
             return interaction.followUp('This feature is currently out of service.');
         }
 
-        const options: CommandInteractionOption[] = [];
+        const optionsArray: CommandInteractionOption[] = [];
 
         for (const option of interaction.options.data) {
-            options.push(option);
+            optionsArray.push(option);
         }
         interaction.member = interaction.guild.members.cache.get(interaction.user.id);
 
         const data: SlashCommand_Data = {
             userCache: await client.database.cache.fetchUserCache(interaction.user),
             guildCache: await client.database.cache.fetchGuildCache(interaction.guild),
+            optionsArray
         }
 
         //If command is owner only and author isn't owner return
@@ -70,7 +71,7 @@ export const event: Event = {
         }
 
         try {
-            slashCommand.run(client, interaction, options, data);
+            slashCommand.run(client, interaction, interaction.options, data);
         } catch (err) {
             const errMsg = `Error While Executing command '${slashCommand.name}'. Error: ${err}`;
             console.log(errMsg);

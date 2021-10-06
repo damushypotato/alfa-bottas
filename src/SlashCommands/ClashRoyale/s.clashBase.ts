@@ -47,11 +47,11 @@ export const slashCommand: SlashCommand = {
             ],
         },
     ],
-    async run(client, interaction, [ command ], data) {
+    async run(client, interaction, options, data) {
 
-        const stat = command.name;
+        const stat = options.getSubcommand();
 
-        let tag = (command.options[0].value as string).toUpperCase();
+        let tag = options.getString('tag').toUpperCase();
         
         if (!tag.startsWith('#') && tag != '$') tag = '#' + tag;
 

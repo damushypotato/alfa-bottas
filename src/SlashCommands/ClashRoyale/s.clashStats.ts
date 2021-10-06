@@ -1,6 +1,6 @@
 import { MessageEmbed, EmbedFieldData } from 'discord.js';
 import { SlashCommand } from '../../Interfaces';
-import { ClashProfile, ClashChests, ClashWarWeek } from '../../Modules/ClashRoyale';
+import { ClashProfile, ClashChests, ClashWarWeek, HashtagHelper } from '../../Modules/ClashRoyale';
 
 export const slashCommand: SlashCommand = {
     name: 'clashstats',
@@ -53,7 +53,13 @@ export const slashCommand: SlashCommand = {
 
         let tag = options.getString('tag').toUpperCase();
         
-        if (!tag.startsWith('#') && tag != '$') tag = '#' + tag;
+        if (!tag.startsWith('#')) tag = '#' + tag;
+        
+        if (tag != '$') {
+            if (!HashtagHelper.isValidHashtag(tag)) {
+                return interaction.followUp('Thats not a real hashtag yo');
+            }
+        }
 
         if (stat == 'war') {
 

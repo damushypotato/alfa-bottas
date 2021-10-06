@@ -1,6 +1,7 @@
 export { ClashProfile, PlayerData } from './ClashProfile';
 export { ClashChests, UpcomingChestData } from './ClashChests';
 export { ClashWarWeek, WarWeekData } from './ClashWarWeek';
+export { HashtagHelper } from './HashtagHelper';
 
 import fetch from 'node-fetch';
 

@@ -25,7 +25,7 @@ export const command: Command = {
             ] });
         }
 
-        if (status != 'on' && status != 'off' && status != '?' ||
+        if (status != 'on' && status != 'off' ||
             !keys.map(s => s.toLowerCase()).includes(service)) {
             return message.channel.send('Usage: '+data.prefix+this.usage);
         }

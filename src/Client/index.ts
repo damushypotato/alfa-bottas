@@ -6,6 +6,7 @@ import { Command, SlashCommand, Event, Config, Secrets, API_Keys, ClientServices
 import * as configJson from '../config.json';
 import { config as envConfig } from 'dotenv';
 import Database from '../MongoDB';
+import CustomEmojiManager from '../Emojis';
 
 const devPath = joinPath(__dirname, '..', '..', 'dev');
 const dev = existsSync(devPath);
@@ -35,6 +36,7 @@ class ExtendedClient extends Client {
         editSnipe: true,
     };
     public database = new Database(this);
+    public customEmojis = new CustomEmojiManager(this);
     public dev = dev;
 
     public async init() {

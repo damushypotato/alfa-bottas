@@ -104,13 +104,13 @@ export namespace Profile {
     export async function fetchPlayer(tag: string, token: string) {
         tag = encodeURIComponent(tag);
 
-        const url = `https://proxy.royaleapi.dev/v1/players/${tag}`;
+        const url = `/players/${tag}`;
 
         const res = await ClashRoyaleAPI(url, token);
 
-        if (!res.ok) return false;
+        if (res.status != 200) return false;
 
-        return await res.json() as PlayerData;
+        return res.data as PlayerData;
     }
 
     export const getEmbed: ClashEmbed = async (tag, token, config) => {

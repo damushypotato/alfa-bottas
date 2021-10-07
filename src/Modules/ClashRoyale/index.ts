@@ -3,13 +3,15 @@ export { Chests } from './Chests';
 export { War }  from './War';
 export { HashtagHelper } from './HashtagHelper';
 
-import fetch from 'node-fetch';
+import axios from 'axios';
 
 export async function ClashRoyaleAPI(url: string, token: string) {
-    const data = await fetch(url, {
+    const data = await axios.get(url, {
+        baseURL: 'https://proxy.royaleapi.dev/v1/',
         headers: {
-            'Authorization': `Bearer ${token}`
-        }
+            'Authorization': `Bearer ${token}`,
+        },
+        responseType: 'json',
     });
 
     return data;

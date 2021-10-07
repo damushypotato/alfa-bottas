@@ -2,7 +2,7 @@
   "name": "alfa-bottas",
   "version": "0.0.1",
   "description": "",
-  "exports": "./dist/index.js",
+  "main": "./dist/index.js",
   "engines": {
     "node": "16.6.2"
   },

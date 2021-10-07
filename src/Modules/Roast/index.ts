@@ -1,7 +1,13 @@
-import fetch from 'node-fetch';
 import { decode } from 'html-entities';
+import axios from 'axios';
 
 export async function GetRoast(): Promise<string> {
-    const res = await fetch('https://evilinsult.com/generate_insult.php?lang=en&type=text');
-    return decode(await res.text());
+    const url = 'https://evilinsult.com/generate_insult.php?lang=en&type=text';
+
+    const res = await axios.get(url, {
+        method: 'GET',
+        responseType: 'text',
+    });
+
+    return decode(res.data);
 }

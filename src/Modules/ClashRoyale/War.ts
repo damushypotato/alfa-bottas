@@ -58,13 +58,13 @@ export namespace War {
     export async function fetchClanWar(tag: string, token: string) {
         tag = encodeURIComponent(tag);
 
-        const url = `https://proxy.royaleapi.dev/v1/clans/${tag}/currentriverrace`;
+        const url = `/clans/${tag}/currentriverrace`;
 
         const res = await ClashRoyaleAPI(url, token);
 
-        if (!res.ok) return false;
+        if (res.status != 200) return false;
 
-        return await res.json() as WarWeekData;
+        return res.data as WarWeekData;
     }
 
     export const getEmbed: ClashEmbed = async (tag, token, config) => {

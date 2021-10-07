@@ -16,13 +16,13 @@ export namespace Chests {
     export async function fetchChests(tag: string, token: string) {
         tag = encodeURIComponent(tag);
 
-        const url = `https://proxy.royaleapi.dev/v1/players/${tag}/upcomingchests`;
+        const url = `/players/${tag}/upcomingchests`;
 
         const res = await ClashRoyaleAPI(url, token);
 
-        if (!res.ok) return false;
+        if (res.status != 200) return false;
 
-        return await res.json() as UpcomingChestData;
+        return res.data as UpcomingChestData;
     }
 
     export const getEmbed: ClashEmbed = async (tag, token, config) => {

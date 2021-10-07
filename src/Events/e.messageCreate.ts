@@ -1,5 +1,5 @@
 import { GuildMember, Guild ,Message, PermissionString } from 'discord.js';
-import { Event, Command_Data } from '../Interfaces';
+import { Event, TextCommand_Data } from '../Structures/Interfaces';
 
 export const event: Event = {
     name: 'messageCreate',
@@ -31,7 +31,11 @@ export const event: Event = {
         //Checking if the message is a command
         const args = message.content.slice(prefix.length).trim().split(/ +/g);
         const commandName = args.shift()?.toLowerCase() as string;
-        const command = client.commands.get(commandName) || client.commands.find(c => c.aliases?.includes(commandName) || false);
+        const command = client.commands.get(commandName) || client.commands.find(c => c.textCommand.aliases?.includes(commandName) || false);
+
+        if (!command.textCommand) {
+            return message.channel.send(`That is not a command. Use \`/${command.name}\` instead.`)
+        }
 
         //If it isn't a command then return
         if (!command) return;
@@ -42,7 +46,7 @@ export const event: Event = {
             }
         }
 
-        const data: Command_Data = {
+        const data: TextCommand_Data = {
             userCache: await client.database.cache.fetchUserCache(message.author),
             guildCache,
             prefix
@@ -90,7 +94,7 @@ export const event: Event = {
         }
 
         try {
-            command.run(client, message, args, data);
+            command.textCommand.run(client, message, args, data);
         } catch (err) {
             const errMsg = `Error While Executing command '${command.name}'. Error: ${err}`;
             console.log(errMsg);

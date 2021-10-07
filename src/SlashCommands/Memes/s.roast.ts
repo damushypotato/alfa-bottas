@@ -1,6 +1,6 @@
 import { MessageEmbed } from 'discord.js';
-import { SlashCommand } from '../../Interfaces';
-import { GetRoast } from '../../Modules/Roast';
+import { SlashCommand } from '../../Structures/Interfaces';
+import { GetRoast } from '../../Modules/APIs/Roast';
 
 export const slashCommand: SlashCommand = {
     name: 'roast',

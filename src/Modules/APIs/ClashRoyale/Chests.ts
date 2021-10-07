@@ -1,6 +1,6 @@
 import { ClashRoyaleAPI } from '.';
 import { MessageEmbed, EmbedFieldData } from 'discord.js';
-import { ClashEmbed } from '../../Interfaces';
+import { ClashEmbed } from '../../../Structures/Interfaces';
 
 export namespace Chests {
 

@@ -1,5 +1,5 @@
 import { MessageEmbed, Message } from 'discord.js';
-import { SlashCommand } from '../../Interfaces';
+import { SlashCommand } from '../../Structures/Interfaces';
 
 export const slashCommand: SlashCommand = {
     name: 'editsnipe',

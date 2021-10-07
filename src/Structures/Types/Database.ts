@@ -1,9 +1,9 @@
-import { LogDB } from '../MongoDB/Models/Log'
-import { UserDB } from '../MongoDB/Models/User'
-import { GuildDB } from '../MongoDB/Models/Guild'
-import { MemberDB } from '../MongoDB/Models/Member'
-import { EditedMessageDB } from '../MongoDB/Models/EditedMessage'
-import { DeletedMessageDB } from '../MongoDB/Models/DeletedMessage'
+import { LogDB } from '../../Modules/MongoDB/Models/Log'
+import { UserDB } from '../../Modules/MongoDB/Models/User'
+import { GuildDB } from '../../Modules/MongoDB/Models/Guild'
+import { MemberDB } from '../../Modules/MongoDB/Models/Member'
+import { EditedMessageDB } from '../../Modules/MongoDB/Models/EditedMessage'
+import { DeletedMessageDB } from '../../Modules/MongoDB/Models/DeletedMessage'
 import { Document, ObjectId } from 'mongoose';
 
 export type BaseDoc<T> = Document<any, any, T> & T & {_id: ObjectId};

@@ -1,5 +1,5 @@
 import { Collection, Emoji } from 'discord.js';
-import Client from '../Client';
+import Client from '../../Client';
 
 export default class CustomEmojiManager {
     constructor(client: Client) {

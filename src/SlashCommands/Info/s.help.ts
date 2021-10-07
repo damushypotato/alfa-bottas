@@ -1,5 +1,5 @@
 import { MessageEmbed, MessageActionRow, MessageSelectMenu, MessageSelectOptionData, SelectMenuInteraction, EmbedFieldData, ButtonInteraction, MessageButton, Message } from 'discord.js'
-import { SlashCommand, SlashCommand_Category } from '../../Interfaces';
+import { SlashCommand, SlashCommand_Category } from '../../Structures/Interfaces';
 
 export const slashCommand: SlashCommand = {
     name: 'help',

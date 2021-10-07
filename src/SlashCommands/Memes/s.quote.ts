@@ -1,6 +1,6 @@
 import { MessageEmbed } from 'discord.js';
-import { SlashCommand } from '../../Interfaces';
-import { GetQuote } from '../../Modules/Quote';
+import { SlashCommand } from '../../Structures/Interfaces';
+import { GetQuote } from '../../Modules/APIs/Quote';
 
 export const slashCommand: SlashCommand = {
     name: 'quote',

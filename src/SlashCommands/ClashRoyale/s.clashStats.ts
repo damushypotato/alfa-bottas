@@ -1,6 +1,6 @@
 import { MessageEmbed, EmbedFieldData } from 'discord.js';
-import { SlashCommand } from '../../Interfaces';
-import { Profile, War, Chests, HashtagHelper } from '../../Modules/ClashRoyale';
+import { SlashCommand } from '../../Structures/Interfaces';
+import { Profile, War, Chests, HashtagHelper } from '../../Modules/APIs/ClashRoyale';
 
 export const slashCommand: SlashCommand = {
     name: 'clashstats',

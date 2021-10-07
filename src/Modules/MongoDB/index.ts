@@ -1,9 +1,9 @@
 import { User, Guild, GuildMember, Message, TextChannel } from 'discord.js';
 import { UserModel, GuildModel, LogModel, MemberModel, DeletedMessageModel, EditedMessageModel } from './Models'
 import { ObjectId, connect } from 'mongoose';
-import { UserDoc, GuildDoc, MemberDoc } from '../Types';
-import CacheManager from './Cache';
-import Client from '../Client';
+import { UserDoc, GuildDoc, MemberDoc } from '../../Structures/Types';
+import CacheManager from '../Cache';
+import Client from '../../Client';
 
 export interface MultiDB {
     userDB: UserDoc;

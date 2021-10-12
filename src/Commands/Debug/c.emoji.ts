@@ -2,7 +2,7 @@ import {  } from 'discord.js';
 import Command from '../../Modules/Command';
 
 const command = new Command({
-    name: 'emoji',
+    name: 'testemoji',
     description: 'The bot\'s custom emojis.',
 });
 

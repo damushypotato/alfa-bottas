@@ -3,6 +3,7 @@ import Command from '../../Modules/Command';
 const command = new Command({
     name: 'nickname',
     description: 'Change a user\'s nickname.',
+    memberPerms: ['ADMINISTRATOR']
 });
 
 command.slashCommand = {

@@ -1,24 +1,54 @@
-import { MessageEmbed } from 'discord.js'
-import { Command } from '../../Interfaces';
+import { MessageEmbed, User } from 'discord.js';
+import Command from '../../Modules/Command';
+import { Config } from '../../Structures/Interfaces';
 
-export const command: Command = {
+const getEmbed = (target: User, config: Config) => {
+    const embed = new MessageEmbed()
+        .setTitle(`heres ur pfp`)
+        .setDescription(`<@${target.id}>`)
+        .setImage(`${target.displayAvatarURL({ dynamic: true })}?size=1024`)
+        .setFooter(config.embed_footer)
+        .setColor(config.color);
+
+    return embed;
+}
+
+const command = new Command({
     name: 'pfp',
-    description: 'Show a user\'s profile picture',
-    aliases: ['avatar'],
-    usage: 'invite',
-    async run(client, message, args, data) {
+    description: 'Shows a user\'s profile picture.',
+});
 
-        const user = !args[0] ? message.author : message.mentions.users.first();
-
-        if (!user) return message.channel.send(`Usage: ${data.prefix}${this.usage}`);
-
-        const embed = new MessageEmbed()
-            .setTitle(`heres ur pfp`)
-            .setDescription(`<@${user.id}>`)
-            .setImage(`${user.displayAvatarURL()}?size=1024`)
-            .setFooter(client.config.embed_footer)
-            .setColor(client.config.color)
-
-        message.channel.send({ embeds: [embed] });
+command.textCommand = {
+    usage: '<@User>',
+    async run(client, message, [ mention ], data) {
+        let target: User;
+        if (mention) {
+            target = client.tools.mentions.getUserFromMention(mention, client);
+            if (!target) return command.sendUsage(message, data.prefix);
+        }
+        else {
+            target = message.author;
+        }
+        
+        message.channel.send({ embeds: [getEmbed(target, client.config)] });
     }
 }
+
+command.slashCommand = {
+    type: 'CHAT_INPUT',
+    options: [
+        {
+            type: 'USER',
+            name: 'target',
+            description: 'The user whose pfp you want to get.',
+            required: false,
+        }
+    ],
+    async run(client, interaction, options, data) {
+        const target = options.getUser('target') || interaction.user;
+
+        interaction.followUp({ embeds: [getEmbed(target, client.config)] });
+    }
+}
+
+export default command;

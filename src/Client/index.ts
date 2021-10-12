@@ -1,12 +1,14 @@
-import { Client, Collection } from 'discord.js';
+import { Client, Collection, ApplicationCommandData } from 'discord.js';
 import { clientIntents } from './intents';
 import { join as joinPath } from 'path';
 import { readdirSync, existsSync } from 'fs';
-import { Command, SlashCommand, Event, Config, Secrets, API_Keys, ClientServices } from '../Interfaces';
+import { Event, Config, Secrets, API_Keys, ClientServices, ClientTools } from '../Structures/Interfaces';
 import * as configJson from '../config.json';
 import { config as envConfig } from 'dotenv';
-import Database from '../MongoDB';
-import CustomEmojiManager from '../Emojis';
+import Database from '../Modules/MongoDB';
+import CustomEmojiManager from '../Modules/Emojis';
+import Command from '../Modules/Command';
+import { Mentions } from '../Modules/Tools';
 
 const devPath = joinPath(__dirname, '..', '..', 'dev');
 const dev = existsSync(devPath);
@@ -20,7 +22,6 @@ class ExtendedClient extends Client {
     }
 
     public commands: Collection<string, Command> = new Collection();
-    public slashCommands: Collection<string, SlashCommand> = new Collection();
     public events: Collection<string, Event> = new Collection();
     public config: Config = configJson;
     public secrets: Secrets = {
@@ -38,38 +39,32 @@ class ExtendedClient extends Client {
     public database = new Database(this);
     public customEmojis = new CustomEmojiManager(this);
     public dev = dev;
+    public tools: ClientTools = {
+        mentions: Mentions
+    };
 
     public async init() {
         // Commands
         const commandPath = joinPath(__dirname, '..', 'Commands');
         readdirSync(commandPath).forEach(dir => {
             const dirPath = joinPath(commandPath, dir);
-
             const commands = readdirSync(dirPath).filter(file => file.startsWith('c.'));
 
             for (const file of commands) {
                 const filePath = joinPath(dirPath, file)
-                const command: Command = require(filePath).command;
+                const command: Command = require(filePath).default;
+                if (!command.textCommand && !command.slashCommand) {
+                    throw new Error(`Command '${command.name}' must have a valid textCommand or slashCommand property.`);
+                }
                 command.category ||= dir;
+                
+                if (['MESSAGE', 'USER'].includes(command.slashCommand?.type)) delete command.description;
+                
                 this.commands.set(command.name, command);
             }
         })
 
-        // Slash Commands
-        const slashPath = joinPath(__dirname, '..', 'SlashCommands');
-        readdirSync(slashPath).forEach(dir => {
-            const dirPath = joinPath(slashPath, dir);
-
-            const slashCommands = readdirSync(dirPath).filter(file => file.startsWith('s.'));
-
-            for (const file of slashCommands) {
-                const filePath = joinPath(dirPath, file)
-                const slashCommand: SlashCommand = require(filePath).slashCommand;
-                if (['MESSAGE', 'USER'].includes(slashCommand.type)) delete slashCommand.description;
-                slashCommand.category ||= dir;
-                this.slashCommands.set(slashCommand.name, slashCommand);
-            }
-        })
+        // Register Slash Commands
         this.once('ready', async () => {
             if (this.dev) {
                 // Register for a single guild
@@ -100,15 +95,22 @@ class ExtendedClient extends Client {
         // Login
         this.login(this.secrets.CLIENT_TOKEN);
     }
+
+    public async getAllSlashCommands() {
+        return this.commands
+            .filter(c => c.slashCommand != undefined)
+            .map(c => c.toApplicationCommand());
+    }
+
     //slash commands
     public async registerAllSlashGuild(guildId: string) {
         await this.guilds.cache.get(guildId).commands.set(
-            this.slashCommands.map(slashCommand => slashCommand)
+            await this.getAllSlashCommands()
         );
     }
     public async registerAllSlashGlobal() {
         await this.application.commands.set(
-            this.slashCommands.map(slashCommand => slashCommand)
+            await this.getAllSlashCommands()
         );
     }
     public async unregisterAllSlashGuild(guildId: string) {

@@ -1,23 +1,35 @@
 import { MessageEmbed } from 'discord.js';
-import { Command } from '../../Interfaces';
-import { GetRoast } from '../../Modules/Roast';
+import { Config } from '../../Structures/Interfaces';
+import { GetRoast } from '../../Modules/APIs/Roast';
+import Command from '../../Modules/Command';
 
-export const command: Command = {
+const getFailEmbed = (config: Config) => new MessageEmbed().setColor(config.color).setTitle('API Unavailable.');
+
+const command = new Command({
     name: 'roast',
-    description: 'u suck',
-    usage: 'insult',
+    description: 'U suck',
+});
+
+command.textCommand = {
+    usage: '',
     async run(client, message, args, data) {
+        const roast = await GetRoast();
 
-        const fetchingEmbed = new MessageEmbed()
-            .setTitle('Generating...')
-            .setColor(client.config.color);
+        if (!roast) message.channel.send({ embeds: [getFailEmbed(client.config)] });
 
-        const sent_fetchingEmbed = message.channel.send({ embeds: [fetchingEmbed] })
-
-        const [msg, roast] = await Promise.all([sent_fetchingEmbed, GetRoast()]);
-
-        if (!roast) msg.edit({ embeds: [new MessageEmbed().setColor(client.config.color).setTitle('API Unavailable.')] });
-
-        msg.edit({ content: roast, embeds: [] });
+        message.channel.send(roast);
     }
 }
+
+command.slashCommand = {
+    type: 'CHAT_INPUT',
+    async run(client, interaction, options, data) {
+        const roast = await GetRoast();
+
+        if (!roast) interaction.followUp({ embeds: [getFailEmbed(client.config)] });
+
+        interaction.followUp(roast);
+    }
+}
+
+export default command;

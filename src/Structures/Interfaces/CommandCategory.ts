@@ -1,4 +1,4 @@
-import { TextCommand } from '.';
+import Command from '../../Modules/Command';
 
 export interface CommandCategory {
     name: string;

@@ -1,4 +1,4 @@
-import { PermissionString } from 'discord.js';
+import { PermissionString, ApplicationCommandData, Message } from 'discord.js';
 import { SlashCommand, TextCommand } from '../../Structures/Interfaces';
 
 interface CommandConfig {
@@ -40,4 +40,39 @@ export default class Command {
     public opOnly: boolean;
 
     public category: string;
+
+    public toApplicationCommand() {
+        if (!this.slashCommand) {
+            process.emitWarning(
+                `Command '${this.name}' cannot be converted to applicationCommand because it does not have a slashCommand property.`
+            );
+            return;
+        }
+        return {
+            name: this.name,
+            description: this.description,
+            type: this.slashCommand.type,
+            options: this.slashCommand.options,
+        } as ApplicationCommandData;
+    }
+
+    public getUsage(prefix: string) {
+        if (!this.textCommand) {
+            process.emitWarning(
+                `Cannot get usage for command '${this.name}' because it does not have a textCommand property.`
+            );
+            return;
+        }
+        return `Usage: \`${prefix}${this.name} ${this.textCommand.usage}\``;
+    }
+
+    public sendUsage(message: Message, prefix: string) {
+        if (!this.textCommand) {
+            process.emitWarning(
+                `Cannot get usage for command '${this.name}' because it does not have a textCommand property.`
+            );
+            return;
+        }
+        return message.channel.send(this.getUsage(prefix));
+    }
 }

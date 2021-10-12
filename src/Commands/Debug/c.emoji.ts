@@ -1,9 +1,19 @@
 import {  } from 'discord.js';
-import { SlashCommand } from '../../Structures/Interfaces';
+import Command from '../../Modules/Command';
 
-export const slashCommand: SlashCommand = {
+const command = new Command({
     name: 'emoji',
-    description: 'sends an emoji from the bot\'s custom emojis',
+    description: 'The bot\'s custom emojis.',
+});
+
+command.textCommand = {
+    usage: '<name>',
+    async run(client, message, args, data) {
+        message.channel.send(client.customEmojis.get(args[0]));
+    }
+}
+
+command.slashCommand = {
     type: 'CHAT_INPUT',
     options: [
         {
@@ -18,3 +28,5 @@ export const slashCommand: SlashCommand = {
         interaction.followUp(client.customEmojis.get(emoji));
     }
 }
+
+export default command;

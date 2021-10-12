@@ -43,35 +43,27 @@ export const event: Event = {
             return;
         }
 
-        let userPerms: PermissionString[] = [];
-        //Checking for members permission
-        command.memberPerms?.forEach((perm) => {
-            if ((interaction.channel as TextChannel).permissionsFor(interaction.member as GuildMember).has(perm)) {
-                userPerms.push(perm);
+        const userPerms: PermissionString[] = command.memberPerms?.map(perm => {
+            if (!(interaction.channel as TextChannel).permissionsFor(interaction.member as GuildMember).has(perm)) {
+                return perm;
             }
         });
-
-        //If user permissions arraylist length is more than zero return error
         if (userPerms.length > 0) {
             return interaction.followUp(
                 'Looks like you\'re missing the following permissions:\n' +
-                    userPerms.map((p) => `\`${p}\``).join(', ')
+                    userPerms.map(p => `\`${p}\``).join(', ')
             );
         }
 
-        let clientPerms: PermissionString[] = [];
-        //Checking for client permissions
-        command.clientPerms?.forEach((perm) => {
-            if ((interaction.channel as TextChannel).permissionsFor((interaction.guild as Guild).me as GuildMember).has(perm)) {
-                clientPerms.push(perm);
+        const clientPerms: PermissionString[] = command.clientPerms?.map(perm => {
+            if (!(interaction.channel as TextChannel).permissionsFor(interaction.guild.me).has(perm)) {
+                return perm;
             }
         });
-
-        //If client permissions arraylist length is more than zero return error
         if (clientPerms.length > 0) {
             return interaction.followUp(
                 'Looks like I\'m missing the following permissions:\n' +
-                    clientPerms.map((p) => `\`${p}\``).join(', ')
+                    clientPerms.map(p => `\`${p}\``).join(', ')
             );
         }
 

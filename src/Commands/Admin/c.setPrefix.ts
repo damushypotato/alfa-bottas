@@ -1,9 +1,14 @@
 import {  } from 'discord.js';
-import { SlashCommand } from '../../Structures/Interfaces';
+import Command from '../../Modules/Command';
 
-export const slashCommand: SlashCommand = {
+const maxLength = 8;
+
+const command = new Command({
     name: 'setprefix',
-    description: 'Set the guild prefix',
+    description: 'Set a new prefix for the server.',
+});
+
+command.slashCommand = {
     type: 'CHAT_INPUT',
     options: [
         {
@@ -23,24 +28,24 @@ export const slashCommand: SlashCommand = {
 
         const prefixInput = options.getString('prefix');
         const addSpace = options.getBoolean('addspace');
-
+    
         let prefix = prefixInput.toLowerCase();
-        
-        const maxLength = 8
-        
+                
         if (prefix.length > maxLength) {
             return interaction.followUp(`Prefix must be shorter than ${maxLength} characters!`)
         }
         
         if (addSpace) prefix += ' ';
-
+    
         if (prefix == data.guildCache.prefix) return interaction.followUp(`Prefix already set!`);
         
         const guildDB = await client.database.fetchGuildDB(interaction.guild);
         guildDB.prefix = prefix;
         await guildDB.save();
         client.database.cache.fetchAndUpdateGuild(guildDB);
-
+    
         interaction.followUp(`The new prefix is set to \`${prefix}\` !`);
     }
 }
+
+export default command;

@@ -82,10 +82,11 @@ export namespace War {
             .setColor(config.color)
             .setFooter(config.embed_footer);
 
-        const clanStandings = war.clans.sort((a, b) => b.fame - a.fame);
+        const clanStandingsOverall = war.clans.sort((a, b) => b.fame - a.fame);
+        const clanStandingsToday = war.clans.sort((a, b) => b.periodPoints - a.periodPoints);
 
         if (war.periodType == 'colosseum') {
-            warEmbed.addFields(clanStandings.map((c, i) => {
+            warEmbed.addFields(clanStandingsOverall.map((c, i) => {
                 return {
                     name: `#${i+1} - ${c.name}`,
                     value: `${c.fame} points`
@@ -93,10 +94,10 @@ export namespace War {
             }))
         }
         else {
-            warEmbed.addFields(clanStandings.map((c, i) => {
+            warEmbed.addFields(clanStandingsOverall.map((c, i) => {
                 return {
                     name: `#${i+1} - ${c.name} - ${c.fame} points`,
-                    value: `${c.periodPoints} medals today`
+                    value: `#${clanStandingsToday.findIndex(x => x.tag == c.tag)+1} today - ${c.periodPoints} medals`
                 } as EmbedFieldData;
             }))
         }

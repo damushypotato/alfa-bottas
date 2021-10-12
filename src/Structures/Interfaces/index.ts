@@ -10,3 +10,4 @@ export { ClientServices } from './ClientServices';
 export { CommandCategory } from './CommandCategory';
 export { SlashCommand_Category } from './SlashCommand_Category';
 export { ClashEmbed } from './ClashEmbed';
+export { ClientTools } from './ClientTools';

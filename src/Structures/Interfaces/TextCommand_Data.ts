@@ -5,4 +5,5 @@ export interface TextCommand_Data {
     prefix: string;
     userCache: UserCache;
     guildCache: GuildCache;
+    fullArgs?: string;
 }

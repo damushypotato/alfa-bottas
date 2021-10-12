@@ -1,30 +1,44 @@
 import { MessageEmbed } from 'discord.js';
-import { Command } from '../../Interfaces';
-import { GetQuote } from '../../Modules/Quote';
+import Command from '../../Modules/Command';
+import { Config } from '../../Structures/Interfaces';
+import { GetQuote } from '../../Modules/APIs/Quote';
 
-export const command: Command = {
+const getEmbed = async (quote: string, config: Config) => {
+    const embed = new MessageEmbed()
+        .setColor(config.color)
+        .setFooter(config.embed_footer)
+        .setTitle('An AI-generated Quote')
+        .setURL('https://inspirobot.me')
+        .setImage(quote);
+
+    return embed;
+}
+
+const getFailEmbed = (config: Config) => new MessageEmbed().setColor(config.color).setTitle('API Unavailable.');
+
+const command = new Command({
     name: 'quote',
-    description: 'An AI Generated quote',
-    usage: 'quote',
+    description: 'An AI-generated quote.',
+});
+
+command.textCommand = {
+    usage: '',
     async run(client, message, args, data) {
+        const quote = await GetQuote();
+        if (!quote) message.channel.send({ embeds: [getFailEmbed(client.config)] });
 
-        const fetchingEmbed = new MessageEmbed()
-            .setTitle('Generating...')
-            .setColor(client.config.color);
-
-        const sent_fetchingEmbed = message.channel.send({ embeds: [fetchingEmbed] })
-
-        const [msg, quote] = await Promise.all([sent_fetchingEmbed, GetQuote()]);
-
-        if (!quote) msg.edit({ embeds: [new MessageEmbed().setColor(client.config.color).setTitle('API Unavailable.')] });
-
-        const embed = new MessageEmbed()
-            .setColor(client.config.color)
-            .setFooter(client.config.embed_footer)
-            .setTitle('An AI-Generated Quote')
-            .setURL('https://inspirobot.me')
-            .setImage(quote);
-
-        msg.edit({ embeds: [embed] });
+        message.channel.send({ embeds: [await getEmbed(quote, client.config)] })
     }
 }
+
+command.slashCommand = {
+    type: 'CHAT_INPUT',
+    async run(client, interaction, options, data) {
+        const quote = await GetQuote();
+        if (!quote) interaction.followUp({ embeds: [getFailEmbed(client.config)] });
+
+        interaction.followUp({ embeds: [await getEmbed(quote, client.config)] })
+    }
+}
+
+export default command;

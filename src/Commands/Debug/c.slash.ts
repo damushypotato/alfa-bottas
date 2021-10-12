@@ -1,16 +1,19 @@
-import { MessageEmbed } from 'discord.js'
-import { Command } from '../../Interfaces';
+import { MessageEmbed } from 'discord.js';
+import Command from '../../Modules/Command';
 
-export const command: Command = {
+const command = new Command({
     name: 'slash',
-    description: 'Manage slash commands',
+    description: 'Manage slash commands.',
     ownerOnly: true,
-    usage: 'slash <register/unregister> <guild/global>',
+});
+
+command.textCommand = {
+    usage: '',
     async run(client, message, [ action, scope ], data) {
 
         if (action != 'register' && action != 'unregister' ||
             scope != 'guild' && scope != 'global') {
-            return message.channel.send('Usage: '+data.prefix+this.usage);
+            return command.sendUsage(message, data.prefix)
         }
 
         const embed = new MessageEmbed()
@@ -43,6 +46,7 @@ export const command: Command = {
         }
 
         sent.edit({ embeds: [new MessageEmbed(embed).setTitle('Done!')] });
-
     }
 }
+
+export default command;

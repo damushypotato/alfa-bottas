@@ -66,13 +66,16 @@ export default class Command {
         return `Usage: \`${prefix}${this.name} ${this.textCommand.usage}\``;
     }
 
-    public sendUsage(message: Message, prefix: string) {
+    public sendUsage(message: Message, prefix: string, edit = false) {
         if (!this.textCommand) {
             process.emitWarning(
                 `Cannot get usage for command '${this.name}' because it does not have a textCommand property.`
             );
             return;
         }
-        return message.channel.send(this.getUsage(prefix));
+        if (!edit)
+            return message.channel.send(this.getUsage(prefix));
+        else
+            return message.edit(this.getUsage(prefix));
     }
 }

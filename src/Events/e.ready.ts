@@ -5,5 +5,8 @@ export const event: Event = {
     once: true,
     async run(client) {
         console.log(`${client.user.tag} has entered the chat.`);
+        if (client.dev) {
+            require('beeper')();
+        }
     }
 }

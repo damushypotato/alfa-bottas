@@ -62,10 +62,8 @@ export const event: Event = {
             return;
         }
 
-        const userPerms: PermissionString[] = command.memberPerms?.map(perm => {
-            if (message.channel.type == 'GUILD_TEXT' && !message.channel.permissionsFor(message.member).has(perm)) {
-                return perm;
-            }
+        const userPerms: PermissionString[] = command.memberPerms?.filter(perm => {
+            return !message.guild.members.cache.get(message.author.id).permissions.has(perm)
         });
         if (userPerms.length > 0) {
             return message.channel.send(
@@ -74,10 +72,8 @@ export const event: Event = {
             );
         }
 
-        const clientPerms: PermissionString[] = command.clientPerms?.map(perm => {
-            if (message.channel.type == 'GUILD_TEXT' && !message.channel.permissionsFor(message.guild.me).has(perm)) {
-                return perm;
-            }
+        const clientPerms: PermissionString[] = command.clientPerms?.filter(perm => {
+            return !message.guild.me.permissions.has(perm);
         });
         if (clientPerms.length > 0) {
             return message.channel.send(

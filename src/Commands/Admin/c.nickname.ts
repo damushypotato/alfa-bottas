@@ -30,6 +30,8 @@ command.slashCommand = {
             return interaction.followUp('User not found.')
         }
 
+        if (target.id == interaction.guild.ownerId) return interaction.followUp('Unable to change owner\'s nickname.')
+
         const nickInput = options.getString('nickname');
     
         if (nickInput.length > 32) {

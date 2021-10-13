@@ -43,10 +43,8 @@ export const event: Event = {
             return;
         }
 
-        const userPerms: PermissionString[] = command.memberPerms?.map(perm => {
-            if (!(interaction.channel as TextChannel).permissionsFor(interaction.member as GuildMember).has(perm)) {
-                return perm;
-            }
+        const userPerms: PermissionString[] = command.memberPerms?.filter(perm => {
+            return !interaction.guild.members.cache.get(interaction.user.id).permissions.has(perm)
         });
         if (userPerms.length > 0) {
             return interaction.followUp(
@@ -55,10 +53,8 @@ export const event: Event = {
             );
         }
 
-        const clientPerms: PermissionString[] = command.clientPerms?.map(perm => {
-            if (!(interaction.channel as TextChannel).permissionsFor(interaction.guild.me).has(perm)) {
-                return perm;
-            }
+        const clientPerms: PermissionString[] = command.clientPerms?.filter(perm => {
+            return !interaction.guild.me.permissions.has(perm);
         });
         if (clientPerms.length > 0) {
             return interaction.followUp(

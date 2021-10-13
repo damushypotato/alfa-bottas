@@ -5,7 +5,6 @@ import Client from '../../../Client';
 export namespace WCC {
     export async function getEmbed(client: Client) {
         const wcc = await getCurrentConstructorStandings();
-        console.log(wcc)
 
         const embed = new MessageEmbed()
             .setColor(client.config.color)

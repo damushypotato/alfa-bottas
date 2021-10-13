@@ -5,7 +5,6 @@ import Client from '../../../Client';
 export namespace WDC {
     export async function getEmbed(client: Client) {
         const wdc = await getCurrentDriverStandings();
-        console.log(wdc.standings[19].constructors)
 
         const embed = new MessageEmbed()
             .setColor(client.config.color)

@@ -1,6 +1,6 @@
 import { MessageEmbed } from 'discord.js';
 import Client from '../../Client';
-import { WDC, WCC } from '../../Modules/APIs/F1';
+import { WDC, WCC, NextGP, LastGP } from '../../Modules/APIs/F1';
 import Command from '../../Modules/Command';
 import { Config } from '../../Structures/Interfaces';
 
@@ -14,14 +14,12 @@ const getStat = async (stat: Stat, client: Client) => {
     if (stat == 'wcc') {
         return await WCC.getEmbed(client);
     }
-    // if (stat == 'next') {
-    //     return;
-    //     // return await NextGP.getEmbed(client);
-    // }
-    // if (stat == 'last') {
-    //     return;
-    //     // return await LastGP.getEmbed(client);
-    // }
+    if (stat == 'next') {
+        return await NextGP.getEmbed(client);
+    }
+    if (stat == 'last') {
+        return await LastGP.getEmbed(client);
+    }
 }
 
 const command = new Command({
@@ -30,8 +28,7 @@ const command = new Command({
 });
 
 command.textCommand = {
-    // next | last | 
-    usage: '<wdc | wcc>',
+    usage: '<next | last | wdc | wcc>',
     async run(client, message, [ statIn ], data) {
         const stat = statIn as Stat;
         if (!validStat.map(x => x as string).includes(statIn)) return command.sendUsage(message, data.prefix);
@@ -58,16 +55,16 @@ command.slashCommand = {
             name: 'wcc',
             description: 'The Constructor standings.'
         },
-        // {
-        //     type: 'SUB_COMMAND',
-        //     name: 'next',
-        //     description: 'The next Formula 1 Grand Prix.'
-        // },
-        // {
-        //     type: 'SUB_COMMAND',
-        //     name: 'last',
-        //     description: 'The last Formula 1 Grand Prix.'
-        // },
+        {
+            type: 'SUB_COMMAND',
+            name: 'next',
+            description: 'The next Formula 1 Grand Prix.'
+        },
+        {
+            type: 'SUB_COMMAND',
+            name: 'last',
+            description: 'The last Formula 1 Grand Prix.'
+        },
     ],
     async run(client, interaction, options, data) {
         const stat = options.getSubcommand() as Stat;

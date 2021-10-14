@@ -2,7 +2,6 @@ import { MessageEmbed } from 'discord.js';
 import Client from '../../Client';
 import { WDC, WCC, NextGP, LastGP } from '../../Modules/APIs/F1';
 import Command from '../../Modules/Command';
-import { Config } from '../../Structures/Interfaces';
 
 const validStat = ['wdc', 'wcc', 'next', 'last'] as const;
 type Stat = typeof validStat[number];

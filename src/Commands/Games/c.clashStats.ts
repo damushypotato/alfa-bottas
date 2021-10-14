@@ -3,20 +3,18 @@ import { MessageEmbed } from 'discord.js';
 import { Profile, Chests, War, HashtagHelper } from '../../Modules/APIs/ClashRoyale';
 import { Config } from '../../Structures/Interfaces';
 
-const getStat = (stat: string, tag: string, token: string, config: Config) => {
+const validStat = ['player', 'chests', 'war'] as const;
+type Stat = typeof validStat[number];
+
+const getStat = (stat: Stat, tag: string, token: string, config: Config) => {
     if (stat == 'war') {
         return War.getEmbed(tag, token, config);
     }
-    else if (stat == 'player') {
+    if (stat == 'player') {
         return Profile.getEmbed(tag, token, config);
     }
-    else if (stat == 'chests') {
+    if (stat == 'chests') {
         return Chests.getEmbed(tag, token, config);
-    }
-    else {
-        return new MessageEmbed()
-            .setTitle('Unknown stat.')
-            .setColor(config.color);
     }
 }
 
@@ -26,16 +24,17 @@ const command = new Command({
 });
 
 command.textCommand = {
-    usage: '<player / chests / war> #TAG',
+    usage: '<player | chests | war> #TAG',
     aliases: ['crstats'],
     async run(client, message, args, data) {
 
         if (!args[1]) return command.sendUsage(message, data.prefix);
 
-        let [stat, tag] = args;
+        let [statIn, tag] = args;
 
-        const stats = ['player', 'chests', 'war']
-        if (!stats.includes(stat)) return command.sendUsage(message, data.prefix);
+        const stat = statIn as Stat;
+
+        if (!validStat.map(x => x as string).includes(stat)) return command.sendUsage(message, data.prefix);
         
         if (tag != '$') {
             tag = '#' + HashtagHelper.normalizeHashtag(tag);
@@ -52,7 +51,7 @@ command.textCommand = {
             .setTitle('Fetching data...')
             .setColor(client.config.color);
 
-        const send_fetchingEmbed = message.reply({ embeds: [fetchingEmbed] });
+        const send_fetchingEmbed = message.channel.send({ embeds: [fetchingEmbed] });
         
         let statEmbed = getStat(stat, tag, token, config);
 
@@ -107,7 +106,7 @@ command.slashCommand = {
     ],
     async run(client, interaction, options, data) {
 
-        const stat = options.getSubcommand();
+        const stat = options.getSubcommand() as Stat;
         let tag = options.getString('tag');
         
         if (tag != '$') {

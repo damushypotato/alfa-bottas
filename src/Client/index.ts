@@ -9,6 +9,7 @@ import Database from '../Modules/MongoDB';
 import CustomEmojiManager from '../Modules/Emojis';
 import Command from '../Modules/Command';
 import { Mentions } from '../Modules/Tools';
+import { DiscordTogether } from 'discord-together';
 
 const devPath = joinPath(__dirname, '..', '..', 'dev');
 const dev = existsSync(devPath);
@@ -42,6 +43,7 @@ class ExtendedClient extends Client {
     public tools: ClientTools = {
         mentions: Mentions
     };
+    public discordTogether = new DiscordTogether(this);
 
     public async init() {
         // Commands

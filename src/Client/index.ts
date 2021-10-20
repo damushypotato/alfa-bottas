@@ -5,7 +5,7 @@ import { readdirSync, existsSync } from 'fs';
 import { Event, Config, Secrets, API_Keys, ClientServices, ClientTools } from '../Structures/Interfaces';
 import * as configJson from '../config.json';
 import { config as envConfig } from 'dotenv';
-import Database from '../Modules/MongoDB';
+import Database from '../Modules/Database';
 import CustomEmojiManager from '../Modules/Emojis';
 import Command from '../Modules/Command';
 import { Mentions } from '../Modules/Tools';
@@ -14,12 +14,12 @@ import { DiscordTogether } from 'discord-together';
 const devPath = joinPath(__dirname, '..', '..', 'dev');
 const dev = existsSync(devPath);
 if (dev) {
-    envConfig({ path: joinPath(devPath, 'dev.env'), });
+    envConfig({ path: joinPath(devPath, 'dev.env') });
 }
 
 class ExtendedClient extends Client {
     public constructor() {
-        super({ intents: clientIntents })
+        super({ intents: clientIntents });
     }
 
     public commands: Collection<string, Command> = new Collection();
@@ -41,38 +41,37 @@ class ExtendedClient extends Client {
     public customEmojis = new CustomEmojiManager(this);
     public dev = dev;
     public tools: ClientTools = {
-        mentions: Mentions
+        mentions: Mentions,
     };
     public discordTogether = new DiscordTogether(this);
 
     public async init() {
         // Commands
         const commandPath = joinPath(__dirname, '..', 'Commands');
-        readdirSync(commandPath).forEach(dir => {
+        readdirSync(commandPath).forEach((dir) => {
             const dirPath = joinPath(commandPath, dir);
-            const commands = readdirSync(dirPath).filter(file => file.startsWith('c.'));
+            const commands = readdirSync(dirPath).filter((file) => file.startsWith('c.'));
 
             for (const file of commands) {
-                const filePath = joinPath(dirPath, file)
+                const filePath = joinPath(dirPath, file);
                 const command: Command = require(filePath).default;
                 if (!command.textCommand && !command.slashCommand) {
                     throw new Error(`Command '${command.name}' must have a valid textCommand or slashCommand property.`);
                 }
                 command.category ||= dir;
-                
+
                 if (['MESSAGE', 'USER'].includes(command.slashCommand?.type)) delete command.description;
-                
+
                 this.commands.set(command.name, command);
             }
-        })
+        });
 
         // Register Slash Commands
         this.once('ready', async () => {
             if (this.dev) {
                 // Register for a single guild
                 await this.registerAllSlashGuild(process.env.DEV_GUILD_ID);
-            }
-            else {
+            } else {
                 // Register for all the guilds the bot is in
                 await this.registerAllSlashGlobal();
             }
@@ -80,16 +79,18 @@ class ExtendedClient extends Client {
 
         // Events
         const eventPath = joinPath(__dirname, '..', 'Events');
-        readdirSync(eventPath).filter(file => file.startsWith('e.')).forEach(async file => {
-            const filePath = joinPath(eventPath, file);
-            const event: Event = require(filePath).event;
-            this.events.set(event.name, event);
-            if (event.once) {
-                this.once(event.name, event.run.bind(null, this));
-            } else {
-                this.on(event.name, event.run.bind(null, this));
-            }
-        })
+        readdirSync(eventPath)
+            .filter((file) => file.startsWith('e.'))
+            .forEach(async (file) => {
+                const filePath = joinPath(eventPath, file);
+                const event: Event = require(filePath).event;
+                this.events.set(event.name, event);
+                if (event.once) {
+                    this.once(event.name, event.run.bind(null, this));
+                } else {
+                    this.on(event.name, event.run.bind(null, this));
+                }
+            });
 
         // connect to database
         await this.database.connect();
@@ -99,21 +100,15 @@ class ExtendedClient extends Client {
     }
 
     public async getAllSlashCommands() {
-        return this.commands
-            .filter(c => c.slashCommand != undefined)
-            .map(c => c.toApplicationCommand());
+        return this.commands.filter((c) => c.slashCommand != undefined).map((c) => c.toApplicationCommand());
     }
 
     //slash commands
     public async registerAllSlashGuild(guildId: string) {
-        await this.guilds.cache.get(guildId).commands.set(
-            await this.getAllSlashCommands()
-        );
+        await this.guilds.cache.get(guildId).commands.set(await this.getAllSlashCommands());
     }
     public async registerAllSlashGlobal() {
-        await this.application.commands.set(
-            await this.getAllSlashCommands()
-        );
+        await this.application.commands.set(await this.getAllSlashCommands());
     }
     public async unregisterAllSlashGuild(guildId: string) {
         await this.guilds.cache.get(guildId).commands.set([]);

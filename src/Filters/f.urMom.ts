@@ -1,6 +1,6 @@
 import { Filter } from '../Structures/Interfaces';
 
-const triggers: string[] = ['ur mom', 'ur mum', 'ur mother', 'your mom', 'your mum', 'your mother'];
+export const triggers: string[] = ['ur mom', 'ur mum', 'ur mother', 'your mom', 'your mum', 'your mother'];
 
 export const filter: Filter = {
     name: 'urmom',

@@ -1,8 +1,8 @@
-import { Client, Collection, ApplicationCommandData } from 'discord.js';
+import { Client, Collection } from 'discord.js';
 import { clientIntents } from './intents';
 import { join as joinPath } from 'path';
 import { readdirSync, existsSync } from 'fs';
-import { Event, Config, Secrets, API_Keys, ClientServices, ClientTools } from '../Structures/Interfaces';
+import { Event, Config, Secrets, API_Keys, ClientServices, ClientTools, Filter } from '../Structures/Interfaces';
 import * as configJson from '../config.json';
 import { config as envConfig } from 'dotenv';
 import Database from '../Modules/Database';
@@ -44,6 +44,7 @@ class ExtendedClient extends Client {
         mentions: Mentions,
     };
     public discordTogether = new DiscordTogether(this);
+    public filters: Collection<string, Filter> = new Collection();
 
     public async init() {
         // Commands
@@ -90,6 +91,16 @@ class ExtendedClient extends Client {
                 } else {
                     this.on(event.name, event.run.bind(null, this));
                 }
+            });
+
+        // Filters
+        const filterPath = joinPath(__dirname, '..', 'Filters');
+        readdirSync(filterPath)
+            .filter((file) => file.startsWith('f.'))
+            .forEach(async (file) => {
+                const filePath = joinPath(filterPath, file);
+                const filter: Filter = require(filePath).filter;
+                this.filters.set(filter.name, filter);
             });
 
         // connect to database

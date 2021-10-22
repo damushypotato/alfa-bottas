@@ -1,4 +1,4 @@
-import { GuildMember, Guild ,Message, PermissionString } from 'discord.js';
+import { GuildMember, Guild, Message, PermissionString } from 'discord.js';
 import { Event, TextCommand_Data } from '../Structures/Interfaces';
 
 export const event: Event = {
@@ -18,12 +18,22 @@ export const event: Event = {
         //Check if message starts with the prefix
         if (!message.content.toLowerCase().startsWith(prefix)) {
             // if directly mentioned
-            if (message.content.startsWith(`<@!${message.client.user?.id}>`) ||
-                message.content.startsWith(`<@${message.client.user?.id}>`)) {
-                return message.channel.send(
-                    `What? btw the prefix is \'${prefix}\'.`
-                );
+            if (message.content.startsWith(`<@!${message.client.user?.id}>`) || message.content.startsWith(`<@${message.client.user?.id}>`)) {
+                return message.channel.send(`What? btw the prefix is \'${prefix}\'.`);
             }
+
+            // validate message / other stuff
+
+            let pass = true;
+            for (const i of client.filters) {
+                const filter = i[1];
+                const result = await filter.evaluate(client, message);
+                if (!result) pass = false;
+            }
+            if (!pass) {
+                return;
+            }
+
             return;
         }
 
@@ -31,8 +41,15 @@ export const event: Event = {
         const args = message.content.slice(prefix.length).trim().split(/ +/g);
         const commandName = args.shift()?.toLowerCase() as string;
         const fullArgs = message.content.slice(prefix.length + commandName.length).trim();
+
+        const data: TextCommand_Data = {
+            userCache: await client.database.cache.fetchUserCache(message.author),
+            guildCache,
+            prefix,
+            fullArgs,
+        };
         // get command
-        const command = client.commands.get(commandName) || client.commands.find(c => c.textCommand?.aliases?.includes(commandName) || false);
+        const command = client.commands.get(commandName) || client.commands.find((c) => c.textCommand?.aliases?.includes(commandName) || false);
         //Checking if the message is a command
         if (!command) return;
         else if (!command.textCommand) {
@@ -46,13 +63,6 @@ export const event: Event = {
             }
         }
 
-        const data: TextCommand_Data = {
-            userCache: await client.database.cache.fetchUserCache(message.author),
-            guildCache,
-            prefix,
-            fullArgs
-        };
-        
         //If command is owner only and author isn't owner return
         if (command.ownerOnly && message.author.id !== client.secrets.OWNER_ID) {
             return;
@@ -62,24 +72,18 @@ export const event: Event = {
             return;
         }
 
-        const userPerms: PermissionString[] = command.memberPerms?.filter(perm => {
-            return !message.guild.members.cache.get(message.author.id).permissions.has(perm)
+        const userPerms: PermissionString[] = command.memberPerms?.filter((perm) => {
+            return !message.guild.members.cache.get(message.author.id).permissions.has(perm);
         });
         if (userPerms.length > 0) {
-            return message.channel.send(
-                'Looks like you\'re missing the following permissions:\n' +
-                    userPerms.map(p => `\`${p}\``).join(', ')
-            );
+            return message.channel.send("Looks like you're missing the following permissions:\n" + userPerms.map((p) => `\`${p}\``).join(', '));
         }
 
-        const clientPerms: PermissionString[] = command.clientPerms?.filter(perm => {
+        const clientPerms: PermissionString[] = command.clientPerms?.filter((perm) => {
             return !message.guild.me.permissions.has(perm);
         });
         if (clientPerms.length > 0) {
-            return message.channel.send(
-                'Looks like I\'m missing the following permissions:\n' +
-                    clientPerms.map(p => `\`${p}\``).join(', ')
-            );
+            return message.channel.send("Looks like I'm missing the following permissions:\n" + clientPerms.map((p) => `\`${p}\``).join(', '));
         }
 
         try {
@@ -88,5 +92,5 @@ export const event: Event = {
             const errMsg = `Error While Executing command '${command.name}'. Error: ${err}`;
             console.log(errMsg);
         }
-    }
-}
+    },
+};

@@ -4,6 +4,7 @@ export const triggers: string[] = ['ur mom', 'ur mum', 'ur mother', 'your mom', 
 
 export const filter: Filter = {
     name: 'urmom',
+    enabled: false,
     async evaluate(client, message) {
         const text = message.content.toLowerCase();
         for (const i in triggers) {

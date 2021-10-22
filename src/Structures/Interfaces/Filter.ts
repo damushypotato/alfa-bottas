@@ -7,5 +7,6 @@ interface Evaluate {
 
 export interface Filter {
     name: string;
+    enabled: boolean;
     evaluate: Evaluate;
 }

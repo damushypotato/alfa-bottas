@@ -27,6 +27,7 @@ export const event: Event = {
             let pass = true;
             for (const i of client.filters) {
                 const filter = i[1];
+                if (!filter.enabled) break;
                 const result = await filter.evaluate(client, message);
                 if (!result) pass = false;
             }

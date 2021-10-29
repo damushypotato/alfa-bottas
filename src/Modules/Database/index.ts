@@ -140,29 +140,29 @@ export default class Database {
             content: message.content || '`Message had no text.`',
             createdAt: message.createdTimestamp,
             deletedAt: Date.now(),
-            attachments: await Promise.all(
-                message.attachments
-                    .map((a) => {
-                        if (a.size < 8000000) {
-                            return a;
-                        }
-                    })
-                    .filter(Boolean)
-                    .map(async (a, i) => {
-                        const attch = await axios.get(a.url, { responseType: 'arraybuffer' });
-                        const name = `${delMsgDB._id}-${i}.${a.name.split('.').at(-1)}`;
-                        await this.cos
-                            .putObject({
-                                Bucket: 'deletedfiles',
-                                Key: name,
-                                Body: attch.data,
-                            })
-                            .promise();
-                        return name;
-                    })
-            ),
         });
 
+        delMsgDB.attachments = await Promise.all(
+            message.attachments
+                .map((a) => {
+                    if (a.size < 8000000) {
+                        return a;
+                    }
+                })
+                .filter(Boolean)
+                .map(async (a, i) => {
+                    const attch = await axios.get(a.url, { responseType: 'arraybuffer' });
+                    const name = `${delMsgDB._id}-${i}.${a.name.split('.').at(-1)}`;
+                    await this.cos
+                        .putObject({
+                            Bucket: 'deletedfiles',
+                            Key: name,
+                            Body: attch.data,
+                        })
+                        .promise();
+                    return name;
+                })
+        )
         await delMsgDB.save();
 
         return delMsgDB;

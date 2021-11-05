@@ -45,7 +45,10 @@ command.textCommand = {
         }
         await deleteFromDB(delMsgDBs);
 
-        const msg = await sent.edit('Done.');
+        const msg = await sent.edit({
+            embeds: [new MessageEmbed().setTitle('Done.').setColor(client.config.color)],
+            content: ''
+        });
 
         setTimeout(() => msg.delete(), 5000);
     },
@@ -81,7 +84,9 @@ command.slashCommand = {
 
         await deleteFromDB(delMsgDBs);
 
-        const int = (await interaction.followUp('Done.')) as Message;
+        const int = (await interaction.followUp({
+            embeds: [new MessageEmbed().setTitle('Done.').setColor(client.config.color)],
+        })) as Message;
 
         setTimeout(() => int.delete(), 5000);
     },

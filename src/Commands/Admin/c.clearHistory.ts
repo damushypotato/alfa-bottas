@@ -46,8 +46,7 @@ command.textCommand = {
         await deleteFromDB(delMsgDBs);
 
         const msg = await sent.edit({
-            embeds: [new MessageEmbed().setTitle('Done.').setColor(client.config.color)],
-            content: ''
+            embeds: [new MessageEmbed().setTitle('Done.').setColor(client.config.color)]
         });
 
         setTimeout(() => msg.delete(), 5000);

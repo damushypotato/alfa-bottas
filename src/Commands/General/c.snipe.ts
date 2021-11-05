@@ -50,7 +50,9 @@ command.textCommand = {
 
         const send_fetchEmbed = message.channel.send({ embeds: [fetchingEmbed] });
 
-        const [delMsgDB, sent] = await Promise.all([db_req, send_fetchEmbed]);
+        const [db_res, sent] = await Promise.all([db_req, send_fetchEmbed]);
+
+        const delMsgDB = db_res.at(-1);
 
         if (!delMsgDB) {
             return await sent.edit({ embeds: [new MessageEmbed().setTitle('Theres nothing to snipe here.').setColor(client.config.color)] });
@@ -75,7 +77,7 @@ command.slashCommand = {
     async run(client, interaction, options, data) {
         const numOfMsgs = Math.floor(Math.min(max, Math.max(1, options.getNumber('num'))) || 1);
 
-        const delMsgDB = await client.database.fetchDeletedMessages(interaction.channelId, numOfMsgs);
+        const delMsgDB = (await client.database.fetchDeletedMessages(interaction.channelId, numOfMsgs)).at(-1);
 
         if (!delMsgDB) {
             return await interaction.followUp({

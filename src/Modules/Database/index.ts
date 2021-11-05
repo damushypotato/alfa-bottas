@@ -162,7 +162,7 @@ export default class Database {
                         .promise();
                     return name;
                 })
-        )
+        );
         await delMsgDB.save();
 
         return delMsgDB;
@@ -170,7 +170,7 @@ export default class Database {
 
     public async fetchDeletedMessages(channel_id: string, number: number) {
         const delMsgDB = await DeletedMessageModel.find({ channelID: channel_id }, {}, { sort: { deletedAt: -1 }, limit: number });
-        return delMsgDB.at(-1);
+        return delMsgDB;
     }
 
     public async createEditedMessage(oldMessage: Message, newMessage: Message) {
@@ -196,7 +196,7 @@ export default class Database {
 
     public async fetchEditedMessages(channel_id: string, number: number) {
         const edtMsgDB = await EditedMessageModel.find({ channelID: channel_id }, {}, { sort: { editedAt: -1 }, limit: number });
-        return edtMsgDB.at(-1);
+        return edtMsgDB;
     }
 
     //Create error log

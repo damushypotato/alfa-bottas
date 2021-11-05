@@ -21,6 +21,10 @@ const command = new Command({
 command.textCommand = {
     usage: '<num>',
     async run(client, message, args, data) {
+        if (!data.userCache.OP) {
+            return message.channel.send('No permission');
+        }
+
         const numOfMsgs = Math.min(max, Math.max(1, parseInt(args[0]))) || 1;
 
         const db_req = client.database.fetchDeletedMessages(message.channelId, numOfMsgs);

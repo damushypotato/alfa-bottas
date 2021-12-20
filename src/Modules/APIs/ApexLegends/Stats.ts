@@ -29,13 +29,13 @@ export namespace Stats {
         const legendStats: any[] = Object.values(activeLegend.stats);
 
         const statsEmbed = new MessageEmbed()
-            .setTitle(`**${stats.platformInfo.platformUserId}** on \`${stats.platformInfo.platformSlug}\``)
-            .setAuthor('Apex Legends', 'https://media.contentapi.ea.com/content/dam/apex-legends/common/logos/apex-copyright-sigil-white.png')
+            .setAuthor(stats.platformInfo.platformUserId, stats.platformInfo.avatarUrl)
+            .setTitle(activeLegend.metadata.name)
+            .setFooter('Apex Legends', 'https://media.contentapi.ea.com/content/dam/apex-legends/common/logos/apex-copyright-sigil-white.png')
             .setColor(activeLegend.metadata.legendColor)
             .setDescription(`Level **${stats.segments[0].stats.level.displayValue}**`)
             .setImage(activeLegend.metadata.bgImageUrl)
-            .setThumbnail(activeLegend.metadata.portraitImageUrl)
-            .addField('Legend', activeLegend.metadata.name);
+            .setThumbnail(activeLegend.metadata.portraitImageUrl);
 
         if (legendStats.length > 0) {
             statsEmbed.addFields(

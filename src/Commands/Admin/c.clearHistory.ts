@@ -1,6 +1,5 @@
 import { Message, MessageEmbed } from 'discord.js';
 import Command from '../../Modules/Command';
-import Client from '../../Client';
 import { DeletedMessageDoc } from '../../Structures/Types';
 
 const max = 10;

@@ -3,7 +3,12 @@ import Client from '../../Client';
 import { SlashCommand_Data } from '.';
 
 interface Run {
-    (client: Client, interaction: CommandInteraction, options: CommandInteractionOptionResolver, data: SlashCommand_Data): void
+    (
+        client: Client,
+        interaction: CommandInteraction,
+        options: Omit<CommandInteractionOptionResolver, 'getMessage' | 'getFocused'>,
+        data: SlashCommand_Data
+    ): void;
 }
 
 export interface SlashCommand {

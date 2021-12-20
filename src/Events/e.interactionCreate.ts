@@ -11,10 +11,10 @@ export const event: Event = {
 
         const command = client.commands.get(interaction.commandName);
         if (!command) return interaction.followUp({ content: 'Unknown command.' });
-        
+
         if (!command.slashCommand) {
             const { prefix } = await client.database.cache.fetchGuildCache(interaction.guild);
-            return interaction.followUp(`That is not a command. Use \`${prefix}${command.name}\` instead.`)
+            return interaction.followUp(`That is not a command. Use \`${prefix}${command.name}\` instead.`);
         }
 
         if (!client.services.slashCommands) {
@@ -31,8 +31,8 @@ export const event: Event = {
         const data: SlashCommand_Data = {
             userCache: await client.database.cache.fetchUserCache(interaction.user),
             guildCache: await client.database.cache.fetchGuildCache(interaction.guild),
-            optionsArray
-        }
+            optionsArray,
+        };
 
         //If command is owner only and author isn't owner return
         if (command.ownerOnly && interaction.user.id !== client.secrets.OWNER_ID) {
@@ -43,24 +43,18 @@ export const event: Event = {
             return;
         }
 
-        const userPerms: PermissionString[] = command.memberPerms?.filter(perm => {
-            return !interaction.guild.members.cache.get(interaction.user.id).permissions.has(perm)
+        const userPerms: PermissionString[] = command.memberPerms?.filter((perm) => {
+            return !interaction.guild.members.cache.get(interaction.user.id).permissions.has(perm);
         });
         if (userPerms.length > 0) {
-            return interaction.followUp(
-                'Looks like you\'re missing the following permissions:\n' +
-                    userPerms.map(p => `\`${p}\``).join(', ')
-            );
+            return interaction.followUp("Looks like you're missing the following permissions:\n" + userPerms.map((p) => `\`${p}\``).join(', '));
         }
 
-        const clientPerms: PermissionString[] = command.clientPerms?.filter(perm => {
+        const clientPerms: PermissionString[] = command.clientPerms?.filter((perm) => {
             return !interaction.guild.me.permissions.has(perm);
         });
         if (clientPerms.length > 0) {
-            return interaction.followUp(
-                'Looks like I\'m missing the following permissions:\n' +
-                    clientPerms.map(p => `\`${p}\``).join(', ')
-            );
+            return interaction.followUp("Looks like I'm missing the following permissions:\n" + clientPerms.map((p) => `\`${p}\``).join(', '));
         }
 
         try {
@@ -70,5 +64,5 @@ export const event: Event = {
             console.log(errMsg);
             interaction.followUp('There was an error executing that command.');
         }
-    }
-}
+    },
+};

@@ -3,7 +3,6 @@ import { MessageEmbed, EmbedFieldData } from 'discord.js';
 import { ClashEmbed } from '../../../Structures/Interfaces';
 
 export namespace Chests {
-
     interface Chest {
         index: number;
         name: string;
@@ -26,25 +25,24 @@ export namespace Chests {
     }
 
     export const getEmbed: ClashEmbed = async (tag, token, config) => {
-
         const chests = await fetchChests(tag, token);
 
-        if (!chests) return new MessageEmbed()
-            .setTitle('Unable to find chest data.')
-            .setColor(config.color);
+        if (!chests) return new MessageEmbed().setTitle('Unable to find chest data.').setColor(config.color);
 
         const chestsEmbed = new MessageEmbed()
-        .setTitle(`Upcoming chests for ${tag}`)
-        .setURL(`https://royaleapi.com/player/${encodeURIComponent(tag)}`)
-        .addFields(chests.items.map(c => {
-            return {
-                name: c.name,
-                value: c.index == 0 ? 'Next' : `+${c.index}`
-            } as EmbedFieldData;
-        }))
-        .setColor(config.color)
-        .setFooter(config.embed_footer)
+            .setTitle(`Upcoming chests for ${tag}`)
+            .setURL(`https://royaleapi.com/player/${encodeURIComponent(tag)}`)
+            .addFields(
+                chests.items.map((c) => {
+                    return {
+                        name: c.name,
+                        value: c.index == 0 ? 'Next' : `+${c.index}`,
+                    } as EmbedFieldData;
+                })
+            )
+            .setColor(config.color)
+            .setFooter(config.embed_footer);
 
         return chestsEmbed;
-    }
+    };
 }

@@ -5,7 +5,7 @@ import { ApexPlatform } from '../../../Structures/Types';
 
 export async function ApexAPI(platform: ApexPlatform, pId: string, token: string) {
     try {
-        const data = await axios.get(`${platform}/${pId}`, {
+        const data = await axios.get(`${encodeURIComponent(platform)}/${encodeURIComponent(pId)}`, {
             baseURL: 'https://public-api.tracker.gg/v2/apex/standard/profile',
             headers: {
                 'TRN-Api-Key': token,

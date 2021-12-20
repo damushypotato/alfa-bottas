@@ -1,1 +1,0 @@
-export { GetMeme, Meme } from './Memes';

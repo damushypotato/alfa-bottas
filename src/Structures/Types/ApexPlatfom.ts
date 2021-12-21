@@ -1,1 +1,1 @@
-export type ApexPlatform = 'psn' | 'xbl' | 'origin';
+export type ApexPlatform = 'PC' | 'PS4' | 'X1';

@@ -5,5 +5,5 @@ export interface API_Keys {
         KEY: string;
         INSTANCE_ID: string;
     };
-    TRN: string;
+    APEX: string;
 }

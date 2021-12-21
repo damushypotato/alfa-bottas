@@ -1,7 +1,5 @@
 import Command from '../../Modules/Command';
-import { MessageEmbed } from 'discord.js';
 import { Stats } from '../../Modules/APIs/ApexLegends';
-import { Config } from '../../Structures/Interfaces';
 import { ApexPlatform } from '../../Structures/Types';
 
 const command = new Command({
@@ -19,15 +17,15 @@ command.slashCommand = {
             choices: [
                 {
                     name: 'PlayStation',
-                    value: 'psn',
+                    value: 'PS4',
                 },
                 {
                     name: 'Xbox',
-                    value: 'xbl',
+                    value: 'X1',
                 },
                 {
-                    name: 'Origin',
-                    value: 'origin',
+                    name: 'PC',
+                    value: 'PC',
                 },
             ],
             required: true,
@@ -43,7 +41,7 @@ command.slashCommand = {
         const platform = options.getString('platform') as ApexPlatform;
         const pId = options.getString('username');
 
-        const token = client.secrets.API_KEYS.TRN;
+        const token = client.secrets.API_KEYS.APEX;
 
         interaction.followUp({ embeds: [await Stats.getEmbed(platform, pId, token, client.config)] });
     },

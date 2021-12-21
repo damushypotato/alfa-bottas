@@ -1,4 +1,5 @@
 export { Stats } from './Stats';
+export { MapRotation } from './MapRotation';
 
 import axios from 'axios';
 

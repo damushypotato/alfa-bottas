@@ -1,7 +1,6 @@
 import { EmbedFieldData, MessageEmbed } from 'discord.js';
-import { stat } from 'fs';
 import { ApexAPI } from '.';
-import { ApexEmbed } from '../../../Structures/Interfaces';
+import { ApexStatsEmbed } from '../../../Structures/Interfaces';
 import { ApexPlatform } from '../../../Structures/Types';
 
 export namespace Stats {
@@ -180,7 +179,7 @@ export namespace Stats {
     export async function fetchStats(platform: ApexPlatform, pId: string, token: string): Promise<APIResponse | false> {
         pId = encodeURIComponent(pId);
 
-        const url = `/bridge?version=5&platform=${platform}&player=${encodeURIComponent(pId)}&auth=${token}`;
+        const url = `/bridge?version=5&platform=${platform}&player=${pId}&auth=${token}`;
 
         const res = await ApexAPI(url);
 
@@ -199,7 +198,7 @@ export namespace Stats {
         };
     }
 
-    export const getEmbed: ApexEmbed = async (platform, pId, token, config) => {
+    export const getEmbed: ApexStatsEmbed = async (platform, pId, token, config) => {
         const api = await fetchStats(platform, pId, token);
 
         if (!api) return new MessageEmbed().setTitle('Unable to find profile.').setColor(config.color);

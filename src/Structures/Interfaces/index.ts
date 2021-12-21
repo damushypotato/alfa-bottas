@@ -10,6 +10,6 @@ export { ClientServices } from './ClientServices';
 export { CommandCategory } from './CommandCategory';
 export { SlashCommand_Category } from './SlashCommand_Category';
 export { ClashEmbed } from './ClashEmbed';
-export { ApexEmbed } from './ApexEmbed';
+export { ApexStatsEmbed, ApexRotationEmbed } from './ApexEmbed';
 export { ClientTools } from './ClientTools';
 export { Filter } from './Filter';

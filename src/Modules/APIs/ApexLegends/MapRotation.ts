@@ -1,4 +1,4 @@
-import { EmbedFieldData, MessageEmbed } from 'discord.js';
+import { MessageEmbed } from 'discord.js';
 import { ApexAPI } from '.';
 import { ApexRotationEmbed } from '../../../Structures/Interfaces';
 

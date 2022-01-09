@@ -1,4 +1,4 @@
-import {  } from 'discord.js';
+import { Message } from 'discord.js';
 import { inspect } from 'util';
 import Command from '../../Modules/Command';
 
@@ -12,7 +12,7 @@ command.textCommand = {
     usage: '<JS code>',
     async run(client, message, args, { fullArgs, prefix }) {
         if (!fullArgs) return command.sendUsage(message, prefix);
-        
+
         const code = fullArgs;
 
         let output;
@@ -20,8 +20,7 @@ command.textCommand = {
             let result;
             try {
                 result = await eval(code);
-            }
-            catch (error) {
+            } catch (error) {
                 result = error;
             }
             output = result;
@@ -31,13 +30,12 @@ command.textCommand = {
 
             output = `\`\`\`JS\n${output}\n\`\`\``;
 
-            await message.channel.send(output);
+            await message.author.send(output);
+        } catch (error) {
+            message.author.send('Evaluated content is too long to display.');
         }
-        catch (error) {
-            message.channel.send('Evaluated content is too long to display.');
-        }
-    }
-}
+    },
+};
 
 command.slashCommand = {
     type: 'CHAT_INPUT',
@@ -57,8 +55,7 @@ command.slashCommand = {
             let result;
             try {
                 result = await eval(code);
-            }
-            catch (error) {
+            } catch (error) {
                 result = error;
             }
             output = result;
@@ -68,12 +65,13 @@ command.slashCommand = {
 
             output = `\`\`\`JS\n${output}\n\`\`\``;
 
-            await interaction.followUp(output);
+            interaction.followUp('Done.');
+            interaction.user.send(output);
+        } catch (error) {
+            interaction.followUp('Done.');
+            interaction.user.send('Evaluated content is too long to display.');
         }
-        catch (error) {
-            interaction.followUp('Evaluated content is too long to display.');
-        }
-    }
-}
+    },
+};
 
 export default command;

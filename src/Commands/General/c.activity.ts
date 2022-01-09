@@ -4,7 +4,6 @@ import Command from '../../Modules/Command';
 const command = new Command({
     name: 'activity',
     description: 'Do activites together.',
-    memberPerms: ['ADMINISTRATOR']
 });
 
 command.slashCommand = {
@@ -15,7 +14,7 @@ command.slashCommand = {
             type: 'CHANNEL',
             description: 'The voice channel to start the activity.',
             channelTypes: ['GUILD_VOICE'],
-            required: true
+            required: true,
         },
         {
             name: 'activity',
@@ -24,56 +23,63 @@ command.slashCommand = {
             choices: [
                 {
                     name: 'YouTube',
-                    value: 'youtube'
+                    value: 'youtube',
                 },
                 {
                     name: 'Poker',
-                    value: 'poker'
+                    value: 'poker',
                 },
                 {
                     name: 'Chess',
-                    value: 'chess'
+                    value: 'chess',
                 },
                 {
                     name: 'Betrayal',
-                    value: 'betrayal'
+                    value: 'betrayal',
                 },
                 {
                     name: 'Fishing',
-                    value: 'fishing'
+                    value: 'fishing',
                 },
                 {
                     name: 'Letter Tile',
-                    value: 'lettertile'
+                    value: 'lettertile',
                 },
                 {
                     name: 'Words Snack',
-                    value: 'wordsnack'
+                    value: 'wordsnack',
                 },
                 {
                     name: 'Doodle Crew',
-                    value: 'doodlecrew'
+                    value: 'doodlecrew',
                 },
             ],
-            required: true
-        }
+            required: true,
+        },
     ],
     async run(client, interaction, options, data) {
-        const channel = options.getChannel('channel')
+        const channel = options.getChannel('channel');
         const activity = options.getString('activity');
-        const invite = await client.discordTogether.createTogetherCode(channel.id, activity);
+        const invite = await client.discordTogether.createTogetherCode(
+            channel.id,
+            activity
+        );
 
         if (!invite?.code) {
-            return interaction.followUp('An error occured.')
+            return interaction.followUp('An error occured.');
         }
 
-        interaction.followUp({ embeds: [
-            new MessageEmbed()
-                .setColor(client.config.color)
-                .setTitle(`Started a new ${activity} session`)
-                .setDescription(`[Click to join!](${invite.code}) (🔊 ${channel.name})`)
-        ]});
-    }
-}
+        interaction.followUp({
+            embeds: [
+                new MessageEmbed()
+                    .setColor(client.config.color)
+                    .setTitle(`Started a new ${activity} session`)
+                    .setDescription(
+                        `[Click to join!](${invite.code}) (🔊 ${channel.name})`
+                    ),
+            ],
+        });
+    },
+};
 
 export default command;

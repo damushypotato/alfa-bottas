@@ -1,7 +1,7 @@
 import Command from '../../Modules/Command';
 
 const command = new Command({
-    name: 'testemoji',
+    name: 'emoji',
     description: "The bot's custom emojis.",
 });
 

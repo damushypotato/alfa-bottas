@@ -3,7 +3,12 @@ import { Message } from 'discord.js';
 import { TextCommand_Data } from '.';
 
 interface Run {
-    (client: Client, message: Message, args: string[], data: TextCommand_Data): void
+    (
+        client: Client,
+        message: Message,
+        args: string[],
+        data: TextCommand_Data
+    ): Promise<any>;
 }
 
 export interface TextCommand {

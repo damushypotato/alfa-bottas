@@ -46,7 +46,18 @@ command.slashCommand = {
             type: 'STRING',
             required: true,
         },
+        {
+            name: 'secret',
+            description: 'Hide in chat? Default true',
+            type: 'BOOLEAN',
+            required: false,
+        },
     ],
+    async ephemeralDefer(client, interaction) {
+        const secret = interaction.options.getBoolean('secret');
+
+        return secret == null ? true : secret;
+    },
     async run(client, interaction, options, data) {
         const code = options.getString('code');
 

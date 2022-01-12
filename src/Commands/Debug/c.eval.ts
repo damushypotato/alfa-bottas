@@ -8,34 +8,34 @@ const command = new Command({
     ownerOnly: true,
 });
 
-command.textCommand = {
-    usage: '<JS code>',
-    async run(client, message, args, { fullArgs, prefix }) {
-        if (!fullArgs) return command.sendUsage(message, prefix);
+// command.textCommand = {
+//     usage: '<JS code>',
+//     async run(client, message, args, { fullArgs, prefix }) {
+//         if (!fullArgs) return command.sendUsage(message, prefix);
 
-        const code = fullArgs;
+//         const code = fullArgs;
 
-        let output;
-        try {
-            let result;
-            try {
-                result = await eval(code);
-            } catch (error) {
-                result = error;
-            }
-            output = result;
-            if (typeof result != 'string') {
-                output = inspect(result);
-            }
+//         let output;
+//         try {
+//             let result;
+//             try {
+//                 result = await eval(code);
+//             } catch (error) {
+//                 result = error;
+//             }
+//             output = result;
+//             if (typeof result != 'string') {
+//                 output = inspect(result);
+//             }
 
-            output = `\`\`\`JS\n${output}\n\`\`\``;
+//             output = `\`\`\`JS\n${output}\n\`\`\``;
 
-            await message.author.send(output);
-        } catch (error) {
-            message.author.send('Evaluated content is too long to display.');
-        }
-    },
-};
+//             await message.author.send(output);
+//         } catch (error) {
+//             message.author.send('Evaluated content is too long to display.');
+//         }
+//     },
+// };
 
 command.slashCommand = {
     type: 'CHAT_INPUT',
@@ -52,6 +52,12 @@ command.slashCommand = {
             type: 'BOOLEAN',
             required: false,
         },
+        {
+            name: 'output',
+            description: 'Show output? Default true',
+            type: 'BOOLEAN',
+            required: false,
+        },
     ],
     async ephemeralDefer(client, interaction) {
         const secret = interaction.options.getBoolean('secret');
@@ -61,26 +67,31 @@ command.slashCommand = {
     async run(client, interaction, options, data) {
         const code = options.getString('code');
 
-        let output;
+        const outputOpt = options.getBoolean('output');
+        const showOutput = outputOpt == null ? true : outputOpt;
+
+        let result: any;
         try {
-            let result;
-            try {
-                result = await eval(code);
-            } catch (error) {
-                result = error;
-            }
-            output = result;
+            result = await eval(code);
+        } catch (error) {
+            result = error;
+        }
+
+        if (showOutput) {
+            let output = result;
             if (typeof result != 'string') {
                 output = inspect(result);
             }
-
-            output = `\`\`\`JS\n${output}\n\`\`\``;
-
+            const final = `\`\`\`JS\n${output}\n\`\`\``;
+            if (final.length <= 2000) {
+                interaction.followUp(final);
+            } else {
+                interaction.followUp(
+                    'Evaluated content is too long to display.'
+                );
+            }
+        } else {
             interaction.followUp('Done.');
-            interaction.user.send(output);
-        } catch (error) {
-            interaction.followUp('Done.');
-            interaction.user.send('Evaluated content is too long to display.');
         }
     },
 };

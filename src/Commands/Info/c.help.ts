@@ -1,6 +1,7 @@
 import { MessageEmbed, EmbedFieldData, SelectMenuInteraction, ButtonInteraction, MessageButton, MessageActionRow, MessageSelectMenu, MessageSelectOptionData, Message, CollectorFilter } from 'discord.js';
 import Command from '../../Modules/Command';
 import { CommandCategory, Config } from '../../Structures/Interfaces';
+import { Chunk } from '../../Modules/Tools'
 
 const menu = (categories: CommandCategory[], disabled: boolean, placeholder?: string) => new MessageActionRow().addComponents(
     new MessageSelectMenu()
@@ -29,19 +30,10 @@ const buttons = (disabled: boolean) => new MessageActionRow().addComponents(
         .setStyle('PRIMARY')
 );
 
-const chunk = (array: any[], max: number) => {
-    const a = [...array];
-    const results: any[][] = [];
-    while (a.length) {
-        results.push(a.splice(0, max));
-    }
-    return results;
-}
-
 const getEmbeds = (category: CommandCategory, config: Config) => {
     const commands = [...category.commands];
 
-    return (chunk(commands, 5) as Command[][]).map((cmds, i, a) => {
+    return Chunk.default<Command>(commands, 5).map((cmds, i, a) => {
         return new MessageEmbed()
         .setTitle(`${category.name} Commands`)
         .setColor(config.color)

@@ -1,0 +1,34 @@
+{
+    "Discord.js command": {
+        "prefix": "!cmd",
+        "body": [
+            "import {  } from 'discord.js';",
+            "import Command from '../../Modules/Command';",
+            "",
+            "const command = new Command({",
+            "    name: '$1',",
+            "    description: '$2',",
+            "});",
+            "",
+            "command.textCommand = {",
+            "    usage: '',",
+            "    async run(client, message, args, data) {",
+            "        ",
+            "    }",
+            "}",
+            "",
+            "command.slashCommand = {",
+            "    type: 'CHAT_INPUT',",
+            "    options: [",
+            "        ",
+            "    ],",
+            "    async run(client, interaction, options, data) {",
+            "        ",
+            "    }",
+            "}",
+            "",
+            "export default command;"
+        ],
+        "description": "Discord.js command"
+    }
+}

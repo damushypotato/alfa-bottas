@@ -1,5 +1,12 @@
 import { User, Guild, GuildMember, Message, TextChannel } from 'discord.js';
-import { UserModel, GuildModel, LogModel, MemberModel, DeletedMessageModel, EditedMessageModel } from './Models';
+import {
+    UserModel,
+    GuildModel,
+    LogModel,
+    MemberModel,
+    DeletedMessageModel,
+    EditedMessageModel,
+} from './Models';
 import { ObjectId, connect } from 'mongoose';
 import { UserDoc, GuildDoc, MemberDoc } from '../../Structures/Types';
 import CacheManager from '../Cache';
@@ -24,15 +31,21 @@ export default class Database {
     public cos: S3;
 
     public async connect() {
-        console.log('Attempting connection to MongoDB Database...');
+        console.log('Initializing database connections...\n');
+
+        let time = Date.now();
+        const initTime = time;
+
+        console.log('Connecting to MongoDB database...');
         try {
             await connect(this.client.secrets.MONGO_URI);
-            console.log('Successfully connected to MongoDB Database.');
+            console.log(`Done! (${Date.now() - time}ms)\n`);
         } catch (e) {
-            console.log('MongoDB DataBase connection error:', e);
+            console.log('MongoDB connection error:', e);
             process.exit(0);
         }
-        console.log('Attempting connection to IBM Database...');
+        time = Date.now();
+        console.log('Connecting to IBM COS database...');
         try {
             this.cos = new S3({
                 endpoint: this.client.secrets.API_KEYS.IBM.ENDPOINT,
@@ -40,11 +53,16 @@ export default class Database {
                 serviceInstanceId: this.client.secrets.API_KEYS.IBM.INSTANCE_ID,
                 signatureVersion: 'iam',
             });
-            console.log('Successfully connected to IBM Database.');
+            console.log(`Done! (${Date.now() - time}ms)\n`);
         } catch (e) {
-            console.log('IBM DataBase connection error:', e);
+            console.log('IBM COS connection error:', e);
             process.exit(0);
         }
+        console.log(
+            `Done initializing database connections. (Total ${
+                Date.now() - initTime
+            }ms)\n`
+        );
     }
 
     public async fetchUserDB(user: User) {
@@ -76,7 +94,10 @@ export default class Database {
 
         let db: GuildDoc;
         if (guildDB) {
-            if (guild.memberCount != guildDB.lastMemberCount || guild.name != guildDB.name) {
+            if (
+                guild.memberCount != guildDB.lastMemberCount ||
+                guild.name != guildDB.name
+            ) {
                 guildDB.lastMemberCount = guild.memberCount;
                 guildDB.name = guild.name;
                 await guildDB.save();
@@ -97,7 +118,10 @@ export default class Database {
     }
 
     public async fetchMemberDB(user_id: ObjectId, guild_id: ObjectId) {
-        const memberDB = await MemberModel.findOne({ user: user_id, guild: guild_id });
+        const memberDB = await MemberModel.findOne({
+            user: user_id,
+            guild: guild_id,
+        });
 
         if (memberDB) {
             return memberDB;
@@ -113,7 +137,10 @@ export default class Database {
     }
 
     public async fetchMultiDB(member: GuildMember) {
-        const [userDB, guildDB] = await Promise.all([this.fetchUserDB(member.user), this.fetchGuildDB(member.guild)]);
+        const [userDB, guildDB] = await Promise.all([
+            this.fetchUserDB(member.user),
+            this.fetchGuildDB(member.guild),
+        ]);
 
         const memberDB = await this.fetchMemberDB(userDB._id, guildDB._id);
 
@@ -127,7 +154,9 @@ export default class Database {
     }
 
     public async createDeletedMessage(message: Message) {
-        const { memberDB } = await this.fetchMultiDB(message.member as GuildMember);
+        const { memberDB } = await this.fetchMultiDB(
+            message.member as GuildMember
+        );
 
         const delMsgDB = new DeletedMessageModel({
             member: memberDB._id,
@@ -151,8 +180,12 @@ export default class Database {
                 })
                 .filter(Boolean)
                 .map(async (a, i) => {
-                    const attch = await axios.get(a.url, { responseType: 'arraybuffer' });
-                    const name = `${delMsgDB._id}-${i}.${a.name.split('.').at(-1)}`;
+                    const attch = await axios.get(a.url, {
+                        responseType: 'arraybuffer',
+                    });
+                    const name = `${delMsgDB._id}-${i}.${a.name
+                        .split('.')
+                        .at(-1)}`;
                     await this.cos
                         .putObject({
                             Bucket: 'deletedfiles',
@@ -169,12 +202,18 @@ export default class Database {
     }
 
     public async fetchDeletedMessages(channel_id: string, number: number) {
-        const delMsgDB = await DeletedMessageModel.find({ channelID: channel_id }, {}, { sort: { deletedAt: -1 }, limit: number });
+        const delMsgDB = await DeletedMessageModel.find(
+            { channelID: channel_id },
+            {},
+            { sort: { deletedAt: -1 }, limit: number }
+        );
         return delMsgDB;
     }
 
     public async createEditedMessage(oldMessage: Message, newMessage: Message) {
-        const { memberDB } = await this.fetchMultiDB(newMessage.member as GuildMember);
+        const { memberDB } = await this.fetchMultiDB(
+            newMessage.member as GuildMember
+        );
 
         const edtMsgDB = new EditedMessageModel({
             member: memberDB._id,
@@ -195,7 +234,11 @@ export default class Database {
     }
 
     public async fetchEditedMessages(channel_id: string, number: number) {
-        const edtMsgDB = await EditedMessageModel.find({ channelID: channel_id }, {}, { sort: { editedAt: -1 }, limit: number });
+        const edtMsgDB = await EditedMessageModel.find(
+            { channelID: channel_id },
+            {},
+            { sort: { editedAt: -1 }, limit: number }
+        );
         return edtMsgDB;
     }
 

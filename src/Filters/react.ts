@@ -5,10 +5,11 @@ export let ids: string[] = ['890940402641829899'];
 export let emojis: EmojiResolvable[] = ['💩'];
 
 export const filter: Filter = {
-    name: 'sed',
+    name: 'react',
     enabled: false,
     async evaluate(client, message) {
-        if (ids.includes(message.author.id)) emojis.forEach((emoji) => message.react(emoji));
+        if (ids.includes(message.author.id))
+            emojis.forEach((emoji) => message.react(emoji));
         return true;
     },
 };

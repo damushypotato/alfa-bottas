@@ -18,6 +18,10 @@ import CustomEmojiManager from '../Modules/Emojis';
 import Command from '../Modules/Command';
 import { Mentions } from '../Modules/Tools';
 import { DiscordTogether } from 'discord-together';
+import * as glob from 'glob';
+import { promisify } from 'util';
+
+const globPromise = promisify(glob);
 
 const devPath = joinPath(__dirname, '..', '..', 'dev');
 const dev = existsSync(devPath);
@@ -62,15 +66,12 @@ class ExtendedClient extends Client {
         // Commands
         console.log('Loading commands...');
         const commandPath = joinPath(__dirname, '..', 'Commands');
-        readdirSync(commandPath).forEach((dir) => {
+        readdirSync(commandPath).forEach(async (dir) => {
             const dirPath = joinPath(commandPath, dir);
-            const commands = readdirSync(dirPath).filter((file) =>
-                file.startsWith('c.')
-            );
+            const commands = await globPromise(dirPath + '/*{.ts,.js}');
 
             for (const file of commands) {
-                const filePath = joinPath(dirPath, file);
-                const command: Command = require(filePath).default;
+                const command: Command = require(file).default;
                 if (!command.textCommand && !command.slashCommand) {
                     throw new Error(
                         `Command '${command.name}' must have a valid textCommand or slashCommand property.`
@@ -103,32 +104,28 @@ class ExtendedClient extends Client {
         time = Date.now();
         // Events
         console.log('Loading events...');
-        const eventPath = joinPath(__dirname, '..', 'Events');
-        readdirSync(eventPath)
-            .filter((file) => file.startsWith('e.'))
-            .forEach(async (file) => {
-                const filePath = joinPath(eventPath, file);
-                const event: Event = require(filePath).event;
+        (await globPromise(`${__dirname}/../Events/*{.ts,.js}`)).forEach(
+            async (file) => {
+                const event: Event = require(file).event;
                 this.events.set(event.name, event);
                 if (event.once) {
                     this.once(event.name, event.run.bind(null, this));
                 } else {
                     this.on(event.name, event.run.bind(null, this));
                 }
-            });
+            }
+        );
         console.log(`Done! (${Date.now() - time}ms)\n`);
 
         time = Date.now();
         // Filters
         console.log('Loading filters...');
-        const filterPath = joinPath(__dirname, '..', 'Filters');
-        readdirSync(filterPath)
-            .filter((file) => file.startsWith('f.'))
-            .forEach(async (file) => {
-                const filePath = joinPath(filterPath, file);
-                const filter: Filter = require(filePath).filter;
+        (await globPromise(`${__dirname}/../Filters/*{.ts,.js}`)).forEach(
+            async (file) => {
+                const filter: Filter = require(file).filter;
                 this.filters.set(filter.name, filter);
-            });
+            }
+        );
         console.log(`Done! (${Date.now() - time}ms)\n`);
 
         console.log(

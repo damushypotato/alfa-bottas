@@ -1,7 +1,7 @@
 import { EmbedFieldData, MessageEmbed } from 'discord.js';
 import { ApexAPI } from '.';
 import { ApexStatsEmbed } from '../../../Structures/Interfaces';
-import { ApexPlatform } from '../../../Structures/Types';
+import { ApexPlatform, CurrentLegends } from '../../../Structures/Types';
 
 export namespace Stats {
     interface BansInfo {
@@ -38,7 +38,7 @@ export namespace Stats {
         history: BP_SeasonHistory;
     }
 
-    interface Global_Badge {
+    interface Data_NV {
         name: string;
         value: number;
     }
@@ -55,7 +55,7 @@ export namespace Stats {
         rank: Rank;
         arena: Rank;
         battlepass: BattlepassHistory;
-        badges?: Global_Badge[];
+        badges?: Data_NV[];
     }
 
     interface RealtimeInfo {
@@ -76,6 +76,8 @@ export namespace Stats {
         category: string;
     }
 
+    type CurrentBadges = [Badge, Badge, Badge];
+
     interface GameInfo {
         skin: string;
         skinRarity: string;
@@ -85,65 +87,52 @@ export namespace Stats {
         poseRarity: string;
         intro: string;
         introRarity: string;
-        badges?: Badge[];
+        badges: CurrentBadges;
     }
 
-    interface ImgAssets {
+    interface LegendTracker_Rank {
+        rankPos: number;
+        topPercent: number;
+    }
+
+    interface LegendTracker {
+        name: string;
+        value: number;
+        key: string;
+        rank: LegendTracker_Rank;
+        rankPlatformSpecific: LegendTracker_Rank;
+    }
+
+    interface ImageAssets {
         icon: string;
         banner: string;
     }
 
-    export interface LegendStat {
-        name: string;
-        value: number;
-        key: string;
+    interface Legend {
+        data?: LegendTracker[];
+        gameInfo?: GameInfo;
+        ImgAssets: ImageAssets;
     }
 
-    interface SelectedLegend {
+    interface SelectedLegend extends Legend {
         LegendName: string;
-        data?: LegendStat[];
-        gameInfo: GameInfo;
-        ImgAssets: ImgAssets;
     }
 
-    export interface Legend {
-        data?: LegendStat[];
-        ImgAssets: ImgAssets;
-    }
+    type AllLegends = {
+        [key in CurrentLegends]: Legend;
+    };
 
-    export interface All {
-        Revenant: Legend;
-        Crypto: Legend;
-        Horizon: Legend;
-        Gibraltar: Legend;
-        Wattson: Legend;
-        Fuse: Legend;
-        Bangalore: Legend;
-        Wraith: Legend;
-        Octane: Legend;
-        Bloodhound: Legend;
-        Caustic: Legend;
-        Lifeline: Legend;
-        Pathfinder: Legend;
-        Loba: Legend;
-        Mirage: Legend;
-        Rampart: Legend;
-        Valkyrie: Legend;
-        Seer: Legend;
-        Ash: Legend;
-    }
-
-    export interface Legends {
+    interface Legends {
         selected: SelectedLegend;
-        all: All;
+        all: AllLegends;
     }
 
-    export interface RateLimit {
+    interface RateLimit {
         max_per_second: number;
         current_req: string;
     }
 
-    export interface MozambiquehereInternal {
+    interface MozambiquehereInternal {
         isNewToDB: boolean;
         claimedBy: string;
         APIAccessType: string;
@@ -152,16 +141,8 @@ export namespace Stats {
         clusterSrv: string;
     }
 
-    export interface Stat_KV {
-        name: string;
-        value: string;
-    }
-
-    export interface Total {
-        damage: Stat_KV;
-        arenas_kills: Stat_KV;
-        arenas_damage: Stat_KV;
-        kd: Stat_KV;
+    interface TotalTrackers {
+        [key: string]: Data_NV;
     }
 
     export interface PlayerStats {
@@ -169,14 +150,18 @@ export namespace Stats {
         realtime: RealtimeInfo;
         legends: Legends;
         mozambiquehere_internal: MozambiquehereInternal;
-        total: Total;
+        total: TotalTrackers;
     }
 
     interface APIResponse {
         data: PlayerStats;
     }
 
-    export async function fetchStats(platform: ApexPlatform, pId: string, token: string): Promise<APIResponse | false> {
+    export async function fetchStats(
+        platform: ApexPlatform,
+        pId: string,
+        token: string
+    ): Promise<APIResponse | false> {
         pId = encodeURIComponent(pId);
 
         const url = `/bridge?version=5&platform=${platform}&player=${pId}&auth=${token}`;
@@ -198,28 +183,42 @@ export namespace Stats {
         };
     }
 
-    export const getEmbed: ApexStatsEmbed = async (platform, pId, token, config) => {
+    export const getEmbed: ApexStatsEmbed = async (
+        platform,
+        pId,
+        token,
+        config
+    ) => {
         const api = await fetchStats(platform, pId, token);
 
-        if (!api) return new MessageEmbed().setTitle('Unable to find profile.').setColor(config.color);
+        if (!api)
+            return new MessageEmbed()
+                .setTitle('Unable to find profile.')
+                .setColor(config.color);
 
         const stats = api.data;
 
         const selectedLegend = stats.legends.selected;
 
+        const badges = selectedLegend.gameInfo.badges
+            .filter((b) => b.name != null)
+            .map((b) => `*${b.name}*`)
+            .join('\n');
+
         const statsEmbed = new MessageEmbed()
             .setAuthor(`${stats.global.name} on ${stats.global.platform}`)
             .setTitle(selectedLegend.LegendName)
-            .setFooter('Apex Legends', 'https://media.contentapi.ea.com/content/dam/apex-legends/common/logos/apex-copyright-sigil-white.png')
+            .setFooter(
+                'Apex Legends',
+                'https://media.contentapi.ea.com/content/dam/apex-legends/common/logos/apex-copyright-sigil-white.png'
+            )
             .setColor(config.color)
             .setDescription(
-                `Level **${stats.global.level}**\n${selectedLegend.gameInfo.skinRarity} Skin: **${selectedLegend.gameInfo.skin}**` +
-                    (selectedLegend.gameInfo.badges
-                        ? `\n\n**Badges**:\n${selectedLegend.gameInfo.badges
-                              .map((b) => (b.name ? `*${b.name}*` : null))
-                              .filter(Boolean)
-                              .join('\n')}`
-                        : '')
+                `Level **${stats.global.level}**\n` +
+                    `BR Rank: **${stats.global.rank.rankName}**\n` +
+                    `Arena Rank: **${stats.global.arena.rankName}**\n\n` +
+                    `${selectedLegend.gameInfo.skinRarity} Skin: **${selectedLegend.gameInfo.skin}**` +
+                    (badges ? `\n\n**Badges**:\n${badges}` : '')
             )
             .setImage(selectedLegend.ImgAssets.banner)
             .setThumbnail(selectedLegend.ImgAssets.icon);

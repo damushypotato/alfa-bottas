@@ -4,7 +4,7 @@ import { GuildDoc, UserDoc } from '../../Structures/Types';
 import { Document, ObjectId } from 'mongoose';
 
 class BaseCache<T> {
-    constructor(db: Document<any, any, T> & T & {_id: ObjectId}) {
+    constructor(db: Document<any, any, T> & T & { _id: ObjectId }) {
         this.db = db._id;
     }
 
@@ -41,22 +41,32 @@ export default class CacheManager {
     public userCache: Collection<string, UserCache> = new Collection();
 
     public fetchAndUpdateGuild(guildDB: GuildDoc) {
-        const cache = new GuildCache(guildDB, this.client)
+        const cache = new GuildCache(guildDB, this.client);
         this.guildCache.set(guildDB.id, cache);
         return cache;
     }
 
     public async fetchGuildCache(guild: Guild) {
-        return this.guildCache.get(guild.id) || this.fetchAndUpdateGuild(await this.client.database.fetchGuildDB(guild));
+        return (
+            this.guildCache.get(guild.id) ||
+            this.fetchAndUpdateGuild(
+                await this.client.database.fetchGuildDB(guild)
+            )
+        );
     }
 
     public fetchAndUpdateUser(userDB: UserDoc) {
-        const cache = new UserCache(userDB, this.client)
+        const cache = new UserCache(userDB, this.client);
         this.userCache.set(userDB.id, cache);
         return cache;
     }
 
     public async fetchUserCache(user: User) {
-        return this.userCache.get(user.id) || this.fetchAndUpdateUser(await this.client.database.fetchUserDB(user));
+        return (
+            this.userCache.get(user.id) ||
+            this.fetchAndUpdateUser(
+                await this.client.database.fetchUserDB(user)
+            )
+        );
     }
 }

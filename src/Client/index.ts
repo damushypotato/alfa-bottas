@@ -20,6 +20,7 @@ import { Mentions } from '../Modules/Tools';
 import { DiscordTogether } from 'discord-together';
 import * as glob from 'glob';
 import { promisify } from 'util';
+import { Player } from 'discord-player';
 
 const globPromise = promisify(glob);
 
@@ -57,6 +58,12 @@ class ExtendedClient extends Client {
     };
     public discordTogether = new DiscordTogether(this);
     public filters: Collection<string, Filter> = new Collection();
+    public player = new Player(this, {
+        ytdlOptions: {
+            quality: 'highestaudio',
+            highWaterMark: 1 << 25,
+        },
+    });
 
     public async init() {
         console.log('Starting up client...\n');
@@ -126,6 +133,11 @@ class ExtendedClient extends Client {
                 this.filters.set(filter.name, filter);
             }
         );
+        console.log(`Done! (${Date.now() - time}ms)\n`);
+
+        time = Date.now();
+        //settings
+        console.log('Loading settings...');
         console.log(`Done! (${Date.now() - time}ms)\n`);
 
         console.log(

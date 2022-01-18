@@ -10,7 +10,8 @@
         "start": "node .",
         "build": "tsc",
         "dev": "tsnd --respawn --transpile-only --rs src/index.ts",
-        "testbuild": "npm run build && npm start"
+        "testbuild": "npm run build && npm start",
+        "postinstall": "patch-package"
     },
     "repository": {
         "type": "git",
@@ -35,7 +36,8 @@
         "glob": "^7.2.0",
         "html-entities": "^2.3.2",
         "ibm-cos-sdk": "^1.10.2",
-        "mongoose": "^6.0.8"
+        "mongoose": "^6.0.8",
+        "patch-package": "^6.4.7"
     },
     "devDependencies": {
         "@types/glob": "^7.2.0",

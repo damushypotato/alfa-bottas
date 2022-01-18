@@ -13,27 +13,44 @@ const common = (
     const progressbar = queue.createProgressBar();
     const timestamp = queue.getPlayerTimestamp();
 
-    return {
-        embeds: [
-            client.newEmbed({
-                title: 'Now Playing',
-                description: `🎶 | **${queue.current.title}** (\`${timestamp.progress}%\`)\n${progressbar}`,
-                footer: {
-                    text: `Queued by ${queue.current.requestedBy.tag}`,
-                },
+    const overflow = queue.tracks.length - max;
+
+    const limited = queue.tracks.slice(0, max);
+
+    const embed = client.newEmbed({
+        title: 'Queue',
+        description: `Now playing 🎶 | **${queue.current.title}** (\`${timestamp.progress}%\`)\n${progressbar}`,
+        fields: [
+            ...limited.map((t, i) => {
+                return {
+                    name: `+${i + 1} | \`${t.title}\``,
+                    value: `*Requested by <@${t.requestedBy.id}>*`,
+                };
             }),
         ],
+    });
+
+    if (overflow > 0) {
+        embed.footer = {
+            text: `And ${overflow} more tracks`,
+        };
+    }
+
+    return {
+        embeds: [embed],
     };
 };
 
 const command = new Command({
-    name: 'nowplaying',
-    description: 'Shows info about the current song.',
+    name: 'queue',
+    description: 'Shows all the songs in the queue.',
 });
+
+const max = 10;
 
 command.textCommand = {
     usage: '',
-    async run(client, message, args, data) {
+    async run(client, message, options, data) {
         message.channel.send(common(client, message.guildId));
     },
 };

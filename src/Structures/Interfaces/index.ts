@@ -9,7 +9,6 @@ export { API_Keys } from './API_Keys';
 export { ClientServices } from './ClientServices';
 export { CommandCategory } from './CommandCategory';
 export { SlashCommand_Category } from './SlashCommand_Category';
-export { ClashEmbed } from './ClashEmbed';
 export { ApexStatsEmbed, ApexRotationEmbed } from './ApexEmbed';
 export { ClientTools } from './ClientTools';
 export { Filter } from './Filter';

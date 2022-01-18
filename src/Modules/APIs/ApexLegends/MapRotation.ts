@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import {} from 'discord.js';
 import { ApexAPI } from '.';
 import { ApexRotationEmbed } from '../../../Structures/Interfaces';
 
@@ -69,7 +69,9 @@ export namespace MapRotation {
         data: MapRotation;
     }
 
-    export async function fetchRotation(token: string): Promise<APIResponse | false> {
+    export async function fetchRotation(
+        token: string
+    ): Promise<APIResponse | false> {
         const url = `maprotation?version=2&auth=${token}`;
 
         const res = await ApexAPI(url);
@@ -89,42 +91,45 @@ export namespace MapRotation {
         };
     }
 
-    export const getEmbed: ApexRotationEmbed = async (token, config) => {
+    export const getEmbed: ApexRotationEmbed = async (token, client) => {
         const api = await fetchRotation(token);
 
-        if (!api) return [new MessageEmbed().setTitle('Unable to find profile.').setColor(config.color)];
+        if (!api)
+            return [client.newEmbed({ title: 'Unable to find profile.' })];
 
         const maps = api.data;
 
-        const br_embed = new MessageEmbed()
-            .setTitle('Battle Royale')
-            .setColor(config.color)
-            .setDescription(
-                `Current map - \`${maps.battle_royale.current.map}\`\n\nNext map - \`${maps.battle_royale.next.map}\`\n\nTime until next map - \`${maps.battle_royale.current.remainingTimer}\``
-            )
-            .setImage(maps.battle_royale.current.asset);
+        const br_embed = client.newEmbed({
+            title: 'Battle Royale',
+            description: `Current map - \`${maps.battle_royale.current.map}\`\n\nNext map - \`${maps.battle_royale.next.map}\`\n\nTime until next map - \`${maps.battle_royale.current.remainingTimer}\``,
+            image: {
+                url: maps.battle_royale.current.asset,
+            },
+        });
 
-        const arenas_embed = new MessageEmbed()
-            .setTitle('Arenas')
-            .setColor(config.color)
-            .setDescription(
-                `Current map - \`${maps.arenas.current.map}\`\n\nNext map - \`${maps.arenas.next.map}\`\n\nTime until next map - \`${maps.arenas.current.remainingTimer}\``
-            )
-            .setImage(maps.arenas.current.asset);
+        const arenas_embed = client.newEmbed({
+            title: 'Arenas',
+            description: `Current map - \`${maps.arenas.current.map}\`\n\nNext map - \`${maps.arenas.next.map}\`\n\nTime until next map - \`${maps.arenas.current.remainingTimer}\``,
+            image: {
+                url: maps.arenas.current.asset,
+            },
+        });
 
-        const br_ranked_embed = new MessageEmbed()
-            .setTitle('Ranked Battle Royale')
-            .setColor(config.color)
-            .setDescription(`\`${maps.ranked.current.map}\``)
-            .setImage(maps.ranked.current.asset);
+        const br_ranked_embed = client.newEmbed({
+            title: 'Ranked Battle Royale',
+            description: `\`${maps.ranked.current.map}\``,
+            image: {
+                url: maps.ranked.current.asset,
+            },
+        });
 
-        const arenas_ranked_embed = new MessageEmbed()
-            .setTitle('Ranked Arenas')
-            .setColor(config.color)
-            .setDescription(
-                `Current map - \`${maps.arenasRanked.current.map}\`\n\nNext map - \`${maps.arenasRanked.next.map}\`\n\nTime until next map - \`${maps.arenasRanked.current.remainingTimer}\``
-            )
-            .setImage(maps.arenasRanked.current.asset);
+        const arenas_ranked_embed = client.newEmbed({
+            title: 'Ranked Arenas',
+            description: `Current map - \`${maps.arenasRanked.current.map}\`\n\nNext map - \`${maps.arenasRanked.next.map}\`\n\nTime until next map - \`${maps.arenasRanked.current.remainingTimer}\``,
+            image: {
+                url: maps.arenasRanked.current.asset,
+            },
+        });
 
         return [br_embed, arenas_embed, br_ranked_embed, arenas_ranked_embed];
     };

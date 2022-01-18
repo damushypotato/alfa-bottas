@@ -1,9 +1,8 @@
-import { MessageEmbed, EmbedFieldData } from 'discord.js';
 import Command from '../../Modules/Command';
 
 const command = new Command({
     name: 'services',
-    description: 'The client\'s services.',
+    description: "The client's services.",
     ownerOnly: true,
 });
 
@@ -13,35 +12,48 @@ command.textCommand = {
         const keys = Object.keys(client.services);
 
         if (service == '--list') {
-            return message.channel.send({ embeds: [new MessageEmbed()
-                .setTitle('Current Services Status:')
-                .setColor(client.config.color)
-                .setFooter(client.config.embed_footer)
-                .addFields(keys.map(s => {
-                    return {
-                        name: `*${s.toUpperCase()}*`,
-                        value: client.services[s] ? '`ON`' : '`OFF`',
-                        inline: true
-                    } as  EmbedFieldData;
-                }))
-            ] });
+            return message.channel.send({
+                embeds: [
+                    client.newEmbed(
+                        {
+                            title: 'Current Services Status:',
+                            fields: keys.map((s) => {
+                                return {
+                                    name: `*${s.toUpperCase()}*`,
+                                    value: client.services[s]
+                                        ? '`ON`'
+                                        : '`OFF`',
+                                    inline: true,
+                                };
+                            }),
+                        },
+                        true
+                    ),
+                ],
+            });
         }
 
-        if (status != 'on' && status != 'off' ||
-            !keys.map(s => s.toLowerCase()).includes(service)) {
+        if (
+            (status != 'on' && status != 'off') ||
+            !keys.map((s) => s.toLowerCase()).includes(service)
+        ) {
             return command.sendUsage(message, data.prefix);
         }
 
-        const newStatus = status == 'on' ? true : status == 'off' ? false : null;
+        const newStatus =
+            status == 'on' ? true : status == 'off' ? false : null;
 
-        client.services[keys.find(s => s.toLowerCase() == service)] = newStatus;
-        message.channel.send({ embeds: [new MessageEmbed()
-            .setTitle(`\`${service.toUpperCase()}\` is now \`${status.toUpperCase()}\``)
-            .setColor(client.config.color)
-            .setFooter(client.config.embed_footer)
-        ] });
-    }
-}
+        client.services[keys.find((s) => s.toLowerCase() == service)] =
+            newStatus;
+        message.channel.send({
+            embeds: [
+                client.newEmbed({
+                    title: `\`${service.toUpperCase()}\` is now \`${status.toUpperCase()}\``,
+                }),
+            ],
+        });
+    },
+};
 
 command.slashCommand = {
     type: 'CHAT_INPUT',
@@ -58,22 +70,22 @@ command.slashCommand = {
                     choices: [
                         {
                             name: 'Commands',
-                            value: 'commands'
+                            value: 'commands',
                         },
                         {
                             name: 'Slash Commands',
-                            value: 'slashcommands'
+                            value: 'slashcommands',
                         },
                         {
                             name: 'Snipes',
-                            value: 'snipe'
+                            value: 'snipe',
                         },
                         {
                             name: 'Edit Snipes',
-                            value: 'editsnipe'
+                            value: 'editsnipe',
                         },
                     ],
-                    required: true
+                    required: true,
                 },
                 {
                     type: 'STRING',
@@ -82,54 +94,65 @@ command.slashCommand = {
                     choices: [
                         {
                             name: 'on',
-                            value: 'on'
+                            value: 'on',
                         },
                         {
                             name: 'off',
-                            value: 'off'
-                        }
+                            value: 'off',
+                        },
                     ],
-                    required: true
-                }
-            ]
+                    required: true,
+                },
+            ],
         },
         {
             type: 'SUB_COMMAND',
             name: 'list',
-            description: 'List all services.'
-        }
+            description: 'List all services.',
+        },
     ],
     async run(client, interaction, options, data) {
         const keys = Object.keys(client.services);
 
         const action = options.getSubcommand();
         const service = options.getString('service');
-        const status  = options.getString('status');
+        const status = options.getString('status');
 
         if (action == 'list') {
-            return interaction.followUp({ embeds: [new MessageEmbed()
-                .setTitle('Current Services Status:')
-                .setColor(client.config.color)
-                .setFooter(client.config.embed_footer)
-                .addFields(keys.map(s => {
-                    return {
-                        name: `*${s.toUpperCase()}*`,
-                        value: client.services[s] ? '`ON`' : '`OFF`',
-                        inline: true
-                    } as  EmbedFieldData;
-                }))
-            ] });
+            return interaction.followUp({
+                embeds: [
+                    client.newEmbed(
+                        {
+                            title: 'Current Services Status:',
+                            fields: keys.map((s) => {
+                                return {
+                                    name: `*${s.toUpperCase()}*`,
+                                    value: client.services[s]
+                                        ? '`ON`'
+                                        : '`OFF`',
+                                    inline: true,
+                                };
+                            }),
+                        },
+                        true
+                    ),
+                ],
+            });
         }
 
-        const newStatus = status == 'on' ? true : status == 'off' ? false : null;
+        const newStatus =
+            status == 'on' ? true : status == 'off' ? false : null;
 
-        client.services[keys.find(s => s.toLowerCase() == service)] = newStatus;
-        interaction.followUp({ embeds: [new MessageEmbed()
-            .setTitle(`\`${service.toUpperCase()}\` is now \`${status.toUpperCase()}\``)
-            .setColor(client.config.color)
-            .setFooter(client.config.embed_footer)
-        ] });
-    }
-}
+        client.services[keys.find((s) => s.toLowerCase() == service)] =
+            newStatus;
+        interaction.followUp({
+            embeds: [
+                client.newEmbed({
+                    title: `\`${service.toUpperCase()}\` is now \`${status.toUpperCase()}\``,
+                }),
+            ],
+        });
+    },
+};
 
 export default command;

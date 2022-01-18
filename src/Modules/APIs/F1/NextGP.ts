@@ -1,5 +1,5 @@
 import { getCurrentSeasonRacesSchedule } from 'f1-api';
-import { MessageEmbed } from 'discord.js';
+import {} from 'discord.js';
 import Client from '../../../Client';
 
 export namespace NextGP {
@@ -8,23 +8,24 @@ export namespace NextGP {
 
         const now = Date.now();
 
-        const gp = season.filter(r => r.date.getTime() - now >= 0)[0];
+        const gp = season.filter((r) => r.date.getTime() - now >= 0)[0];
 
-        const embed = new MessageEmbed()
-            .setColor(client.config.color)
-            .setFooter(client.config.embed_footer)
-            .setAuthor('Next Grand Prix:')
-            .setTitle(`${gp.season} ${gp.name} - Round ${gp.round}`)
-            .addFields(
+        const embed = client.newEmbed({
+            author: {
+                name: 'Next Grand Prix:',
+            },
+            title: `${gp.season} ${gp.name} - Round ${gp.round}`,
+            fields: [
                 {
                     name: 'When',
-                    value: `<t:${Math.floor(gp.date.getTime() / 1000)}:R>`
+                    value: `<t:${Math.floor(gp.date.getTime() / 1000)}:R>`,
                 },
                 {
                     name: 'Where',
-                    value: `*${gp.circuit.name}* - \`${gp.circuit.location.city}, ${gp.circuit.location.country}\``
-                }
-            )
+                    value: `*${gp.circuit.name}* - \`${gp.circuit.location.city}, ${gp.circuit.location.country}\``,
+                },
+            ],
+        });
 
         return embed;
     }

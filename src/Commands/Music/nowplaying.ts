@@ -1,4 +1,3 @@
-import { GuildMember } from 'discord.js';
 import Command from '../../Modules/Command';
 
 const command = new Command({
@@ -12,29 +11,20 @@ command.slashCommand = {
         const { player } = client;
         const queue = player.getQueue(interaction.guildId);
         if (!queue?.playing)
-            return interaction.followUp({
-                content: 'No music is currently being played',
-            });
+            return interaction.followUp('There is nothing playing.');
 
         const progressbar = queue.createProgressBar();
         const timestamp = queue.getPlayerTimestamp();
 
         return interaction.followUp({
             embeds: [
-                {
+                client.newEmbed({
                     title: 'Now Playing',
-                    description: `🎶 | **${queue.current.title}**! (\`${timestamp.progress}%\`)`,
-                    fields: [
-                        {
-                            name: '\u200b',
-                            value: progressbar,
-                        },
-                    ],
-                    color: client.config.color,
+                    description: `🎶 | **${queue.current.title}** (\`${timestamp.progress}%\`)\n${progressbar}`,
                     footer: {
                         text: `Queued by ${queue.current.requestedBy.tag}`,
                     },
-                },
+                }),
             ],
         });
     },

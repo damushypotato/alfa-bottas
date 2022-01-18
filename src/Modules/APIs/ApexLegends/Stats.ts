@@ -1,4 +1,4 @@
-import { EmbedFieldData, MessageEmbed } from 'discord.js';
+import {} from 'discord.js';
 import { ApexAPI } from '.';
 import { ApexStatsEmbed } from '../../../Structures/Interfaces';
 import { ApexPlatform, CurrentLegends } from '../../../Structures/Types';
@@ -187,14 +187,14 @@ export namespace Stats {
         platform,
         pId,
         token,
-        config
+        client
     ) => {
         const api = await fetchStats(platform, pId, token);
 
         if (!api)
-            return new MessageEmbed()
-                .setTitle('Unable to find profile.')
-                .setColor(config.color);
+            return client.newEmbed({
+                title: 'Unable to find profile.',
+            });
 
         const stats = api.data;
 
@@ -205,36 +205,46 @@ export namespace Stats {
             .map((b) => `*${b.name}*`)
             .join('\n');
 
-        const statsEmbed = new MessageEmbed()
-            .setAuthor(`${stats.global.name} on ${stats.global.platform}`)
-            .setTitle(selectedLegend.LegendName)
-            .setFooter(
-                'Apex Legends',
-                'https://media.contentapi.ea.com/content/dam/apex-legends/common/logos/apex-copyright-sigil-white.png'
-            )
-            .setColor(config.color)
-            .setDescription(
+        const statsEmbed = client.newEmbed({
+            author: {
+                name: `${stats.global.name} on ${stats.global.platform}`,
+            },
+            title: selectedLegend.LegendName,
+            footer: {
+                text: 'Apex Legends',
+                iconURL:
+                    'https://media.contentapi.ea.com/content/dam/apex-legends/common/logos/apex-copyright-sigil-white.png',
+            },
+            description:
                 `Level **${stats.global.level}**\n` +
-                    `BR Rank: **${stats.global.rank.rankName}**\n` +
-                    `Arena Rank: **${stats.global.arena.rankName}**\n\n` +
-                    `${selectedLegend.gameInfo.skinRarity} Skin: **${selectedLegend.gameInfo.skin}**` +
-                    (badges ? `\n\n**Badges**:\n${badges}` : '')
-            )
-            .setImage(selectedLegend.ImgAssets.banner)
-            .setThumbnail(selectedLegend.ImgAssets.icon);
+                `BR Rank: **${stats.global.rank.rankName}**\n` +
+                `Arena Rank: **${stats.global.arena.rankName}**\n\n` +
+                `${selectedLegend.gameInfo.skinRarity} Skin: **${selectedLegend.gameInfo.skin}**` +
+                (badges ? `\n\n**Badges**:\n${badges}` : ''),
+            image: {
+                url: selectedLegend.ImgAssets.banner,
+            },
+            thumbnail: {
+                url: selectedLegend.ImgAssets.icon,
+            },
+        });
 
         if (stats.legends.selected.data) {
-            statsEmbed.addFields(
-                stats.legends.selected.data.map((s) => {
+            statsEmbed.fields.push(
+                ...stats.legends.selected.data.map((s) => {
                     return {
                         name: s.name,
                         value: s.value.toString(),
                         inline: true,
-                    } as EmbedFieldData;
+                    };
                 })
             );
         } else {
-            statsEmbed.addField('Legend Stats', 'No Legend Stats Shown');
+            statsEmbed.fields.push({
+                name: 'Legend Stats',
+                value: 'No Legend Stats Shown',
+                inline: false,
+            });
         }
 
         return statsEmbed;

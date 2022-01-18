@@ -1,4 +1,3 @@
-import { EmojiResolvable } from 'discord.js';
 import { Filter } from '../Structures/Interfaces';
 
 export let ids: string[] = ['625192842045685799'];

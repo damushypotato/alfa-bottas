@@ -62,11 +62,13 @@ command.slashCommand = {
             const platform = options.getString('platform') as ApexPlatform;
             const pId = options.getString('username');
 
-            return interaction.followUp({ embeds: [await Stats.getEmbed(platform, pId, token, client.config)] });
+            return interaction.followUp({
+                embeds: [await Stats.getEmbed(platform, pId, token, client)],
+            });
         }
         if (command == 'maps') {
             return interaction.followUp({
-                embeds: await MapRotation.getEmbed(token, client.config),
+                embeds: await MapRotation.getEmbed(token, client),
                 content: '**Current map rotations for Apex Legends:**',
             });
         }

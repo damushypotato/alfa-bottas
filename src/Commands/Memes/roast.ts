@@ -1,9 +1,7 @@
-import { MessageEmbed } from 'discord.js';
+import {} from 'discord.js';
 import { Config } from '../../Structures/Interfaces';
 import { GetRoast } from '../../Modules/APIs/Roast';
 import Command from '../../Modules/Command';
-
-const getFailEmbed = (config: Config) => new MessageEmbed().setColor(config.color).setTitle('API Unavailable.');
 
 const command = new Command({
     name: 'roast',
@@ -15,21 +13,21 @@ command.textCommand = {
     async run(client, message, args, data) {
         const roast = await GetRoast();
 
-        if (!roast) message.channel.send({ embeds: [getFailEmbed(client.config)] });
+        if (!roast) message.channel.send({ embeds: [client.apiFailEmbed()] });
 
         message.channel.send(roast);
-    }
-}
+    },
+};
 
 command.slashCommand = {
     type: 'CHAT_INPUT',
     async run(client, interaction, options, data) {
         const roast = await GetRoast();
 
-        if (!roast) interaction.followUp({ embeds: [getFailEmbed(client.config)] });
+        if (!roast) interaction.followUp({ embeds: [client.apiFailEmbed()] });
 
         interaction.followUp(roast);
-    }
-}
+    },
+};
 
 export default command;

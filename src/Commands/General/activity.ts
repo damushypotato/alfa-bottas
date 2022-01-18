@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import {} from 'discord.js';
 import Command from '../../Modules/Command';
 
 const command = new Command({
@@ -71,12 +71,10 @@ command.slashCommand = {
 
         interaction.followUp({
             embeds: [
-                new MessageEmbed()
-                    .setColor(client.config.color)
-                    .setTitle(`Started a new ${activity} session`)
-                    .setDescription(
-                        `[Click to join!](${invite.code}) (🔊 ${channel.name})`
-                    ),
+                client.newEmbed({
+                    title: `Started a new ${activity} session`,
+                    description: `[Click to join!](${invite.code}) (🔊 ${channel.name})`,
+                }),
             ],
         });
     },

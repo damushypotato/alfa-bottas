@@ -10,5 +10,5 @@ export const event: Event = {
         if (oldMessage.content == newMessage.content) return;
         if (!client.services.editSnipe) return;
         await client.database.createEditedMessage(oldMessage, newMessage);
-    }
-}
+    },
+};

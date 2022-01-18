@@ -9,5 +9,5 @@ export const event: Event = {
         if (message.channel.type != 'GUILD_TEXT') return;
         if (!client.services.snipe) return;
         await client.database.createDeletedMessage(message);
-    }
-}
+    },
+};

@@ -1,10 +1,7 @@
 import {
-    GuildMember,
-    Guild,
     Interaction,
     PermissionString,
     CommandInteractionOption,
-    TextChannel,
 } from 'discord.js';
 import { Event, SlashCommand_Data } from '../Structures/Interfaces';
 

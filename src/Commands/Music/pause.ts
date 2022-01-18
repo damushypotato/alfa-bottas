@@ -10,9 +10,7 @@ command.slashCommand = {
     async run({ player }, interaction, options, data) {
         const queue = player.getQueue(interaction.guildId);
         if (!queue?.playing)
-            return interaction.followUp({
-                content: 'No music is currently being played',
-            });
+            return interaction.followUp('There is nothing playing.');
 
         queue.setPaused(true);
 

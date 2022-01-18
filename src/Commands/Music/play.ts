@@ -22,12 +22,14 @@ command.slashCommand = {
 
         if (!member.voice.channel)
             return interaction.followUp({
-                content: 'Join a voice channel first you dumbass',
+                content: 'Join a voice channel first you dumbass.',
             });
 
-        const searchResult = await player.search(query, {
-            requestedBy: interaction.user,
-        });
+        const track = (
+            await player.search(query, {
+                requestedBy: interaction.user,
+            })
+        ).tracks[0];
 
         const queue = player.createQueue(interaction.guild, {
             metadata: interaction.channel,
@@ -35,11 +37,13 @@ command.slashCommand = {
 
         if (!queue.connection) await queue.connect(member.voice.channel);
 
-        searchResult.playlist
-            ? queue.addTracks(searchResult.tracks)
-            : queue.addTrack(searchResult.tracks[0]);
+        queue.addTrack(track);
 
-        interaction.followUp({ content: `Playing \`${queue.current.title}\`` });
+        interaction.followUp({
+            content: `${queue.playing ? 'Added to queue' : 'Playing'}: \`${
+                track.title
+            }\``,
+        });
 
         if (!queue.playing) await queue.play();
     },

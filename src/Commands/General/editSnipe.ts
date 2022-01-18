@@ -1,12 +1,11 @@
 import {
     InteractionReplyOptions,
     MessageEditOptions,
-    MessageEmbed,
     User,
     Message,
 } from 'discord.js';
+import ExtendedClient from '../../Client';
 import Command from '../../Modules/Command';
-import { Config } from '../../Structures/Interfaces';
 import { EditedMessageDoc } from '../../Structures/Types';
 
 const max = 10;
@@ -14,26 +13,34 @@ const max = 10;
 const getSniped = (
     user: User,
     edtMsgDB: EditedMessageDoc,
-    config: Config,
+    client: ExtendedClient,
     numOfMsgs: number
 ) => {
-    const oldMsgEmbed = new MessageEmbed()
-        .setTitle(`Old Message:`)
-        .setTimestamp(edtMsgDB.createdAt)
-        .setDescription(edtMsgDB.oldContent)
-        .setColor(config.color);
+    const headerEmbed = client.newEmbed({
+        author: {
+            name: edtMsgDB.authorTag,
+            iconURL: user?.displayAvatarURL(),
+        },
+        description: `<@${edtMsgDB.authorID}>`,
+    });
 
-    const newMsgEmbed = new MessageEmbed()
-        .setTitle(`Edited Message:`)
-        .setTimestamp(edtMsgDB.editedAt)
-        .setDescription(edtMsgDB.newContent)
-        .setColor(config.color);
+    const oldMsgEmbed = client.newEmbed({
+        title: 'Old Message:',
+        timestamp: edtMsgDB.createdAt,
+        description: edtMsgDB.oldContent,
+    });
+
+    const newMsgEmbed = client.newEmbed({
+        title: 'Edited Message:',
+        timestamp: edtMsgDB.editedAt,
+        description: edtMsgDB.newContent,
+    });
 
     return {
         content: `Sniped from ${numOfMsgs} message${
             numOfMsgs > 1 ? 's' : ''
         } in the past.`,
-        embeds: [oldMsgEmbed, newMsgEmbed],
+        embeds: [headerEmbed, oldMsgEmbed, newMsgEmbed],
     } as MessageEditOptions | InteractionReplyOptions;
 };
 
@@ -53,9 +60,7 @@ command.textCommand = {
             numOfMsgs
         );
 
-        const fetchingEmbed = new MessageEmbed()
-            .setTitle('Fetching...')
-            .setColor(client.config.color);
+        const fetchingEmbed = client.fetchingEmbed();
 
         const send_fetchEmbed = message.channel.send({
             embeds: [fetchingEmbed],
@@ -68,41 +73,16 @@ command.textCommand = {
         if (!edtMsgDB) {
             return await sent.edit({
                 embeds: [
-                    new MessageEmbed()
-                        .setTitle('Theres nothing to snipe here.')
-                        .setColor(client.config.color),
+                    client.newEmbed({ title: 'Theres nothing to snipe here.' }),
                 ],
             });
         }
 
-        let msg: Message;
-        try {
-            msg = await message.channel.messages.fetch(edtMsgDB.messageID);
-        } catch {
-            msg = null;
-        }
-
         const user = client.users.cache.get(edtMsgDB.authorID);
 
-        const headerEmbed = new MessageEmbed()
-            .setAuthor(edtMsgDB.authorTag, user?.displayAvatarURL())
-            .setColor(client.config.color)
-            .setDescription(
-                `<@${edtMsgDB.authorID}>${
-                    !msg || msg?.deleted ? ' (Message has been deleted)' : ''
-                }`
-            )
-            .setFooter(client.config.embed_footer);
+        const msgData = getSniped(user, edtMsgDB, client, numOfMsgs);
 
-        const msgData = getSniped(user, edtMsgDB, client.config, numOfMsgs);
-
-        if (msg && !msg?.deleted) {
-            await msg.reply(msgData);
-            sent.delete();
-        } else {
-            msgData.embeds.unshift(headerEmbed);
-            sent.edit(msgData);
-        }
+        sent.edit(msgData);
     },
 };
 
@@ -131,37 +111,14 @@ command.slashCommand = {
         if (!edtMsgDB) {
             return await interaction.followUp({
                 embeds: [
-                    new MessageEmbed()
-                        .setTitle('Theres nothing to snipe here.')
-                        .setColor(client.config.color),
+                    client.newEmbed({ title: 'Theres nothing to snipe here.' }),
                 ],
             });
         }
 
-        let msg: Message;
-        try {
-            msg = await interaction.channel.messages.fetch(edtMsgDB.messageID);
-        } catch {
-            msg = null;
-        }
-
         const user = client.users.cache.get(edtMsgDB.authorID);
 
-        const headerEmbed = new MessageEmbed()
-            .setAuthor(edtMsgDB.authorTag, user?.displayAvatarURL())
-            .setColor(client.config.color)
-            .setDescription(
-                `<@${edtMsgDB.authorID}>${
-                    !msg || msg?.deleted
-                        ? ' (Message has been deleted)'
-                        : ` [Message Link](${msg?.url})`
-                }`
-            )
-            .setFooter(client.config.embed_footer);
-
-        const msgData = getSniped(user, edtMsgDB, client.config, numOfMsgs);
-
-        msgData.embeds.unshift(headerEmbed);
+        const msgData = getSniped(user, edtMsgDB, client, numOfMsgs);
 
         interaction.followUp(msgData);
     },

@@ -1,4 +1,4 @@
-import { Message, MessageEmbed } from 'discord.js';
+import { Message } from 'discord.js';
 import Command from '../../Modules/Command';
 import { DeletedMessageDoc } from '../../Structures/Types';
 
@@ -32,12 +32,8 @@ command.textCommand = {
             numOfMsgs
         );
 
-        const fetchingEmbed = new MessageEmbed()
-            .setTitle('Fetching...')
-            .setColor(client.config.color);
-
         const send_fetchEmbed = message.channel.send({
-            embeds: [fetchingEmbed],
+            embeds: [client.fetchingEmbed()],
         });
 
         const [delMsgDBs, sent] = await Promise.all([db_req, send_fetchEmbed]);
@@ -45,9 +41,9 @@ command.textCommand = {
         if (delMsgDBs?.length < 1) {
             const msg = await sent.edit({
                 embeds: [
-                    new MessageEmbed()
-                        .setTitle('Theres nothing to clear here.')
-                        .setColor(client.config.color),
+                    client.newEmbed({
+                        title: 'Theres nothing to clear here.',
+                    }),
                 ],
             });
 
@@ -57,11 +53,7 @@ command.textCommand = {
         await deleteFromDB(delMsgDBs);
 
         const msg = await sent.edit({
-            embeds: [
-                new MessageEmbed()
-                    .setTitle('Done.')
-                    .setColor(client.config.color),
-            ],
+            embeds: [client.newEmbed({ title: 'Done.' })],
         });
 
         setTimeout(() => msg.delete(), 5000);
@@ -95,9 +87,7 @@ command.slashCommand = {
         if (delMsgDBs?.length < 1) {
             const int = (await interaction.followUp({
                 embeds: [
-                    new MessageEmbed()
-                        .setTitle('Theres nothing to clear here.')
-                        .setColor(client.config.color),
+                    client.newEmbed({ title: 'Theres nothing to clear here.' }),
                 ],
             })) as Message;
 
@@ -108,11 +98,7 @@ command.slashCommand = {
         await deleteFromDB(delMsgDBs);
 
         const int = (await interaction.followUp({
-            embeds: [
-                new MessageEmbed()
-                    .setTitle('Done.')
-                    .setColor(client.config.color),
-            ],
+            embeds: [client.newEmbed({ title: 'Done.' })],
         })) as Message;
 
         setTimeout(() => int.delete(), 5000);

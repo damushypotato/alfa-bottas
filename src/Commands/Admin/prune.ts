@@ -1,4 +1,4 @@
-import { MessageEmbed, Message, TextChannel } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import Command from '../../Modules/Command';
 
 const max = 50;
@@ -48,9 +48,9 @@ command.slashCommand = {
 
         const msg = (await interaction.channel.send({
             embeds: [
-                new MessageEmbed()
-                    .setTitle(`Deleted ${Math.max(del.size - 1, 0)} messages.`)
-                    .setColor(client.config.color),
+                client.newEmbed({
+                    title: `Deleted ${Math.max(del.size - 1, 0)} messages.`,
+                }),
             ],
         })) as Message;
 

@@ -1,4 +1,9 @@
-import { Client, Collection } from 'discord.js';
+import {
+    Client,
+    Collection,
+    MessageEmbed,
+    MessageEmbedOptions,
+} from 'discord.js';
 import { clientIntents } from './intents';
 import { join as joinPath } from 'path';
 import { readdirSync, existsSync } from 'fs';
@@ -172,6 +177,22 @@ class ExtendedClient extends Client {
     }
     public async unregisterAllSlashGlobal() {
         await this.application.commands.set([]);
+    }
+
+    //utils
+    public newEmbed(
+        options: MessageEmbedOptions,
+        footer?: boolean
+    ): MessageEmbed {
+        options.color ||= this.config.color;
+        if (footer) options.footer.text ||= this.config.embed_footer;
+        return new MessageEmbed(options);
+    }
+    public fetchingEmbed(): MessageEmbed {
+        return this.newEmbed({ title: 'Fetching...' });
+    }
+    public apiFailEmbed(): MessageEmbed {
+        return this.newEmbed({ title: 'API Unavailable.' });
     }
 }
 

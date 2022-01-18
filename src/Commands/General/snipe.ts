@@ -1,11 +1,21 @@
-import { InteractionReplyOptions, MessageEditOptions, MessageEmbed, User, MessageAttachment } from 'discord.js';
+import {
+    InteractionReplyOptions,
+    MessageEditOptions,
+    User,
+    MessageAttachment,
+} from 'discord.js';
 import Command from '../../Modules/Command';
 import Client from '../../Client';
 import { DeletedMessageDoc } from '../../Structures/Types';
 
 const max = 10;
 
-const getSniped = async (user: User, delMsgDB: DeletedMessageDoc, client: Client, numOfMsgs: number) => {
+const getSniped = async (
+    user: User,
+    delMsgDB: DeletedMessageDoc,
+    client: Client,
+    numOfMsgs: number
+) => {
     const files = await Promise.all(
         delMsgDB.attachments.map(async (Key) => {
             const data = await client.database.cos
@@ -18,17 +28,26 @@ const getSniped = async (user: User, delMsgDB: DeletedMessageDoc, client: Client
         })
     );
 
-    const snipedEmbed = new MessageEmbed()
-        .setAuthor(delMsgDB.authorTag, user?.displayAvatarURL())
-        .setTitle(`${user?.username || delMsgDB.authorTag} said:`)
-        .setTimestamp(delMsgDB.createdAt)
-        .setDescription(delMsgDB.content)
-        .setColor(client.config.color)
-        .setFooter(client.config.embed_footer)
-        .addField('\u200B', `<@${delMsgDB.authorID}>`);
+    const snipedEmbed = client.newEmbed({
+        author: {
+            name: delMsgDB.authorTag,
+            iconURL: user?.displayAvatarURL(),
+        },
+        title: `${user?.username || delMsgDB.authorTag} said:`,
+        timestamp: delMsgDB.createdAt,
+        description: delMsgDB.content,
+        fields: [
+            {
+                name: '\u200B',
+                value: `<@${delMsgDB.authorID}>`,
+            },
+        ],
+    });
 
     return {
-        content: `Sniped from ${numOfMsgs} message${numOfMsgs > 1 ? 's' : ''} in the past.${files.length > 0 ? '\n\n`Attachments:`' : ''}`,
+        content: `Sniped from ${numOfMsgs} message${
+            numOfMsgs > 1 ? 's' : ''
+        } in the past.${files.length > 0 ? '\n\n`Attachments:`' : ''}`,
         embeds: [snipedEmbed],
         files,
     } as MessageEditOptions | InteractionReplyOptions;
@@ -44,18 +63,25 @@ command.textCommand = {
     async run(client, message, args, data) {
         const numOfMsgs = Math.min(max, Math.max(1, parseInt(args[0]))) || 1;
 
-        const db_req = client.database.fetchDeletedMessages(message.channelId, numOfMsgs);
+        const db_req = client.database.fetchDeletedMessages(
+            message.channelId,
+            numOfMsgs
+        );
 
-        const fetchingEmbed = new MessageEmbed().setTitle('Fetching...').setColor(client.config.color);
-
-        const send_fetchEmbed = message.channel.send({ embeds: [fetchingEmbed] });
+        const send_fetchEmbed = message.channel.send({
+            embeds: [client.fetchingEmbed()],
+        });
 
         const [db_res, sent] = await Promise.all([db_req, send_fetchEmbed]);
 
         const delMsgDB = db_res.at(-1);
 
         if (!delMsgDB) {
-            return await sent.edit({ embeds: [new MessageEmbed().setTitle('Theres nothing to snipe here.').setColor(client.config.color)] });
+            return await sent.edit({
+                embeds: [
+                    client.newEmbed({ title: 'Theres nothing to snipe here.' }),
+                ],
+            });
         }
 
         const user = client.users.cache.get(delMsgDB.authorID);
@@ -75,19 +101,30 @@ command.slashCommand = {
         },
     ],
     async run(client, interaction, options, data) {
-        const numOfMsgs = Math.floor(Math.min(max, Math.max(1, options.getNumber('num'))) || 1);
+        const numOfMsgs = Math.floor(
+            Math.min(max, Math.max(1, options.getNumber('num'))) || 1
+        );
 
-        const delMsgDB = (await client.database.fetchDeletedMessages(interaction.channelId, numOfMsgs)).at(-1);
+        const delMsgDB = (
+            await client.database.fetchDeletedMessages(
+                interaction.channelId,
+                numOfMsgs
+            )
+        ).at(-1);
 
         if (!delMsgDB) {
             return await interaction.followUp({
-                embeds: [new MessageEmbed().setTitle('Theres nothing to snipe here.').setColor(client.config.color)],
+                embeds: [
+                    client.newEmbed({ title: 'Theres nothing to snipe here.' }),
+                ],
             });
         }
 
         const user = client.users.cache.get(delMsgDB.authorID);
 
-        interaction.followUp(await getSniped(user, delMsgDB, client, numOfMsgs));
+        interaction.followUp(
+            await getSniped(user, delMsgDB, client, numOfMsgs)
+        );
     },
 };
 

@@ -18,21 +18,19 @@ command.slashCommand = {
         const volumePercentage = options.getInteger('percentage');
         const queue = player.getQueue(interaction.guildId);
         if (!queue?.playing)
-            return interaction.followUp({
-                content: 'No music is currently being played',
-            });
+            return interaction.followUp('There is nothing playing.');
 
         if (!volumePercentage)
-            return interaction.followUp({
-                content: `The current volume is \`${queue.volume}%\``,
-            });
+            return interaction.followUp(
+                `The volume is at \`${queue.volume}%\``
+            );
 
         const vol = Math.min(100, Math.max(1, volumePercentage));
 
         queue.setVolume(vol);
 
         return interaction.followUp({
-            content: `Volume has been set to \`${vol}%\``,
+            content: `Set the volume to \`${vol}%\``,
         });
     },
 };

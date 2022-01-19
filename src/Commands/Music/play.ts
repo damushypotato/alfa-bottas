@@ -67,6 +67,10 @@ command.textCommand = {
         const query = data.fullArgs;
         const member = message.member;
 
+        if (!query) {
+            return command.sendUsage(message, data.prefix);
+        }
+
         if (!member.voice.channel)
             return message.channel.send(
                 'Join a voice channel first you dumbass.'

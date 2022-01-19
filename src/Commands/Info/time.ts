@@ -1,4 +1,4 @@
-import { MessageEmbed, EmbedFieldData } from 'discord.js';
+import {} from 'discord.js';
 import Command from '../../Modules/Command';
 import { getTimezonesForCountry, getCountry } from 'countries-and-timezones';
 
@@ -41,21 +41,21 @@ command.slashCommand = {
 
             const now = Date.now();
 
-            const embed = new MessageEmbed()
-                .setColor(client.config.color)
-                .setDescription(`🕔 Timezones for ${country.name}:`)
-                .addFields(
-                    times.map((tz) => {
-                        const date = new Date(now + tz.dstOffset * 60000);
+            const embed = client.newEmbed({
+                description: `🕔 Timezones for ${country.name}:`,
+                fields: times.map((tz) => {
+                    const date = new Date(now + tz.dstOffset * 60000);
 
-                        const time = [date.getUTCHours(), date.getUTCMinutes()];
+                    const time = [date.getUTCHours(), date.getUTCMinutes()];
 
-                        return {
-                            name: `Time in ${tz.name} -`,
-                            value: `${time[0] > 12 ? time[0] - 12 : time[0]}:${time[1]} ${time[0] > 12 ? 'P.M.' : 'A.M.'}`,
-                        } as EmbedFieldData;
-                    })
-                );
+                    return {
+                        name: `Time in ${tz.name} -`,
+                        value: `${time[0] > 12 ? time[0] - 12 : time[0]}:${
+                            time[1]
+                        } ${time[0] > 12 ? 'P.M.' : 'A.M.'}`,
+                    };
+                }),
+            });
 
             interaction.followUp({ embeds: [embed] });
         }

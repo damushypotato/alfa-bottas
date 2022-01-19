@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import {} from 'discord.js';
 import Client from '../../Client';
 import { WDC, WCC, NextGP, LastGP } from '../../Modules/APIs/F1';
 import Command from '../../Modules/Command';
@@ -19,7 +19,7 @@ const getStat = async (stat: Stat, client: Client) => {
     if (stat == 'last') {
         return await LastGP.getEmbed(client);
     }
-}
+};
 
 const command = new Command({
     name: 'f1',
@@ -28,18 +28,21 @@ const command = new Command({
 
 command.textCommand = {
     usage: '<next | last | wdc | wcc>',
-    async run(client, message, [ statIn ], data) {
+    async run(client, message, [statIn], data) {
         const stat = statIn as Stat;
-        if (!validStat.map(x => x as string).includes(statIn)) return command.sendUsage(message, data.prefix);
+        if (!validStat.map((x) => x as string).includes(statIn))
+            return command.sendUsage(message, data.prefix);
 
-        const sent_fetchingEmbed = message.channel.send({ embeds: [new MessageEmbed().setTitle('Fetching...').setColor(client.config.color)] });
+        const sent_fetchingEmbed = message.channel.send({
+            embeds: [client.fetchingEmbed()],
+        });
         const api_req = getStat(stat, client);
 
         const [sent, embed] = await Promise.all([sent_fetchingEmbed, api_req]);
 
         sent.edit({ embeds: [embed] });
-    }
-}
+    },
+};
 
 command.slashCommand = {
     type: 'CHAT_INPUT',
@@ -47,29 +50,29 @@ command.slashCommand = {
         {
             type: 'SUB_COMMAND',
             name: 'wdc',
-            description: 'The Driver standings.'
+            description: 'The Driver standings.',
         },
         {
             type: 'SUB_COMMAND',
             name: 'wcc',
-            description: 'The Constructor standings.'
+            description: 'The Constructor standings.',
         },
         {
             type: 'SUB_COMMAND',
             name: 'next',
-            description: 'The next Formula 1 Grand Prix.'
+            description: 'The next Formula 1 Grand Prix.',
         },
         {
             type: 'SUB_COMMAND',
             name: 'last',
-            description: 'The last Formula 1 Grand Prix.'
+            description: 'The last Formula 1 Grand Prix.',
         },
     ],
     async run(client, interaction, options, data) {
         const stat = options.getSubcommand() as Stat;
 
-        interaction.followUp({ embeds: [await getStat(stat, client)] })
-    }
-}
+        interaction.followUp({ embeds: [await getStat(stat, client)] });
+    },
+};
 
 export default command;

@@ -49,7 +49,9 @@ export const event: Event = {
         const args = message.content.slice(prefix.length).trim().split(/ +/g);
         const commandName = args.shift()?.toLowerCase() as string;
         const fullArgs = message.content
-            .slice(prefix.length + commandName.length)
+            .slice(prefix.length)
+            .trim()
+            .slice(commandName.length)
             .trim();
 
         const data: TextCommand_Data = {

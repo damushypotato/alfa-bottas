@@ -4,9 +4,9 @@ import {
     User,
     Message,
 } from 'discord.js';
-import ExtendedClient from '../../Client';
-import Command from '../../Modules/Command';
-import { EditedMessageDoc } from '../../Structures/Types';
+import ExtendedClient from '../../Structures/Client';
+import Command from '../../Structures/Command';
+import { EditedMessageDoc } from '../../Types';
 
 const max = 10;
 

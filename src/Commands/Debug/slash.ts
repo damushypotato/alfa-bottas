@@ -1,5 +1,5 @@
 import {} from 'discord.js';
-import Command from '../../Modules/Command';
+import Command from '../../Structures/Command';
 
 const command = new Command({
     name: 'slash',
@@ -8,7 +8,7 @@ const command = new Command({
 });
 
 command.textCommand = {
-    usage: '',
+    usage: '<register | unregister> <guild | global>',
     async run(client, message, [action, scope], data) {
         if (
             (action != 'register' && action != 'unregister') ||

@@ -3,7 +3,7 @@ import {
     PermissionString,
     CommandInteractionOption,
 } from 'discord.js';
-import { Event, SlashCommand_Data } from '../Structures/Interfaces';
+import { Event, SlashCommand_Data } from '../Types';
 
 export const event: Event = {
     name: 'interactionCreate',

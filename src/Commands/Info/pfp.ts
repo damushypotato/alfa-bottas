@@ -1,6 +1,6 @@
 import { User } from 'discord.js';
-import ExtendedClient from '../../Client';
-import Command from '../../Modules/Command';
+import ExtendedClient from '../../Structures/Client';
+import Command from '../../Structures/Command';
 
 const getEmbed = (target: User, client: ExtendedClient) => {
     const embed = client.newEmbed({

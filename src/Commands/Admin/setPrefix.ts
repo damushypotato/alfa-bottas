@@ -1,5 +1,5 @@
 import {} from 'discord.js';
-import Command from '../../Modules/Command';
+import Command from '../../Structures/Command';
 
 const maxLength = 8;
 

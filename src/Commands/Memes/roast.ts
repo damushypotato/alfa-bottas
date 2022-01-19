@@ -1,7 +1,7 @@
 import {} from 'discord.js';
-import { Config } from '../../Structures/Interfaces';
+import { Config } from '../../Types';
 import { GetRoast } from '../../Modules/APIs/Roast';
-import Command from '../../Modules/Command';
+import Command from '../../Structures/Command';
 
 const command = new Command({
     name: 'roast',

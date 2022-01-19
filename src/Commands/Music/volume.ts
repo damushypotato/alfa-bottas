@@ -1,6 +1,6 @@
 import { MessageOptions } from 'discord.js';
-import ExtendedClient from '../../Client';
-import Command from '../../Modules/Command';
+import ExtendedClient from '../../Structures/Client';
+import Command from '../../Structures/Command';
 
 const common = (
     client: ExtendedClient,
@@ -38,12 +38,16 @@ const command = new Command({
 });
 
 command.textCommand = {
+    aliases: ['vol'],
     usage: '<volume (1 - 100)>',
     async run(client, message, [volume], data) {
-        if (!volume) return command.sendUsage(message, data.prefix);
-        let vol = parseInt(volume);
-        if (isNaN(vol)) vol = 100;
-        message.channel.send(common(client, message.guildId, vol));
+        if (volume) {
+            const vol = parseInt(volume);
+            if (isNaN(vol)) return command.sendUsage(message, data.prefix);
+            message.channel.send(common(client, message.guildId, vol));
+        } else {
+            message.channel.send(common(client, message.guildId));
+        }
     },
 };
 

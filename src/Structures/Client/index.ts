@@ -15,13 +15,13 @@ import {
     ClientServices,
     ClientTools,
     Filter,
-} from '../Structures/Interfaces';
-import * as configJson from '../config.json';
+} from '../../Types';
+import * as configJson from '../../config.json';
 import { config as envConfig } from 'dotenv';
-import Database from '../Modules/Database';
-import CustomEmojiManager from '../Modules/Emojis';
-import Command from '../Modules/Command';
-import { Mentions } from '../Modules/Tools';
+import Database from '../Database';
+import CustomEmojiManager from '../Emojis';
+import Command from '../Command';
+import { Mentions } from '../../Modules/Tools';
 import { DiscordTogether } from 'discord-together';
 import * as glob from 'glob';
 import { promisify } from 'util';
@@ -29,7 +29,7 @@ import { Player } from 'discord-player';
 
 const globPromise = promisify(glob);
 
-const devPath = joinPath(__dirname, '..', '..', 'dev');
+const devPath = joinPath(__dirname, '..', '..', '..', 'dev');
 const dev = existsSync(devPath);
 if (dev) {
     envConfig({ path: joinPath(devPath, 'dev.env') });
@@ -39,7 +39,6 @@ class ExtendedClient extends Client {
     public constructor() {
         super({ intents: clientIntents });
     }
-
     public commands: Collection<string, Command> = new Collection();
     public events: Collection<string, Event> = new Collection();
     public config: Config = configJson;
@@ -77,7 +76,7 @@ class ExtendedClient extends Client {
         const initTime = time;
         // Commands
         console.log('Loading commands...');
-        const commandPath = joinPath(__dirname, '..', 'Commands');
+        const commandPath = joinPath(__dirname, '..', '..', 'Commands');
         readdirSync(commandPath).forEach(async (dir) => {
             const dirPath = joinPath(commandPath, dir);
             const commands = await globPromise(dirPath + '/*{.ts,.js}');
@@ -116,7 +115,7 @@ class ExtendedClient extends Client {
         time = Date.now();
         // Events
         console.log('Loading events...');
-        (await globPromise(`${__dirname}/../Events/*{.ts,.js}`)).forEach(
+        (await globPromise(`${__dirname}/../../Events/*{.ts,.js}`)).forEach(
             async (file) => {
                 const event: Event = require(file).event;
                 this.events.set(event.name, event);
@@ -132,7 +131,7 @@ class ExtendedClient extends Client {
         time = Date.now();
         // Filters
         console.log('Loading filters...');
-        (await globPromise(`${__dirname}/../Filters/*{.ts,.js}`)).forEach(
+        (await globPromise(`${__dirname}/../../Filters/*{.ts,.js}`)).forEach(
             async (file) => {
                 const filter: Filter = require(file).filter;
                 this.filters.set(filter.name, filter);
@@ -143,6 +142,7 @@ class ExtendedClient extends Client {
         time = Date.now();
         //settings
         console.log('Loading settings...');
+
         console.log(`Done! (${Date.now() - time}ms)\n`);
 
         console.log(

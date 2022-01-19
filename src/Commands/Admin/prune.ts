@@ -1,5 +1,5 @@
 import { Message, TextChannel } from 'discord.js';
-import Command from '../../Modules/Command';
+import Command from '../../Structures/Command';
 
 const max = 50;
 

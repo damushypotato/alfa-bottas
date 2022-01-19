@@ -1,6 +1,6 @@
 import { MessageOptions } from 'discord.js';
-import ExtendedClient from '../../Client';
-import Command from '../../Modules/Command';
+import ExtendedClient from '../../Structures/Client';
+import Command from '../../Structures/Command';
 
 const common = (
     client: ExtendedClient,

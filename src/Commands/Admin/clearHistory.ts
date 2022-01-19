@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
-import Command from '../../Modules/Command';
-import { DeletedMessageDoc } from '../../Structures/Types';
+import Command from '../../Structures/Command';
+import { DeletedMessageDoc } from '../../Types';
 
 const max = 10;
 

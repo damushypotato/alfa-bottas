@@ -1,4 +1,4 @@
-import Command from '../../Modules/Command';
+import Command from '../../Structures/Command';
 
 const command = new Command({
     name: 'emoji',

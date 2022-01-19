@@ -1,8 +1,7 @@
 import {} from 'discord.js';
-import Command from '../../Modules/Command';
-import { Config } from '../../Structures/Interfaces';
+import Command from '../../Structures/Command';
 import { GetQuote } from '../../Modules/APIs/Quote';
-import ExtendedClient from '../../Client';
+import ExtendedClient from '../../Structures/Client';
 
 const getEmbed = async (quote: string, client: ExtendedClient) => {
     const embed = client.newEmbed({

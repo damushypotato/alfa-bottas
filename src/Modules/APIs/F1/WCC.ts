@@ -1,6 +1,6 @@
 import { getCurrentConstructorStandings } from 'f1-api';
 import {} from 'discord.js';
-import Client from '../../../Client';
+import Client from '../../../Structures/Client';
 
 export namespace WCC {
     export async function getEmbed(client: Client) {

@@ -4,9 +4,9 @@ import {
     User,
     MessageAttachment,
 } from 'discord.js';
-import Command from '../../Modules/Command';
-import Client from '../../Client';
-import { DeletedMessageDoc } from '../../Structures/Types';
+import Command from '../../Structures/Command';
+import Client from '../../Structures/Client';
+import { DeletedMessageDoc } from '../../Types';
 
 const max = 10;
 

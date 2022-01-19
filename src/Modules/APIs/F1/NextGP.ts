@@ -1,6 +1,6 @@
 import { getCurrentSeasonRacesSchedule } from 'f1-api';
 import {} from 'discord.js';
-import Client from '../../../Client';
+import Client from '../../../Structures/Client';
 
 export namespace NextGP {
     export async function getEmbed(client: Client) {

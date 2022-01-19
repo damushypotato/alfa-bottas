@@ -8,9 +8,9 @@ import {
     EditedMessageModel,
 } from './Models';
 import { ObjectId, connect } from 'mongoose';
-import { UserDoc, GuildDoc, MemberDoc } from '../../Structures/Types';
+import { UserDoc, GuildDoc, MemberDoc } from '../../Types';
 import CacheManager from '../Cache';
-import Client from '../../Client';
+import Client from '../Client';
 import { S3 } from 'ibm-cos-sdk';
 import axios from 'axios';
 

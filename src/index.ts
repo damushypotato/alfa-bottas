@@ -1,4 +1,4 @@
-import Client from './Client';
+import Client from './Structures/Client';
 
 const client = new Client();
 

@@ -1,6 +1,6 @@
 import {} from 'discord.js';
 import { ApexAPI } from '.';
-import { ApexRotationEmbed } from '../../../Structures/Interfaces';
+import { ApexRotationEmbed } from '../../../Types';
 
 export namespace MapRotation {
     interface Current {

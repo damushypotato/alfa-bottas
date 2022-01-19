@@ -1,5 +1,5 @@
 import { MessageMentions } from 'discord.js';
-import Client from '../../Client';
+import Client from '../../Structures/Client';
 
 //? https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#parsing-mentions
 
@@ -21,4 +21,4 @@ export const getUserFromMention = (mention: string, client: Client) => {
     }
 
     return client.users.cache.get(id);
-}
+};

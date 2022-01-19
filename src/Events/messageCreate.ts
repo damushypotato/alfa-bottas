@@ -1,5 +1,5 @@
 import { Message, PermissionString } from 'discord.js';
-import { Event, TextCommand_Data } from '../Structures/Interfaces';
+import { Event, TextCommand_Data } from '../Types';
 
 export const event: Event = {
     name: 'messageCreate',

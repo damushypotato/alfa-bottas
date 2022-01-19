@@ -1,7 +1,6 @@
 import {} from 'discord.js';
 import { ApexAPI } from '.';
-import { ApexStatsEmbed } from '../../../Structures/Interfaces';
-import { ApexPlatform, CurrentLegends } from '../../../Structures/Types';
+import { ApexStatsEmbed, ApexPlatform, CurrentLegends } from '../../../Types';
 
 export namespace Stats {
     interface BansInfo {

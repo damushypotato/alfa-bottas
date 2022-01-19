@@ -1,7 +1,6 @@
-import Command from '../../Modules/Command';
+import Command from '../../Structures/Command';
 import { Stats, MapRotation } from '../../Modules/APIs/ApexLegends';
-import { ApexPlatform } from '../../Structures/Types';
-import { Config } from '../../Structures/Interfaces';
+import { ApexPlatform } from '../../Types';
 
 const validCmd = ['stats', 'maps'] as const;
 type Cmd = typeof validCmd[number];

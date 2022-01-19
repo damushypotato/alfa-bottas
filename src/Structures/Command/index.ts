@@ -1,5 +1,5 @@
 import { PermissionString, ApplicationCommandData, Message } from 'discord.js';
-import { SlashCommand, TextCommand } from '../../Structures/Interfaces';
+import { SlashCommand, TextCommand } from '../../Types';
 
 interface CommandConfig {
     name: string;
@@ -20,7 +20,7 @@ export default class Command {
         this.category = config.category;
         this.textCommand = config.textCommand;
         this.slashCommand = config.slashCommand;
-        
+
         this.memberPerms = config.memberPerms || [];
         this.clientPerms = config.clientPerms || [];
         this.ownerOnly = config.ownerOnly || false;
@@ -73,9 +73,7 @@ export default class Command {
             );
             return;
         }
-        if (!edit)
-            return message.channel.send(this.getUsage(prefix));
-        else
-            return message.edit(this.getUsage(prefix));
+        if (!edit) return message.channel.send(this.getUsage(prefix));
+        else return message.edit(this.getUsage(prefix));
     }
 }

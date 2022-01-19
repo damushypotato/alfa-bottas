@@ -6,8 +6,8 @@ import {
     TextBasedChannel,
     VoiceBasedChannel,
 } from 'discord.js';
-import ExtendedClient from '../../Client';
-import Command from '../../Modules/Command';
+import ExtendedClient from '../../Structures/Client';
+import Command from '../../Structures/Command';
 
 const common = async (
     client: ExtendedClient,
@@ -16,11 +16,32 @@ const common = async (
     vc: VoiceBasedChannel,
     track: Track
 ): Promise<MessageOptions> => {
+    if (guild.me.voice.channelId && vc.id !== guild.me.voice.channelId) {
+        return {
+            embeds: [
+                client.newEmbed({
+                    title: '🚫 You are not in my voice channel.',
+                }),
+            ],
+        };
+    }
+
     const queue = client.player.createQueue(guild, {
         metadata: channel,
     });
 
-    if (!queue.connection) await queue.connect(vc);
+    try {
+        if (!queue.connection) await queue.connect(vc);
+    } catch {
+        queue.destroy();
+        return {
+            embeds: [
+                client.newEmbed({
+                    title: '❌ Could not join your voice channel.',
+                }),
+            ],
+        };
+    }
 
     queue.addTrack(track);
 
@@ -28,7 +49,7 @@ const common = async (
 
     return {
         content: `${track.url}\n${
-            queue.playing ? 'Added to queue' : 'Playing'
+            queue.playing ? '✅ Added to queue' : '🎶 Playing'
         }: \`${track.title}\``,
         embeds: [],
     };
@@ -47,9 +68,9 @@ command.textCommand = {
         const member = message.member;
 
         if (!member.voice.channel)
-            return message.channel.send({
-                content: 'Join a voice channel first you dumbass.',
-            });
+            return message.channel.send(
+                'Join a voice channel first you dumbass.'
+            );
 
         const sent_fetchingEmbed = message.channel.send({
             embeds: [client.fetchingEmbed()],
@@ -91,9 +112,9 @@ command.slashCommand = {
         const member = interaction.member as GuildMember;
 
         if (!member.voice.channel)
-            return interaction.followUp({
-                content: 'Join a voice channel first you dumbass.',
-            });
+            return interaction.followUp(
+                'Join a voice channel first you dumbass.'
+            );
 
         const track = (
             await player.search(query, {

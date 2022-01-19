@@ -1,7 +1,6 @@
 import {} from 'discord.js';
-import Client from '../../Client';
-import Command from '../../Modules/Command';
-import { Config } from '../../Structures/Interfaces';
+import Client from '../../Structures/Client';
+import Command from '../../Structures/Command';
 
 const getEmbed = (createdTimestamp: number, client: Client) => {
     const latencyPing = Math.floor(Date.now() - createdTimestamp);

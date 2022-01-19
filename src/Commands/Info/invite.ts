@@ -1,6 +1,6 @@
 import {} from 'discord.js';
-import Client from '../../Client';
-import Command from '../../Modules/Command';
+import Client from '../../Structures/Client';
+import Command from '../../Structures/Command';
 
 const getEmbed = (client: Client) => {
     const inviteURL = `https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands`;

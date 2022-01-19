@@ -5,10 +5,10 @@ import {
     Message,
     MessageEmbed,
 } from 'discord.js';
-import Command from '../../Modules/Command';
-import { CommandCategory } from '../../Structures/Interfaces';
+import Command from '../../Structures/Command';
+import { CommandCategory } from '../../Types';
 import { Chunk } from '../../Modules/Tools';
-import ExtendedClient from '../../Client';
+import ExtendedClient from '../../Structures/Client';
 
 const menu = (
     categories: CommandCategory[],

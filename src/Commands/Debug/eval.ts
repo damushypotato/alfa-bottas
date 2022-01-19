@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 import { inspect } from 'util';
-import Command from '../../Modules/Command';
+import Command from '../../Structures/Command';
 
 const command = new Command({
     name: 'eval',

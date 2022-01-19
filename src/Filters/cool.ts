@@ -1,4 +1,4 @@
-import { Filter } from '../Structures/Interfaces';
+import { Filter } from '../Types';
 
 export let ids: string[] = ['625192842045685799'];
 

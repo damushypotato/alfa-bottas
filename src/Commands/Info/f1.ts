@@ -1,7 +1,7 @@
 import {} from 'discord.js';
-import Client from '../../Client';
+import Client from '../../Structures/Client';
 import { WDC, WCC, NextGP, LastGP } from '../../Modules/APIs/F1';
-import Command from '../../Modules/Command';
+import Command from '../../Structures/Command';
 
 const validStat = ['wdc', 'wcc', 'next', 'last'] as const;
 type Stat = typeof validStat[number];

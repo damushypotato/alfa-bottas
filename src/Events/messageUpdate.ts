@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import { Event } from '../Structures/Interfaces';
+import { Event } from '../Types';
 
 export const event: Event = {
     name: 'messageUpdate',

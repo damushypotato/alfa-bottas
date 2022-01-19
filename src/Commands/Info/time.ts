@@ -1,5 +1,5 @@
 import {} from 'discord.js';
-import Command from '../../Modules/Command';
+import Command from '../../Structures/Command';
 import { getTimezonesForCountry, getCountry } from 'countries-and-timezones';
 
 const validOpts = ['country'] as const;

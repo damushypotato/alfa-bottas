@@ -7,6 +7,7 @@ import {
     ApplicationCommandOptionData,
     CommandInteractionOptionResolver,
     CommandInteractionOption,
+    AutocompleteInteraction,
 } from 'discord.js';
 import ExtendedClient from '../Structures/Client';
 import { Mentions } from '../Modules/Tools';
@@ -120,10 +121,18 @@ interface EphemeralDefer {
     (client: ExtendedClient, interaction: CommandInteraction): Promise<boolean>;
 }
 
+interface Autocomplete {
+    (
+        client: ExtendedClient,
+        interaction: AutocompleteInteraction
+    ): Promise<unknown>;
+}
+
 export interface SlashCommand {
     type: ApplicationCommandType;
     options?: ApplicationCommandOptionData[];
     ephemeralDefer?: EphemeralDefer;
+    autocomplete?: Autocomplete;
     run: Run_SCMD;
 }
 

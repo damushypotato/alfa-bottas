@@ -1,9 +1,23 @@
 import {} from 'discord.js';
 import Command from '../../Structures/Command';
-import { getTimezonesForCountry, getCountry } from 'countries-and-timezones';
+import { Timezones, Time } from '../../Modules/APIs/WorldTime';
 
-const validOpts = ['country'] as const;
-type Opts = typeof validOpts[number];
+const api: { tzs: false | { raw: string; lc: string }[]; ready: boolean } = {
+    ready: false,
+    tzs: false,
+};
+
+Timezones.getTimezones().then((tzs) => {
+    api.ready = true;
+    if (tzs) {
+        api.tzs = tzs.map((t) => {
+            return {
+                raw: t,
+                lc: t.toLowerCase(),
+            };
+        });
+    }
+});
 
 const command = new Command({
     name: 'time',
@@ -14,51 +28,69 @@ command.slashCommand = {
     type: 'CHAT_INPUT',
     options: [
         {
-            type: 'SUB_COMMAND',
-            name: 'country',
-            description: 'Get the timezone for a country.',
-            options: [
-                {
-                    name: 'country_id',
-                    description: 'The 2 digit country code.',
-                    type: 'STRING',
-                    required: true,
-                },
-            ],
+            name: 'location',
+            description: 'The location. It will autocomplete.',
+            type: 'STRING',
+            required: true,
+            autocomplete: true,
         },
     ],
+    async autocomplete(client, interaction) {
+        const val = interaction.options.getString('location');
+
+        if (!api.ready || !api.tzs) return interaction.respond([]);
+
+        const choices = api.tzs;
+
+        const filtered = choices
+            .filter((choice) => choice.lc.match(new RegExp(val, 'gi')))
+            .slice(0, 25);
+
+        interaction.respond(
+            filtered.map((choice) => ({ name: choice.raw, value: choice.lc }))
+        );
+    },
     async run(client, interaction, options, data) {
-        const sub = options.getSubcommand() as Opts;
+        if (!api.ready || !api.tzs) {
+            return interaction.followUp({ embeds: [client.apiFailEmbed()] });
+        }
 
-        if (sub == 'country') {
-            const cId = options.getString('country_id').toUpperCase();
+        const location = options.getString('location').toLowerCase();
 
-            const country = getCountry(cId);
-            const times = getTimezonesForCountry(cId);
-            if (!times || !country) {
-                return interaction.followUp('Invalid country code.');
-            }
+        const timezone = api.tzs.find((t) => t.lc == location);
 
-            const now = Date.now();
-
-            const embed = client.newEmbed({
-                description: `🕔 Timezones for ${country.name}:`,
-                fields: times.map((tz) => {
-                    const date = new Date(now + tz.dstOffset * 60000);
-
-                    const time = [date.getUTCHours(), date.getUTCMinutes()];
-
-                    return {
-                        name: `Time in ${tz.name} -`,
-                        value: `${time[0] > 12 ? time[0] - 12 : time[0]}:${
-                            time[1]
-                        } ${time[0] > 12 ? 'P.M.' : 'A.M.'}`,
-                    };
-                }),
+        if (!timezone)
+            return interaction.followUp({
+                embeds: [
+                    client.newEmbed({ title: 'That is not a valid timezone.' }),
+                ],
             });
 
-            interaction.followUp({ embeds: [embed] });
-        }
+        const time = await Time.getTime(timezone.raw);
+
+        if (!time)
+            return interaction.followUp({ embeds: [client.apiFailEmbed()] });
+
+        const date = new Date(time.datetime);
+
+        const dateOpts: Intl.DateTimeFormatOptions = {
+            timeZone: timezone.raw,
+        };
+
+        const t = date.toLocaleTimeString('en-UK', dateOpts);
+        const d = date.toLocaleDateString('en-UK', dateOpts);
+
+        interaction.followUp({
+            embeds: [
+                client.newEmbed({
+                    author: {
+                        name: 'Time for:',
+                    },
+                    title: `${time.timezone} | (${time.abbreviation})`,
+                    description: `\`${t} - ${d}\``,
+                }),
+            ],
+        });
     },
 };
 

@@ -71,7 +71,7 @@ command.slashCommand = {
         if (!time)
             return interaction.followUp({ embeds: [client.apiFailEmbed()] });
 
-        const date = new Date(time.datetime);
+        const date = new Date();
 
         const dateOpts: Intl.DateTimeFormatOptions = {
             timeZone: timezone.raw,

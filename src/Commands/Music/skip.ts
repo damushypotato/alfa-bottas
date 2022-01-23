@@ -27,7 +27,7 @@ const command = new Command({
 
 command.textCommand = {
     usage: '',
-    aliases: ['next'],
+    aliases: ['next', 's'],
     async run(client, message, args, data) {
         message.channel.send(common(client, message.guildId));
     },

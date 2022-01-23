@@ -87,7 +87,7 @@ command.slashCommand = {
                         name: 'Time for:',
                     },
                     title: `${time.timezone} | (${time.abbreviation})`,
-                    description: `\`${t} - ${d}\``,
+                    description: `\`${t.slice(0, 5)} - ${d}\``,
                 }),
             ],
         });

@@ -38,7 +38,7 @@ const command = new Command({
 });
 
 command.textCommand = {
-    aliases: ['vol'],
+    aliases: ['vol', 'v'],
     usage: '<volume (1 - 100)>',
     async run(client, message, [volume], data) {
         if (volume) {

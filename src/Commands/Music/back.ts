@@ -2,41 +2,45 @@ import { MessageOptions } from 'discord.js';
 import ExtendedClient from '../../Structures/Client';
 import Command from '../../Structures/Command';
 
-const common = (
+const common = async (
     client: ExtendedClient,
     guildId: string
-): string | MessageOptions => {
+): Promise<string | MessageOptions> => {
     const queue = client.player.getQueue(guildId);
     if (!queue?.playing) return 'There is nothing playing.';
 
-    queue.destroy();
+    try {
+        await queue.back();
+    } catch {
+        return 'Unable to rewind.';
+    }
 
     return {
         embeds: [
             client.newEmbed({
-                title: 'Stopped ⏹',
+                title: '⏮ Playing the previous track',
             }),
         ],
     };
 };
 
 const command = new Command({
-    name: 'stop',
-    description: 'Stop playing and leave.',
+    name: 'back',
+    description: 'Play the previous track.',
 });
 
 command.textCommand = {
     usage: '',
-    aliases: ['end', 'leave', 'l'],
+    aliases: ['rewind', 'previous'],
     async run(client, message, args, data) {
-        message.channel.send(common(client, message.guildId));
+        message.channel.send(await common(client, message.guildId));
     },
 };
 
 command.slashCommand = {
     type: 'CHAT_INPUT',
     async run(client, interaction, options, data) {
-        interaction.followUp(common(client, interaction.guildId));
+        interaction.followUp(await common(client, interaction.guildId));
     },
 };
 

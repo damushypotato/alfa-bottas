@@ -186,7 +186,7 @@ export interface Config {
 
 //#endregion
 
-//#region //- FIlter
+//#region //- Filter
 
 interface Evaluate {
     (client: ExtendedClient, message: Message): Promise<boolean>;
@@ -210,6 +210,29 @@ export interface Event {
     name: keyof ClientEvents;
     once?: boolean;
     run: Run_EVNT;
+}
+
+//#endregion
+
+//#region //- Music
+export const modeLookup = {
+    0: '❌ Off',
+    1: '🔂 Single Track',
+    2: '🔁 Queue (Classic)',
+    3: '↪️ Autoplay',
+};
+
+interface GeniusUrl {
+    genius: string;
+}
+
+export interface SongData {
+    title: string;
+    author: string;
+    lyrics: string;
+    thumbnail: GeniusUrl;
+    links: GeniusUrl;
+    disclaimer: string;
 }
 
 //#endregion

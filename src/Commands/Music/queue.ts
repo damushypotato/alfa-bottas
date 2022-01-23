@@ -1,6 +1,7 @@
 import { MessageOptions } from 'discord.js';
 import ExtendedClient from '../../Structures/Client';
 import Command from '../../Structures/Command';
+import { modeLookup } from '../../Types';
 
 const common = (
     client: ExtendedClient,
@@ -18,7 +19,9 @@ const common = (
     const limited = queue.tracks.slice(0, max);
 
     const embed = client.newEmbed({
-        title: 'Queue',
+        title: `Queue | \`( 🔊 ${queue.volume}% Volume )\` \`( Loop ${
+            modeLookup[queue.repeatMode]
+        } )\``,
         description: `Now playing 🎶 | **${queue.current.title}** (\`${timestamp.progress}%\`)\n${progressbar}`,
         fields: [
             ...limited.map((t, i) => {
@@ -50,6 +53,7 @@ const max = 10;
 
 command.textCommand = {
     usage: '',
+    aliases: ['q'],
     async run(client, message, options, data) {
         message.channel.send(common(client, message.guildId));
     },

@@ -9,25 +9,24 @@ const common = (
     const queue = client.player.getQueue(guildId);
     if (!queue?.playing) return 'There is nothing playing.';
 
-    queue.destroy();
+    queue.clear();
 
     return {
         embeds: [
             client.newEmbed({
-                title: 'Stopped ⏹',
+                title: 'Cleared the queue ⭕️',
             }),
         ],
     };
 };
 
 const command = new Command({
-    name: 'stop',
-    description: 'Stop playing and leave.',
+    name: 'clear',
+    description: 'Clear the queue.',
 });
 
 command.textCommand = {
     usage: '',
-    aliases: ['end', 'leave', 'l'],
     async run(client, message, args, data) {
         message.channel.send(common(client, message.guildId));
     },

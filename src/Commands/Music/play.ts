@@ -43,7 +43,17 @@ const common = async (
         };
     }
 
-    queue.addTrack(track);
+    try {
+        queue.addTrack(track);
+    } catch {
+        return {
+            embeds: [
+                client.newEmbed({
+                    title: '🚫 Invalid track.',
+                }),
+            ],
+        };
+    }
 
     if (!queue.playing) queue.play();
 
@@ -62,6 +72,7 @@ const command = new Command({
 
 command.textCommand = {
     usage: '<song title>',
+    aliases: ['p'],
     async run(client, message, args, data) {
         const { player } = client;
         const query = data.fullArgs;

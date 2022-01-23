@@ -9,25 +9,28 @@ const common = (
     const queue = client.player.getQueue(guildId);
     if (!queue?.playing) return 'There is nothing playing.';
 
-    queue.destroy();
+    try {
+        queue.shuffle();
+    } catch {
+        return 'Unable to shuffle.';
+    }
 
     return {
         embeds: [
             client.newEmbed({
-                title: 'Stopped ⏹',
+                title: 'Shuffled 🔀',
             }),
         ],
     };
 };
 
 const command = new Command({
-    name: 'stop',
-    description: 'Stop playing and leave.',
+    name: 'shuffle',
+    description: 'Shuffle the queue.',
 });
 
 command.textCommand = {
     usage: '',
-    aliases: ['end', 'leave', 'l'],
     async run(client, message, args, data) {
         message.channel.send(common(client, message.guildId));
     },

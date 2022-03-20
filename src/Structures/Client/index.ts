@@ -77,7 +77,7 @@ class ExtendedClient extends Client {
         // Commands
         console.log('Loading commands...');
         const commandPath = joinPath(__dirname, '..', '..', 'Commands');
-        readdirSync(commandPath).forEach(async (dir) => {
+        readdirSync(commandPath).forEach(async dir => {
             const dirPath = joinPath(commandPath, dir);
             const commands = await globPromise(dirPath + '/*{.ts,.js}');
 
@@ -116,7 +116,7 @@ class ExtendedClient extends Client {
         // Events
         console.log('Loading events...');
         (await globPromise(`${__dirname}/../../Events/*{.ts,.js}`)).forEach(
-            async (file) => {
+            async file => {
                 const event: Event = require(file).event;
                 this.events.set(event.name, event);
                 if (event.once) {
@@ -132,7 +132,7 @@ class ExtendedClient extends Client {
         // Filters
         console.log('Loading filters...');
         (await globPromise(`${__dirname}/../../Filters/*{.ts,.js}`)).forEach(
-            async (file) => {
+            async file => {
                 const filter: Filter = require(file).filter;
                 this.filters.set(filter.name, filter);
             }
@@ -142,6 +142,10 @@ class ExtendedClient extends Client {
         time = Date.now();
         //settings
         console.log('Loading settings...');
+
+        this.player.on('channelEmpty', q => {
+            console.log(11);
+        });
 
         console.log(`Done! (${Date.now() - time}ms)\n`);
 
@@ -159,8 +163,8 @@ class ExtendedClient extends Client {
 
     public async getAllSlashCommands() {
         return this.commands
-            .filter((c) => c.slashCommand != undefined)
-            .map((c) => c.toApplicationCommand());
+            .filter(c => c.slashCommand != undefined)
+            .map(c => c.toApplicationCommand());
     }
 
     //slash commands

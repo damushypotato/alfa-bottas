@@ -11,8 +11,6 @@ export namespace NextGP {
 
         const season = [...s1, ...s2];
 
-        console.log(season);
-
         const now = Date.now();
 
         const gp = season.filter(r => r.date.getTime() - now >= 0)[0];

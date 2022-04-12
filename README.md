@@ -1,7 +1,5 @@
 # Alfa Botass
 
-![LOC](https://sloc.xyz/github/damushypotato/alfa-bottas)
-
 private (currently) discord bot
 
 all kinds of commands

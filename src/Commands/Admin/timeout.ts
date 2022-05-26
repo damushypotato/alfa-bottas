@@ -3,7 +3,7 @@ import Command from '../../Structures/Command';
 const command = new Command({
     name: 'timeout',
     description: 'Timeout a user for a set amount of time.',
-    memberPerms: ['ADMINISTRATOR'],
+    memberPerms: ['MUTE_MEMBERS'],
 });
 
 command.slashCommand = {

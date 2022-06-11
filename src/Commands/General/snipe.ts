@@ -86,7 +86,7 @@ command.textCommand = {
 
         const user = client.users.cache.get(delMsgDB.authorID);
 
-        sent.edit(await getSniped(user, delMsgDB, client, numOfMsgs));
+        sent.edit(await getSniped(user, delMsgDB, client, numOfMsgs) as MessageEditOptions);
     },
 };
 
@@ -123,7 +123,7 @@ command.slashCommand = {
         const user = client.users.cache.get(delMsgDB.authorID);
 
         interaction.followUp(
-            await getSniped(user, delMsgDB, client, numOfMsgs)
+            await getSniped(user, delMsgDB, client, numOfMsgs) as InteractionReplyOptions
         );
     },
 };

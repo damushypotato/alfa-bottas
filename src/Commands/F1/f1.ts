@@ -1,4 +1,4 @@
-import {} from 'discord.js';
+import { MessageEmbed } from 'discord.js';
 import Client from '../../Structures/Client';
 import { WDC, WCC, NextGP, LastGP } from '../../Modules/APIs/F1';
 import Command from '../../Structures/Command';
@@ -6,7 +6,7 @@ import Command from '../../Structures/Command';
 const validStat = ['wdc', 'wcc', 'next', 'last'] as const;
 type Stat = typeof validStat[number];
 
-const getStat = async (stat: Stat, client: Client) => {
+const getStat = async (stat: Stat, client: Client): Promise<MessageEmbed> => {
     if (stat == 'wdc') {
         return await WDC.getEmbed(client);
     }

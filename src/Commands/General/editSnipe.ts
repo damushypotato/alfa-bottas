@@ -2,7 +2,6 @@ import {
     InteractionReplyOptions,
     MessageEditOptions,
     User,
-    Message,
 } from 'discord.js';
 import ExtendedClient from '../../Structures/Client';
 import Command from '../../Structures/Command';
@@ -82,7 +81,7 @@ command.textCommand = {
 
         const msgData = getSniped(user, edtMsgDB, client, numOfMsgs);
 
-        sent.edit(msgData);
+        sent.edit(msgData as MessageEditOptions);
     },
 };
 
@@ -120,7 +119,7 @@ command.slashCommand = {
 
         const msgData = getSniped(user, edtMsgDB, client, numOfMsgs);
 
-        interaction.followUp(msgData);
+        interaction.followUp(msgData as InteractionReplyOptions);
     },
 };
 

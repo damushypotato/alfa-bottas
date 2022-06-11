@@ -1,4 +1,4 @@
-import { MessageEmbed, MessageOptions } from 'discord.js';
+import { InteractionReplyOptions, MessageEditOptions, MessageEmbed, MessageOptions } from 'discord.js';
 import { GetLyrics } from '../../Modules/APIs/Lyrics';
 import ExtendedClient from '../../Structures/Client';
 import Command from '../../Structures/Command';
@@ -78,7 +78,7 @@ command.textCommand = {
             embeds: [client.fetchingEmbed()],
         });
 
-        sent.edit(await common(client, message.guildId, fullArgs));
+        sent.edit(await common(client, message.guildId, fullArgs) as MessageEditOptions);
     },
 };
 
@@ -97,7 +97,7 @@ command.slashCommand = {
                 client,
                 interaction.guildId,
                 options.getString('search')
-            )
+            ) as string | InteractionReplyOptions
         );
     },
 };

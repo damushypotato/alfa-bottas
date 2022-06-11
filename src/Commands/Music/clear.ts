@@ -1,4 +1,4 @@
-import { MessageOptions } from 'discord.js';
+import { InteractionReplyOptions, MessageOptions } from 'discord.js';
 import ExtendedClient from '../../Structures/Client';
 import Command from '../../Structures/Command';
 
@@ -35,7 +35,7 @@ command.textCommand = {
 command.slashCommand = {
     type: 'CHAT_INPUT',
     async run(client, interaction, options, data) {
-        interaction.followUp(common(client, interaction.guildId));
+        interaction.followUp(common(client, interaction.guildId) as string | InteractionReplyOptions);
     },
 };
 

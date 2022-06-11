@@ -1,4 +1,4 @@
-import { MessageOptions } from 'discord.js';
+import { InteractionReplyOptions, MessageOptions } from 'discord.js';
 import ExtendedClient from '../../Structures/Client';
 import Command from '../../Structures/Command';
 import { QueueRepeatMode } from 'discord-player';
@@ -84,7 +84,7 @@ command.slashCommand = {
     ],
     async run(client, interaction, options, data) {
         interaction.followUp(
-            common(client, interaction.guildId, options.getInteger('mode'))
+            common(client, interaction.guildId, options.getInteger('mode')) as string | InteractionReplyOptions
         );
     },
 };

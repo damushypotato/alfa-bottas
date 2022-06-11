@@ -2,6 +2,8 @@ import { Track } from 'discord-player';
 import {
     Guild,
     GuildMember,
+    InteractionReplyOptions,
+    MessageEditOptions,
     MessageOptions,
     TextBasedChannel,
     VoiceBasedChannel,
@@ -106,7 +108,7 @@ command.textCommand = {
                 message.channel,
                 message.member.voice.channel,
                 track
-            )
+            ) as MessageEditOptions
         );
     },
 };
@@ -144,7 +146,7 @@ command.slashCommand = {
                 interaction.channel,
                 member.voice.channel,
                 track
-            )
+            ) as InteractionReplyOptions
         );
     },
 };

@@ -1,4 +1,4 @@
-import { MessageOptions } from 'discord.js';
+import { InteractionReplyOptions, MessageOptions } from 'discord.js';
 import ExtendedClient from '../../Structures/Client';
 import Command from '../../Structures/Command';
 
@@ -65,7 +65,7 @@ command.slashCommand = {
                 client,
                 interaction.guildId,
                 options.getInteger('time')
-            )
+            ) as string | InteractionReplyOptions
         );
     },
 };

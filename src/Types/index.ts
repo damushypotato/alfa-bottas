@@ -56,7 +56,9 @@ export type CurrentLegends =
     | 'Rampart'
     | 'Valkyrie'
     | 'Seer'
-    | 'Ash';
+    | 'Ash'
+    | 'Mad Maggie'
+    | 'Newcastle';
 
 export interface ApexStatsEmbed {
     (

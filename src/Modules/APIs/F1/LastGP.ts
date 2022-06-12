@@ -6,22 +6,16 @@ export namespace LastGP {
     export async function getEmbed(client: Client) {
         const seasons = await getSafeSeasons(-1);
 
-        //add all races and gps to an array
-        const races: Session[] = [];
-        const gps: GrandPrix[] = [];
-        for (const season of seasons) {
-            gps.push(...season.gps);
-            for (const gp of season.gps)
-                races.push(gp.sessions.find(s => s.type === 'RACE'));
-        }
-        //find the past race
-        const now = Date.now();
-        const last = races
-            .sort((a, b) => b.date.getTime() - a.date.getTime())
-            .filter(s => s.date.getTime() - now <= 0)[0];
+        const sessions = [
+            ...seasons[1].getAllSessions(),
+            ...seasons[0].getAllSessions(),
+        ];
 
-        //find the gp by id
-        const gp = gps.find(g => last.id.endsWith(g.id));
+        const last = sessions
+            .filter(s => s.name == 'Race' && s.completed)
+            .sort((a, b) => b.date.getTime() - a.date.getTime())[0];
+        const gp = last.grandprix;
+        const circuit = gp.circuit;
 
         const embed = client.newEmbed({
             author: {
@@ -35,7 +29,7 @@ export namespace LastGP {
                 },
                 {
                     name: 'Where',
-                    value: `*${gp.circuit.name}* - \`${gp.circuit.location.locality}, ${gp.circuit.location.country}\``,
+                    value: `*${circuit.name}* - \`${circuit.location.locality}, ${circuit.location.country}\``,
                 },
             ],
         });

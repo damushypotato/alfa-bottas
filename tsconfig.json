@@ -1,12 +1,14 @@
 {
     "compilerOptions": {
         "module": "CommonJS",
-        "moduleResolution": "node",
+        "moduleResolution": "Node",
         "target": "ESNext",
         "lib": ["ESNext"],
         "outDir": "dist",
         "rootDir": "src",
         "types": ["node"],
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
         "typeRoots": [
             "node_modules/@types",
             "node_modules/discord.js/typings"

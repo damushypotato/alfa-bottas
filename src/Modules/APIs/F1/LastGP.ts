@@ -4,7 +4,7 @@ import { Session, GrandPrix } from 'formula1.js/dist/Types';
 
 export namespace LastGP {
     export async function getEmbed(client: Client) {
-        const seasons = await getSafeSeasons(-1);
+        const seasons = await getSafeSeasons(client, -1);
 
         const sessions = [
             ...seasons[1].getAllSessions(),

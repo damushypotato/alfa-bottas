@@ -159,7 +159,11 @@ class Client extends _client {
         await this.database.connect();
 
         // Login
-        console.log(`Finally logging in... (Total ${Date.now() - initTime}ms)`);
+        console.log(
+            `Finally logging in... (Total ${
+                Date.now() - initTime
+            }ms)\n${new Date().toTimeString()}`
+        );
         this.login(this.secrets.CLIENT_TOKEN);
     }
 

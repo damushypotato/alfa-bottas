@@ -11,7 +11,7 @@
         "build": "tsc",
         "dev": "tsnd --respawn --transpile-only --rs src/index.ts",
         "testbuild": "npm run build && npm start",
-        "deploy": "git push heroku && heroku logs -t"
+        "deploy": "git push heroku && heroku logs -a='alfa-bottas-2' -t"
     },
     "repository": {
         "type": "git",

@@ -1,18 +1,21 @@
-import { getCurrentConstructorStandings } from 'f1-api';
 import {} from 'discord.js';
 import Client from '../../../Structures/Client';
 
 export namespace WCC {
     export async function getEmbed(client: Client) {
-        const wcc = await getCurrentConstructorStandings();
+        const wcc = await client.api_cache.f1.fetchWCC_Cached(
+            new Date().getFullYear(),
+            undefined,
+            25
+        );
 
         const embed = client.newEmbed({
-            title: `${wcc.season} Constructor Standings (as of Round ${wcc.round})`,
-            fields: wcc.standings.map((c) => {
+            title: `${wcc.season} Constructor Standings (as of Round ${wcc.completedRounds})`,
+            fields: wcc.standings.map(c => {
                 return {
                     name: `\`${c.position}\` - ${client.customEmojis.get(
-                        c.constructor.id
-                    )} *${c.constructor.name}*`,
+                        c.team.id
+                    )} *${c.team.name}*`,
                     value: `**${c.points}** point${c.points != 1 ? 's' : ''}${
                         c.wins > 0
                             ? ` | **${c.wins}** win${c.wins > 1 ? 's' : ''}`

@@ -1,5 +1,5 @@
 import {
-    Client,
+    Client as _client,
     Collection,
     MessageEmbed,
     MessageEmbedOptions,
@@ -26,6 +26,7 @@ import { DiscordTogether } from 'discord-together';
 import * as glob from 'glob';
 import { promisify } from 'util';
 import { Player } from 'discord-player';
+import API_CacheManager from '../API_Cache';
 
 const globPromise = promisify(glob);
 
@@ -35,7 +36,7 @@ if (dev) {
     envConfig({ path: joinPath(devPath, 'dev.env') });
 }
 
-class ExtendedClient extends Client {
+class Client extends _client {
     public constructor() {
         super({ intents: clientIntents });
     }
@@ -56,18 +57,19 @@ class ExtendedClient extends Client {
     };
     public database = new Database(this);
     public customEmojis = new CustomEmojiManager(this);
-    public dev = dev;
+    public dev: boolean = dev;
     public tools: ClientTools = {
         mentions: Mentions,
     };
     public discordTogether = new DiscordTogether(this);
     public filters: Collection<string, Filter> = new Collection();
-    public player = new Player(this, {
+    public player: Player = new Player(this, {
         ytdlOptions: {
             quality: 'highestaudio',
             highWaterMark: 1 << 25,
         },
     });
+    public api_cache: API_CacheManager = new API_CacheManager();
 
     public async init() {
         console.log('Starting up client...\n');
@@ -200,4 +202,4 @@ class ExtendedClient extends Client {
     }
 }
 
-export default ExtendedClient;
+export default Client;

@@ -8,7 +8,7 @@ import {
 import Command from '../../Structures/Command';
 import { CommandCategory } from '../../Types';
 import { Chunk } from '../../Modules/Tools';
-import ExtendedClient from '../../Structures/Client';
+import Client from '../../Structures/Client';
 
 const menu = (
     categories: CommandCategory[],
@@ -21,7 +21,7 @@ const menu = (
                 customId: 'help-menu',
                 placeholder: placeholder || 'Select one...',
                 disabled,
-                options: categories.map((c) => {
+                options: categories.map(c => {
                     return {
                         label: c.name,
                         value: c.name.toLowerCase(),
@@ -52,7 +52,7 @@ const buttons = (disabled: boolean) =>
         ],
     });
 
-const getEmbeds = (category: CommandCategory, client: ExtendedClient) => {
+const getEmbeds = (category: CommandCategory, client: Client) => {
     const commands = [...category.commands];
 
     return Chunk.default<Command>(commands, 5).map((cmds, i, a) =>
@@ -63,7 +63,7 @@ const getEmbeds = (category: CommandCategory, client: ExtendedClient) => {
                     a.length
                 }`,
             },
-            fields: cmds.map((c) => {
+            fields: cmds.map(c => {
                 return {
                     name: `\`${c.name}\` (*${[
                         c.textCommand ? 'prefixed' : null,
@@ -113,15 +113,15 @@ command.textCommand = {
     usage: '',
     async run(client, message, args, data) {
         const allCategories = [
-            ...new Set(client.commands.map((c) => c.category)),
+            ...new Set(client.commands.map(c => c.category)),
         ];
 
-        const categories = allCategories.map((cat) => {
+        const categories = allCategories.map(cat => {
             return {
                 name: cat,
                 commands: client.commands
-                    .filter((cmd) => cmd.category == cat)
-                    .map((c) => c),
+                    .filter(cmd => cmd.category == cat)
+                    .map(c => c),
             } as CommandCategory;
         });
 
@@ -141,11 +141,11 @@ command.textCommand = {
             componentType: 'SELECT_MENU',
             time: 30000,
         })
-            .on('collect', (int) => {
+            .on('collect', int => {
                 currentPageIndex = 0;
                 const [catInput] = int.values;
                 const category = categories.find(
-                    (c) => c.name.toLowerCase() == catInput
+                    c => c.name.toLowerCase() == catInput
                 );
                 embeds = getEmbeds(category, client);
                 const needPagination = embeds.length > 1;
@@ -180,7 +180,7 @@ command.textCommand = {
             },
             componentType: 'BUTTON',
             time: 30000,
-        }).on('collect', (int) => {
+        }).on('collect', int => {
             if (!embeds) return;
 
             currentPageIndex = newIndex(
@@ -199,15 +199,15 @@ command.slashCommand = {
     options: [],
     async run(client, interaction, options, data) {
         const allCategories = [
-            ...new Set(client.commands.map((c) => c.category)),
+            ...new Set(client.commands.map(c => c.category)),
         ];
 
-        const categories = allCategories.map((cat) => {
+        const categories = allCategories.map(cat => {
             return {
                 name: cat,
                 commands: client.commands
-                    .filter((cmd) => cmd.category == cat)
-                    .map((c) => c),
+                    .filter(cmd => cmd.category == cat)
+                    .map(c => c),
             } as CommandCategory;
         });
 
@@ -228,11 +228,11 @@ command.slashCommand = {
                 componentType: 'SELECT_MENU',
                 time: 30000,
             })
-            .on('collect', (int) => {
+            .on('collect', int => {
                 currentPageIndex = 0;
                 const [catInput] = int.values;
                 const category = categories.find(
-                    (c) => c.name.toLowerCase() == catInput
+                    c => c.name.toLowerCase() == catInput
                 );
                 embeds = getEmbeds(category, client);
                 const needPagination = embeds.length > 1;
@@ -269,7 +269,7 @@ command.slashCommand = {
                 componentType: 'BUTTON',
                 time: 30000,
             })
-            .on('collect', (int) => {
+            .on('collect', int => {
                 if (!embeds) return;
 
                 currentPageIndex = newIndex(

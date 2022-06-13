@@ -9,7 +9,7 @@ import {
 } from './Models';
 import { ObjectId, connect } from 'mongoose';
 import { UserDoc, GuildDoc, MemberDoc } from '../../Types';
-import CacheManager from '../Cache';
+import CacheManager from './Cache';
 import Client from '../Client';
 import { S3 } from 'ibm-cos-sdk';
 import axios from 'axios';
@@ -173,7 +173,7 @@ export default class Database {
 
         delMsgDB.attachments = await Promise.all(
             message.attachments
-                .map((a) => {
+                .map(a => {
                     if (a.size < 8000000) {
                         return a;
                     }

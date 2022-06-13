@@ -1,9 +1,5 @@
-import {
-    InteractionReplyOptions,
-    MessageEditOptions,
-    User,
-} from 'discord.js';
-import ExtendedClient from '../../Structures/Client';
+import { InteractionReplyOptions, MessageEditOptions, User } from 'discord.js';
+import Client from '../../Structures/Client';
 import Command from '../../Structures/Command';
 import { EditedMessageDoc } from '../../Types';
 
@@ -12,7 +8,7 @@ const max = 10;
 const getSniped = (
     user: User,
     edtMsgDB: EditedMessageDoc,
-    client: ExtendedClient,
+    client: Client,
     numOfMsgs: number
 ) => {
     const headerEmbed = client.newEmbed({

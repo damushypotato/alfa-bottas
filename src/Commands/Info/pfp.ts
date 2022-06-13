@@ -1,8 +1,8 @@
 import { User } from 'discord.js';
-import ExtendedClient from '../../Structures/Client';
+import Client from '../../Structures/Client';
 import Command from '../../Structures/Command';
 
-const getEmbed = (target: User, client: ExtendedClient) => {
+const getEmbed = (target: User, client: Client) => {
     const embed = client.newEmbed({
         title: 'heres ur pfp',
         description: `<@${target.id}>`,

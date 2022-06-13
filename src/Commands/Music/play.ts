@@ -8,11 +8,11 @@ import {
     TextBasedChannel,
     VoiceBasedChannel,
 } from 'discord.js';
-import ExtendedClient from '../../Structures/Client';
+import Client from '../../Structures/Client';
 import Command from '../../Structures/Command';
 
 const common = async (
-    client: ExtendedClient,
+    client: Client,
     guild: Guild,
     channel: TextBasedChannel,
     vc: VoiceBasedChannel,
@@ -102,13 +102,13 @@ command.textCommand = {
         const track = result.tracks[0];
 
         sent.edit(
-            await common(
+            (await common(
                 client,
                 message.guild,
                 message.channel,
                 message.member.voice.channel,
                 track
-            ) as MessageEditOptions
+            )) as MessageEditOptions
         );
     },
 };
@@ -140,13 +140,13 @@ command.slashCommand = {
         ).tracks[0];
 
         interaction.followUp(
-            await common(
+            (await common(
                 client,
                 interaction.guild,
                 interaction.channel,
                 member.voice.channel,
                 track
-            ) as InteractionReplyOptions
+            )) as InteractionReplyOptions
         );
     },
 };

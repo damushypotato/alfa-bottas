@@ -1,12 +1,9 @@
 import { InteractionReplyOptions, MessageOptions } from 'discord.js';
-import ExtendedClient from '../../Structures/Client';
+import Client from '../../Structures/Client';
 import Command from '../../Structures/Command';
 import { modeLookup } from '../../Types';
 
-const common = (
-    client: ExtendedClient,
-    guildId: string
-): string | MessageOptions => {
+const common = (client: Client, guildId: string): string | MessageOptions => {
     const { player } = client;
     const queue = player.getQueue(guildId);
     if (!queue?.playing) return 'There is nothing playing.';
@@ -45,7 +42,11 @@ command.textCommand = {
 command.slashCommand = {
     type: 'CHAT_INPUT',
     async run(client, interaction, options, data) {
-        interaction.followUp(common(client, interaction.guildId) as string | InteractionReplyOptions);
+        interaction.followUp(
+            common(client, interaction.guildId) as
+                | string
+                | InteractionReplyOptions
+        );
     },
 };
 

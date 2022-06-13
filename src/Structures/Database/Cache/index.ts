@@ -1,9 +1,9 @@
-import Client from '../Client';
+import Client from '../../Client';
 import { Collection, Guild, User } from 'discord.js';
-import { GuildDoc, UserDoc } from '../../Types';
+import { GuildDoc, UserDoc } from '../../../Types';
 import { Document, ObjectId } from 'mongoose';
 
-class BaseCache<T> {
+class BaseCache_MongoDB<T> {
     constructor(db: Document<any, any, T> & T & { _id: ObjectId }) {
         this.db = db._id;
     }
@@ -11,7 +11,7 @@ class BaseCache<T> {
     protected db: ObjectId;
 }
 
-export class GuildCache extends BaseCache<GuildDoc> {
+export class GuildCache extends BaseCache_MongoDB<GuildDoc> {
     constructor(guildDB: GuildDoc, client: Client) {
         super(guildDB);
 
@@ -21,7 +21,7 @@ export class GuildCache extends BaseCache<GuildDoc> {
     public prefix: string;
 }
 
-export class UserCache extends BaseCache<UserDoc> {
+export class UserCache extends BaseCache_MongoDB<UserDoc> {
     constructor(userDB: UserDoc, client: Client) {
         super(userDB);
 

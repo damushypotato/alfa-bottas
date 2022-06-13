@@ -1,9 +1,9 @@
 import {} from 'discord.js';
 import Command from '../../Structures/Command';
 import { GetQuote } from '../../Modules/APIs/Quote';
-import ExtendedClient from '../../Structures/Client';
+import Client from '../../Structures/Client';
 
-const getEmbed = async (quote: string, client: ExtendedClient) => {
+const getEmbed = async (quote: string, client: Client) => {
     const embed = client.newEmbed({
         title: 'An AI-generated Quote',
         url: 'https://inspirobot.me',

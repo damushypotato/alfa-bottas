@@ -1,9 +1,9 @@
 import { InteractionReplyOptions, MessageOptions } from 'discord.js';
-import ExtendedClient from '../../Structures/Client';
+import Client from '../../Structures/Client';
 import Command from '../../Structures/Command';
 
 const common = async (
-    client: ExtendedClient,
+    client: Client,
     guildId: string,
     seconds: number
 ): Promise<string | MessageOptions> => {
@@ -61,11 +61,11 @@ command.slashCommand = {
     ],
     async run(client, interaction, options, data) {
         interaction.followUp(
-            await common(
+            (await common(
                 client,
                 interaction.guildId,
                 options.getInteger('time')
-            ) as string | InteractionReplyOptions
+            )) as string | InteractionReplyOptions
         );
     },
 };

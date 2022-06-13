@@ -1,10 +1,15 @@
-import { InteractionReplyOptions, MessageEditOptions, MessageEmbed, MessageOptions } from 'discord.js';
+import {
+    InteractionReplyOptions,
+    MessageEditOptions,
+    MessageEmbed,
+    MessageOptions,
+} from 'discord.js';
 import { GetLyrics } from '../../Modules/APIs/Lyrics';
-import ExtendedClient from '../../Structures/Client';
+import Client from '../../Structures/Client';
 import Command from '../../Structures/Command';
 import { SongData } from '../../Types';
 
-const lyricsEmbed = (client: ExtendedClient, data: SongData): MessageEmbed => {
+const lyricsEmbed = (client: Client, data: SongData): MessageEmbed => {
     const lengthError = `\n\n**The lyrics are too long. To see the full lyrics, click [here](${data.links.genius}).**`;
     if (data.lyrics.length > 4096 - lengthError.length - 6) {
         return client.newEmbed({
@@ -35,7 +40,7 @@ const lyricsEmbed = (client: ExtendedClient, data: SongData): MessageEmbed => {
 };
 
 const common = async (
-    client: ExtendedClient,
+    client: Client,
     guildId: string,
     search?: string
 ): Promise<MessageOptions> => {
@@ -78,7 +83,13 @@ command.textCommand = {
             embeds: [client.fetchingEmbed()],
         });
 
-        sent.edit(await common(client, message.guildId, fullArgs) as MessageEditOptions);
+        sent.edit(
+            (await common(
+                client,
+                message.guildId,
+                fullArgs
+            )) as MessageEditOptions
+        );
     },
 };
 
@@ -93,11 +104,11 @@ command.slashCommand = {
     ],
     async run(client, interaction, options, data) {
         interaction.followUp(
-            await common(
+            (await common(
                 client,
                 interaction.guildId,
                 options.getString('search')
-            ) as string | InteractionReplyOptions
+            )) as string | InteractionReplyOptions
         );
     },
 };

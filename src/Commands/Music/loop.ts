@@ -1,11 +1,11 @@
 import { InteractionReplyOptions, MessageOptions } from 'discord.js';
-import ExtendedClient from '../../Structures/Client';
+import Client from '../../Structures/Client';
 import Command from '../../Structures/Command';
 import { QueueRepeatMode } from 'discord-player';
 import { modeLookup } from '../../Types';
 
 const common = (
-    client: ExtendedClient,
+    client: Client,
     guildId: string,
     mode?: QueueRepeatMode
 ): string | MessageOptions => {
@@ -84,7 +84,9 @@ command.slashCommand = {
     ],
     async run(client, interaction, options, data) {
         interaction.followUp(
-            common(client, interaction.guildId, options.getInteger('mode')) as string | InteractionReplyOptions
+            common(client, interaction.guildId, options.getInteger('mode')) as
+                | string
+                | InteractionReplyOptions
         );
     },
 };

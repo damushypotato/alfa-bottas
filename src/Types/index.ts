@@ -9,10 +9,10 @@ import {
     CommandInteractionOption,
     AutocompleteInteraction,
 } from 'discord.js';
-import ExtendedClient from '../Structures/Client';
+import Client from '../Structures/Client';
 import { Mentions } from '../Modules/Tools';
 import Command from '../Structures/Command';
-import { GuildCache, UserCache } from '../Structures/Cache';
+import { GuildCache, UserCache } from '../Structures/Database/Cache';
 import { LogDB } from '../Structures/Database/Models/Log';
 import { UserDB } from '../Structures/Database/Models/User';
 import { GuildDB } from '../Structures/Database/Models/Guild';
@@ -65,11 +65,11 @@ export interface ApexStatsEmbed {
         platform: ApexPlatform,
         pId: string,
         token: string,
-        client: ExtendedClient
+        client: Client
     ): Promise<MessageEmbed>;
 }
 export interface ApexRotationEmbed {
-    (token: string, client: ExtendedClient): Promise<MessageEmbed[]>;
+    (token: string, client: Client): Promise<MessageEmbed[]>;
 }
 
 //#endregion
@@ -85,7 +85,7 @@ export interface CommandCategory {
 
 interface Run_TCMD {
     (
-        client: ExtendedClient,
+        client: Client,
         message: Message,
         args: string[],
         data: TextCommand_Data
@@ -109,7 +109,7 @@ export interface TextCommand_Data {
 
 interface Run_SCMD {
     (
-        client: ExtendedClient,
+        client: Client,
         interaction: CommandInteraction,
         options: Omit<
             CommandInteractionOptionResolver,
@@ -120,14 +120,11 @@ interface Run_SCMD {
 }
 
 interface EphemeralDefer {
-    (client: ExtendedClient, interaction: CommandInteraction): Promise<boolean>;
+    (client: Client, interaction: CommandInteraction): Promise<boolean>;
 }
 
 interface Autocomplete {
-    (
-        client: ExtendedClient,
-        interaction: AutocompleteInteraction
-    ): Promise<unknown>;
+    (client: Client, interaction: AutocompleteInteraction): Promise<unknown>;
 }
 
 export interface SlashCommand {
@@ -191,7 +188,7 @@ export interface Config {
 //#region //- Filter
 
 interface Evaluate {
-    (client: ExtendedClient, message: Message): Promise<boolean>;
+    (client: Client, message: Message): Promise<boolean>;
 }
 
 export interface Filter {
@@ -205,7 +202,7 @@ export interface Filter {
 //#region //- Event
 
 interface Run_EVNT {
-    (client: ExtendedClient, ...args: any[]): Promise<any>;
+    (client: Client, ...args: any[]): Promise<any>;
 }
 
 export interface Event {

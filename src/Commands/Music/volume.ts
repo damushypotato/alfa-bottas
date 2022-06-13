@@ -1,9 +1,9 @@
 import { InteractionReplyOptions, MessageOptions } from 'discord.js';
-import ExtendedClient from '../../Structures/Client';
+import Client from '../../Structures/Client';
 import Command from '../../Structures/Command';
 
 const common = (
-    client: ExtendedClient,
+    client: Client,
     guildId: string,
     volume?: number
 ): string | MessageOptions => {

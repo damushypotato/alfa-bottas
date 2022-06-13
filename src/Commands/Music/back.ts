@@ -1,9 +1,9 @@
 import { InteractionReplyOptions, MessageOptions } from 'discord.js';
-import ExtendedClient from '../../Structures/Client';
+import Client from '../../Structures/Client';
 import Command from '../../Structures/Command';
 
 const common = async (
-    client: ExtendedClient,
+    client: Client,
     guildId: string
 ): Promise<string | MessageOptions> => {
     const queue = client.player.getQueue(guildId);
@@ -40,7 +40,11 @@ command.textCommand = {
 command.slashCommand = {
     type: 'CHAT_INPUT',
     async run(client, interaction, options, data) {
-        interaction.followUp(await common(client, interaction.guildId) as string | InteractionReplyOptions);
+        interaction.followUp(
+            (await common(client, interaction.guildId)) as
+                | string
+                | InteractionReplyOptions
+        );
     },
 };
 

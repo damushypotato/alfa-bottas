@@ -10,7 +10,8 @@
         "start": "node .",
         "build": "tsc",
         "dev": "tsnd --respawn --transpile-only --rs src/index.ts",
-        "testbuild": "npm run build && npm start"
+        "testbuild": "npm run build && npm start",
+        "deploy": "git push heroku && heroku logs -t"
     },
     "repository": {
         "type": "git",

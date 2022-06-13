@@ -6,13 +6,11 @@ export class F1_Cache {
 
     async getSchedule_Cache(year: number): Promise<Schedule> {
         const data = await new Schedule(year).get();
-        console.log('made request to f1 api');
         this.schedules.set(year, data);
         return data;
     }
 
     async fetchSchedule_Cached(year: number): Promise<Schedule> {
-        console.log('get cash');
         return this.schedules.get(year) || (await this.getSchedule_Cache(year));
     }
 }

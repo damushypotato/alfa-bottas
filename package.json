@@ -4,14 +4,16 @@
     "description": "",
     "main": "./dist/index.js",
     "engines": {
-        "node": "18.3.0"
+        "node": "18.3.0",
+        "npm": "8.11.0"
     },
     "scripts": {
         "start": "node .",
         "build": "tsc",
         "dev": "tsnd --respawn --transpile-only --rs src/index.ts",
         "testbuild": "npm run build && npm start",
-        "deploy": "git push heroku && heroku logs -a='alfa-bottas-2' -t"
+        "remotelogs": "heroku logs -a='alfa-bottas-2' -t",
+        "deploy": "git push heroku && npm run remotelogs"
     },
     "repository": {
         "type": "git",

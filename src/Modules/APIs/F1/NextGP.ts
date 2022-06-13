@@ -1,6 +1,5 @@
 import Client from '../../../Structures/Client';
 import { getSafeSeasons } from '.';
-import { sessionType } from 'formula1.js/dist/Types';
 
 export namespace NextGP {
     export async function getEmbed(client: Client) {
@@ -8,7 +7,7 @@ export namespace NextGP {
 
         const next = seasons.map(s => s.findNextSession())[0];
         const gp = next.grandprix;
-        const race = gp.sessions.race;
+        const race = gp.getSession('Race');
         const circuit = gp.circuit;
 
         const embed = client.newEmbed({

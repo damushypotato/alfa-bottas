@@ -5,7 +5,7 @@ export class F1_Cache {
     schedules: Collection<number, Schedule> = new Collection();
 
     async getSchedule_Cache(year: number): Promise<Schedule> {
-        const data = await new Schedule(year).get();
+        const data = await new Schedule(year).pop();
         this.schedules.set(year, data);
         return data;
     }

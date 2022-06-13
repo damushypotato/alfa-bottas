@@ -1,6 +1,5 @@
 import { getSafeSeasons } from '.';
 import Client from '../../../Structures/Client';
-import { Session, GrandPrix } from 'formula1.js/dist/Types';
 
 export namespace LastGP {
     export async function getEmbed(client: Client) {

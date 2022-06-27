@@ -44,8 +44,15 @@ const getSniped = async (delMsgDB: DeletedMessageDoc, client: Client, numOfMsgs:
     if (hadContent) snipedEmbed.description = delMsgDB.content;
     else snipedEmbed.title = 'Message had no text.';
 
+    console.log(delMsgDB._id);
     return {
-        content: hasAliveAttachments ? '\n\n`Attachments:`' : null,
+        content: hasAliveAttachments
+            ? '\n\n`Attachments:`'
+            : hadAttachments
+            ? `\`${delMsgDB.attachments.length} expired attachment${
+                  delMsgDB.attachments.length > 1 ? 's' : ''
+              }\``
+            : null,
         embeds: [snipedEmbed],
         files,
     } as MessageEditOptions | InteractionReplyOptions;

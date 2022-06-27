@@ -48,9 +48,9 @@ export default class Database {
         console.log('Connecting to IBM COS database...');
         try {
             this.cos = new S3({
-                endpoint: this.client.secrets.API_KEYS.IBM.ENDPOINT,
-                apiKeyId: this.client.secrets.API_KEYS.IBM.KEY,
-                serviceInstanceId: this.client.secrets.API_KEYS.IBM.INSTANCE_ID,
+                endpoint: this.client.secrets.IBM.ENDPOINT,
+                apiKeyId: this.client.secrets.IBM.KEY,
+                serviceInstanceId: this.client.secrets.IBM.INSTANCE_ID,
                 signatureVersion: 'iam',
             });
             console.log(`Done! (${Date.now() - time}ms)\n`);
@@ -58,11 +58,7 @@ export default class Database {
             console.log('IBM COS connection error:', e);
             process.exit(0);
         }
-        console.log(
-            `Done initializing database connections. (Total ${
-                Date.now() - initTime
-            }ms)\n`
-        );
+        console.log(`Done initializing database connections. (Total ${Date.now() - initTime}ms)\n`);
     }
 
     public async fetchUserDB(user: User) {
@@ -94,10 +90,7 @@ export default class Database {
 
         let db: GuildDoc;
         if (guildDB) {
-            if (
-                guild.memberCount != guildDB.lastMemberCount ||
-                guild.name != guildDB.name
-            ) {
+            if (guild.memberCount != guildDB.lastMemberCount || guild.name != guildDB.name) {
                 guildDB.lastMemberCount = guild.memberCount;
                 guildDB.name = guild.name;
                 await guildDB.save();
@@ -154,9 +147,7 @@ export default class Database {
     }
 
     public async createDeletedMessage(message: Message) {
-        const { memberDB } = await this.fetchMultiDB(
-            message.member as GuildMember
-        );
+        const { memberDB } = await this.fetchMultiDB(message.member as GuildMember);
 
         const delMsgDB = new DeletedMessageModel({
             member: memberDB._id,
@@ -166,7 +157,7 @@ export default class Database {
             guildID: message.guildId,
             channelName: (message.channel as TextChannel).name,
             channelID: message.channelId,
-            content: message.content || '`Message had no text.`',
+            content: message.content || null,
             createdAt: message.createdTimestamp,
             deletedAt: Date.now(),
         });
@@ -183,9 +174,8 @@ export default class Database {
                     const attch = await axios.get(a.url, {
                         responseType: 'arraybuffer',
                     });
-                    const name = `${delMsgDB._id}-${i}.${a.name
-                        .split('.')
-                        .at(-1)}`;
+                    const name = `${delMsgDB._id}-${i}.${a.name.split('.').at(-1)}`;
+
                     await this.cos
                         .putObject({
                             Bucket: 'deletedfiles',
@@ -211,9 +201,7 @@ export default class Database {
     }
 
     public async createEditedMessage(oldMessage: Message, newMessage: Message) {
-        const { memberDB } = await this.fetchMultiDB(
-            newMessage.member as GuildMember
-        );
+        const { memberDB } = await this.fetchMultiDB(newMessage.member as GuildMember);
 
         const edtMsgDB = new EditedMessageModel({
             member: memberDB._id,

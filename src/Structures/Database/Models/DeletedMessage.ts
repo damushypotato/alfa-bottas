@@ -8,7 +8,7 @@ export interface DeletedMessageDB {
     guildID: string;
     channelName: string;
     channelID: string;
-    content: string;
+    content?: string;
     createdAt: number;
     deletedAt: number;
     attachments: string[];
@@ -22,7 +22,7 @@ const schema = new Schema<DeletedMessageDB>({
     guildID: { type: String, required: true },
     channelName: { type: String, required: true },
     channelID: { type: String, required: true },
-    content: { type: String, required: true },
+    content: { type: String, required: false },
     createdAt: { type: Number, required: true },
     deletedAt: { type: Number, required: true },
     attachments: { type: [String], required: false },

@@ -1,9 +1,4 @@
-import {
-    Client as _client,
-    Collection,
-    MessageEmbed,
-    MessageEmbedOptions,
-} from 'discord.js';
+import { Client as _client, Collection, MessageEmbed, MessageEmbedOptions } from 'discord.js';
 import { clientIntents } from './intents';
 import { join as joinPath } from 'path';
 import { readdirSync, existsSync } from 'fs';
@@ -15,6 +10,7 @@ import {
     ClientServices,
     ClientTools,
     Filter,
+    IBM,
 } from '../../Types';
 import * as configJson from '../../config.json';
 import { config as envConfig } from 'dotenv';
@@ -47,6 +43,7 @@ class Client extends _client {
         CLIENT_TOKEN: process.env.CLIENT_TOKEN as string,
         MONGO_URI: process.env.MONGO_URI as string,
         OWNER_ID: process.env.OWNER_ID as string,
+        IBM: JSON.parse(process.env.IBM) as IBM,
         API_KEYS: JSON.parse(process.env.API_KEYS) as API_Keys,
     };
     public services: ClientServices = {
@@ -117,28 +114,24 @@ class Client extends _client {
         time = Date.now();
         // Events
         console.log('Loading events...');
-        (await globPromise(`${__dirname}/../../Events/*{.ts,.js}`)).forEach(
-            async file => {
-                const event: Event = require(file).event;
-                this.events.set(event.name, event);
-                if (event.once) {
-                    this.once(event.name, event.run.bind(null, this));
-                } else {
-                    this.on(event.name, event.run.bind(null, this));
-                }
+        (await globPromise(`${__dirname}/../../Events/*{.ts,.js}`)).forEach(async file => {
+            const event: Event = require(file).event;
+            this.events.set(event.name, event);
+            if (event.once) {
+                this.once(event.name, event.run.bind(null, this));
+            } else {
+                this.on(event.name, event.run.bind(null, this));
             }
-        );
+        });
         console.log(`Done! (${Date.now() - time}ms)\n`);
 
         time = Date.now();
         // Filters
         console.log('Loading filters...');
-        (await globPromise(`${__dirname}/../../Filters/*{.ts,.js}`)).forEach(
-            async file => {
-                const filter: Filter = require(file).filter;
-                this.filters.set(filter.name, filter);
-            }
-        );
+        (await globPromise(`${__dirname}/../../Filters/*{.ts,.js}`)).forEach(async file => {
+            const filter: Filter = require(file).filter;
+            this.filters.set(filter.name, filter);
+        });
         console.log(`Done! (${Date.now() - time}ms)\n`);
 
         time = Date.now();
@@ -151,18 +144,14 @@ class Client extends _client {
 
         console.log(`Done! (${Date.now() - time}ms)\n`);
 
-        console.log(
-            `Done initializing client. (Total ${Date.now() - initTime}ms)\n`
-        );
+        console.log(`Done initializing client. (Total ${Date.now() - initTime}ms)\n`);
 
         // connect to database
         await this.database.connect();
 
         // Login
         console.log(
-            `Finally logging in... (Total ${
-                Date.now() - initTime
-            }ms)\n${new Date().toTimeString()}`
+            `Finally logging in... (Total ${Date.now() - initTime}ms)\n${new Date().toTimeString()}`
         );
         this.login(this.secrets.CLIENT_TOKEN);
     }
@@ -175,9 +164,7 @@ class Client extends _client {
 
     //slash commands
     public async registerAllSlashGuild(guildId: string) {
-        await this.guilds.cache
-            .get(guildId)
-            .commands.set(await this.getAllSlashCommands());
+        await this.guilds.cache.get(guildId).commands.set(await this.getAllSlashCommands());
     }
     public async registerAllSlashGlobal() {
         await this.application.commands.set(await this.getAllSlashCommands());
@@ -190,10 +177,7 @@ class Client extends _client {
     }
 
     //utils
-    public newEmbed(
-        options: MessageEmbedOptions,
-        footer?: boolean
-    ): MessageEmbed {
+    public newEmbed(options: MessageEmbedOptions, footer?: boolean): MessageEmbed {
         options.color ||= this.config.color;
         if (footer) options.footer.text ||= this.config.embed_footer;
         return new MessageEmbed(options);

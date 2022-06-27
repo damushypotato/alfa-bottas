@@ -61,12 +61,7 @@ export type CurrentLegends =
     | 'Newcastle';
 
 export interface ApexStatsEmbed {
-    (
-        platform: ApexPlatform,
-        pId: string,
-        token: string,
-        client: Client
-    ): Promise<MessageEmbed>;
+    (platform: ApexPlatform, pId: string, token: string, client: Client): Promise<MessageEmbed>;
 }
 export interface ApexRotationEmbed {
     (token: string, client: Client): Promise<MessageEmbed[]>;
@@ -84,12 +79,7 @@ export interface CommandCategory {
 //+ TextCommand
 
 interface Run_TCMD {
-    (
-        client: Client,
-        message: Message,
-        args: string[],
-        data: TextCommand_Data
-    ): Promise<any>;
+    (client: Client, message: Message, args: string[], data: TextCommand_Data): Promise<any>;
 }
 
 export interface TextCommand {
@@ -111,10 +101,7 @@ interface Run_SCMD {
     (
         client: Client,
         interaction: CommandInteraction,
-        options: Omit<
-            CommandInteractionOptionResolver,
-            'getMessage' | 'getFocused'
-        >,
+        options: Omit<CommandInteractionOptionResolver, 'getMessage' | 'getFocused'>,
         data: SlashCommand_Data
     ): Promise<any>;
 }
@@ -160,17 +147,19 @@ export interface ClientServices {
 export interface Secrets {
     CLIENT_TOKEN: string;
     MONGO_URI: string;
+    IBM: IBM;
     OWNER_ID: string;
     API_KEYS: API_Keys;
 }
 
+export interface IBM {
+    ENDPOINT: string;
+    KEY: string;
+    INSTANCE_ID: string;
+}
+
 export interface API_Keys {
     CR: string;
-    IBM: {
-        ENDPOINT: string;
-        KEY: string;
-        INSTANCE_ID: string;
-    };
     APEX: string;
 }
 

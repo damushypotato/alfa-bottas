@@ -96,7 +96,19 @@ command.slashCommand = {
             description: `Number of messages in the past to snipe (Default is 1) (Maximum is ${max})`,
             required: false,
         },
+        {
+            name: 'secret',
+            type: 'BOOLEAN',
+            description: 'Hide in chat.',
+            required: false,
+        },
     ],
+    async ephemeralDefer(client, interaction, data) {
+        if (data.userCache.OP) {
+            return interaction.options.getBoolean('secret');
+        }
+        return false;
+    },
     async run(client, interaction, options, data) {
         const numOfMsgs = Math.floor(Math.min(max, Math.max(1, options.getNumber('num'))) || 1);
 

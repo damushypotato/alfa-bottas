@@ -107,7 +107,7 @@ interface Run_SCMD {
 }
 
 interface EphemeralDefer {
-    (client: Client, interaction: CommandInteraction): Promise<boolean>;
+    (client: Client, interaction: CommandInteraction, data: SlashCommand_Data): Promise<boolean>;
 }
 
 interface Autocomplete {

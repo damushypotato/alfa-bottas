@@ -1,8 +1,4 @@
-import {
-    Interaction,
-    PermissionString,
-    CommandInteractionOption,
-} from 'discord.js';
+import { Interaction, PermissionString, CommandInteractionOption } from 'discord.js';
 import { Event, SlashCommand_Data } from '../Types';
 
 export const event: Event = {
@@ -23,31 +19,14 @@ export const event: Event = {
             }
         } else {
             if (!command.slashCommand) {
-                const { prefix } = await client.database.cache.fetchGuildCache(
-                    interaction.guild
-                );
+                const { prefix } = await client.database.cache.fetchGuildCache(interaction.guild);
                 return interaction.reply(
                     `That is not a command. Use \`${prefix}${command.name}\` instead.`
                 );
             }
 
             if (!client.services.slashCommands) {
-                return interaction.reply(
-                    'This feature is currently out of service.'
-                );
-            }
-
-            if (command.slashCommand.ephemeralDefer) {
-                await interaction
-                    .deferReply({
-                        ephemeral: await command.slashCommand.ephemeralDefer(
-                            client,
-                            interaction
-                        ),
-                    })
-                    .catch(() => {});
-            } else {
-                await interaction.deferReply();
+                return interaction.reply('This feature is currently out of service.');
             }
 
             const optionsArray: CommandInteractionOption[] = [];
@@ -55,25 +34,30 @@ export const event: Event = {
             for (const option of interaction.options.data) {
                 optionsArray.push(option);
             }
-            interaction.member = interaction.guild.members.cache.get(
-                interaction.user.id
-            );
+            interaction.member = interaction.guild.members.cache.get(interaction.user.id);
 
             const data: SlashCommand_Data = {
-                userCache: await client.database.cache.fetchUserCache(
-                    interaction.user
-                ),
-                guildCache: await client.database.cache.fetchGuildCache(
-                    interaction.guild
-                ),
+                userCache: await client.database.cache.fetchUserCache(interaction.user),
+                guildCache: await client.database.cache.fetchGuildCache(interaction.guild),
                 optionsArray,
             };
 
+            if (command.slashCommand.ephemeralDefer) {
+                await interaction
+                    .deferReply({
+                        ephemeral: await command.slashCommand.ephemeralDefer(
+                            client,
+                            interaction,
+                            data
+                        ),
+                    })
+                    .catch(() => {});
+            } else {
+                await interaction.deferReply();
+            }
+
             //If command is owner only and author isn't owner return
-            if (
-                command.ownerOnly &&
-                interaction.user.id !== client.secrets.OWNER_ID
-            ) {
+            if (command.ownerOnly && interaction.user.id !== client.secrets.OWNER_ID) {
                 return;
             }
             //If command is op only and author isn't op return
@@ -81,45 +65,34 @@ export const event: Event = {
                 return;
             }
 
-            const userPerms: PermissionString[] = command.memberPerms?.filter(
-                (perm) => {
-                    return !interaction.guild.members.cache
-                        .get(interaction.user.id)
-                        .permissions.has(perm);
-                }
-            );
+            const userPerms: PermissionString[] = command.memberPerms?.filter(perm => {
+                return !interaction.guild.members.cache
+                    .get(interaction.user.id)
+                    .permissions.has(perm);
+            });
             if (userPerms.length > 0) {
                 return interaction.followUp(
                     "Looks like you're missing the following permissions:\n" +
-                        userPerms.map((p) => `\`${p}\``).join(', ')
+                        userPerms.map(p => `\`${p}\``).join(', ')
                 );
             }
 
-            const clientPerms: PermissionString[] = command.clientPerms?.filter(
-                (perm) => {
-                    return !interaction.guild.me.permissions.has(perm);
-                }
-            );
+            const clientPerms: PermissionString[] = command.clientPerms?.filter(perm => {
+                return !interaction.guild.me.permissions.has(perm);
+            });
             if (clientPerms.length > 0) {
                 return interaction.followUp(
                     "Looks like I'm missing the following permissions:\n" +
-                        clientPerms.map((p) => `\`${p}\``).join(', ')
+                        clientPerms.map(p => `\`${p}\``).join(', ')
                 );
             }
 
             try {
-                command.slashCommand.run(
-                    client,
-                    interaction,
-                    interaction.options,
-                    data
-                );
+                command.slashCommand.run(client, interaction, interaction.options, data);
             } catch (err) {
                 const errMsg = `Error While Executing command '${command.name}'. Error: ${err}`;
                 console.log(errMsg);
-                interaction.followUp(
-                    'There was an error executing that command.'
-                );
+                interaction.followUp('There was an error executing that command.');
             }
         }
     },

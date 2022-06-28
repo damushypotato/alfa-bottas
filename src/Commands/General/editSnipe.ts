@@ -5,12 +5,7 @@ import { EditedMessageDoc } from '../../Types';
 
 const max = 10;
 
-const getSniped = (
-    user: User,
-    edtMsgDB: EditedMessageDoc,
-    client: Client,
-    numOfMsgs: number
-) => {
+const getSniped = (user: User, edtMsgDB: EditedMessageDoc, client: Client, numOfMsgs: number) => {
     const headerEmbed = client.newEmbed({
         author: {
             name: edtMsgDB.authorTag,
@@ -32,9 +27,7 @@ const getSniped = (
     });
 
     return {
-        content: `Sniped from ${numOfMsgs} message${
-            numOfMsgs > 1 ? 's' : ''
-        } in the past.`,
+        content: `Sniped from ${numOfMsgs} message${numOfMsgs > 1 ? 's' : ''} in the past.`,
         embeds: [headerEmbed, oldMsgEmbed, newMsgEmbed],
     } as MessageEditOptions | InteractionReplyOptions;
 };
@@ -50,10 +43,7 @@ command.textCommand = {
     async run(client, message, args, data) {
         const numOfMsgs = Math.min(max, Math.max(1, parseInt(args[0]))) || 1;
 
-        const db_req = client.database.fetchEditedMessages(
-            message.channelId,
-            numOfMsgs
-        );
+        const db_req = client.database.fetchEditedMessages(message.channelId, numOfMsgs);
 
         const fetchingEmbed = client.fetchingEmbed();
 
@@ -67,9 +57,7 @@ command.textCommand = {
 
         if (!edtMsgDB) {
             return await sent.edit({
-                embeds: [
-                    client.newEmbed({ title: 'Theres nothing to snipe here.' }),
-                ],
+                embeds: [client.newEmbed({ title: 'Theres nothing to snipe here.' })],
             });
         }
 
@@ -90,24 +78,29 @@ command.slashCommand = {
             description: `Number of messages in the past to snipe (Default is 1) (Maximum is ${max})`,
             required: false,
         },
+        {
+            name: 'secret',
+            type: 'BOOLEAN',
+            description: 'Hide in chat.',
+            required: false,
+        },
     ],
+    async ephemeralDefer(client, interaction, data) {
+        if (data.userCache.OP) {
+            return interaction.options.getBoolean('secret');
+        }
+        return false;
+    },
     async run(client, interaction, options, data) {
-        const numOfMsgs = Math.floor(
-            Math.min(max, Math.max(1, options.getNumber('num'))) || 1
-        );
+        const numOfMsgs = Math.floor(Math.min(max, Math.max(1, options.getNumber('num'))) || 1);
 
         const edtMsgDB = (
-            await client.database.fetchEditedMessages(
-                interaction.channelId,
-                numOfMsgs
-            )
+            await client.database.fetchEditedMessages(interaction.channelId, numOfMsgs)
         ).at(-1);
 
         if (!edtMsgDB) {
             return await interaction.followUp({
-                embeds: [
-                    client.newEmbed({ title: 'Theres nothing to snipe here.' }),
-                ],
+                embeds: [client.newEmbed({ title: 'Theres nothing to snipe here.' })],
             });
         }
 

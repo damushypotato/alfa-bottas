@@ -1,5 +1,6 @@
 import { Interaction, PermissionString, CommandInteractionOption } from 'discord.js';
-import { Event, SlashCommand_Data } from '../Types';
+import { SlashCommandContext } from '../Structures/Command/Slash';
+import { Event } from '../Types';
 
 export const event: Event = {
     name: 'interactionCreate',
@@ -36,20 +37,15 @@ export const event: Event = {
             }
             interaction.member = interaction.guild.members.cache.get(interaction.user.id);
 
-            const data: SlashCommand_Data = {
-                userCache: await client.database.cache.fetchUserCache(interaction.user),
-                guildCache: await client.database.cache.fetchGuildCache(interaction.guild),
-                optionsArray,
-            };
+            const userCache = await client.database.cache.fetchUserCache(interaction.user);
+            const guildCache = await client.database.cache.fetchGuildCache(interaction.guild);
+
+            const ctx = new SlashCommandContext(client, interaction, userCache, guildCache);
 
             if (command.slashCommand.ephemeralDefer) {
                 await interaction
                     .deferReply({
-                        ephemeral: await command.slashCommand.ephemeralDefer(
-                            client,
-                            interaction,
-                            data
-                        ),
+                        ephemeral: await command.slashCommand.ephemeralDefer(ctx),
                     })
                     .catch(() => {});
             } else {
@@ -61,7 +57,7 @@ export const event: Event = {
                 return;
             }
             //If command is op only and author isn't op return
-            if (command.opOnly && !data.userCache.OP) {
+            if (command.opOnly && !ctx.userCache.OP) {
                 return;
             }
 
@@ -88,7 +84,7 @@ export const event: Event = {
             }
 
             try {
-                command.slashCommand.run(client, interaction, interaction.options, data);
+                command.slashCommand.run(ctx);
             } catch (err) {
                 const errMsg = `Error While Executing command '${command.name}'. Error: ${err}`;
                 console.log(errMsg);

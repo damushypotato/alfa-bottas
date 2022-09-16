@@ -1,18 +1,7 @@
-import {
-    MessageEmbed,
-    ClientEvents,
-    Message,
-    CommandInteraction,
-    ApplicationCommandType,
-    ApplicationCommandOptionData,
-    CommandInteractionOptionResolver,
-    CommandInteractionOption,
-    AutocompleteInteraction,
-} from 'discord.js';
+import { MessageEmbed, ClientEvents, Message } from 'discord.js';
 import Client from '../Structures/Client';
 import { Mentions } from '../Modules/Tools';
 import Command from '../Structures/Command';
-import { GuildCache, UserCache } from '../Structures/Database/Cache';
 import { LogDB } from '../Structures/Database/Models/Log';
 import { UserDB } from '../Structures/Database/Models/User';
 import { GuildDB } from '../Structures/Database/Models/Guild';
@@ -76,63 +65,6 @@ export interface CommandCategory {
     commands: Command[];
 }
 
-//+ TextCommand
-
-interface Run_TCMD {
-    (client: Client, message: Message, args: string[], data: TextCommand_Data): Promise<any>;
-}
-
-export interface TextCommand {
-    aliases?: string[];
-    usage: string;
-    run: Run_TCMD;
-}
-
-export interface TextCommand_Data {
-    prefix: string;
-    userCache: UserCache;
-    guildCache: GuildCache;
-    fullArgs?: string;
-}
-
-//+ SlashCommand
-
-interface Run_SCMD {
-    (
-        client: Client,
-        interaction: CommandInteraction,
-        options: Omit<CommandInteractionOptionResolver, 'getMessage' | 'getFocused'>,
-        data: SlashCommand_Data
-    ): Promise<any>;
-}
-
-interface EphemeralDefer {
-    (client: Client, interaction: CommandInteraction, data: SlashCommand_Data): Promise<boolean>;
-}
-
-interface Autocomplete {
-    (client: Client, interaction: AutocompleteInteraction): Promise<unknown>;
-}
-
-export interface SlashCommand {
-    type: ApplicationCommandType;
-    options?: ApplicationCommandOptionData[];
-    ephemeralDefer?: EphemeralDefer;
-    autocomplete?: Autocomplete;
-    run: Run_SCMD;
-}
-
-export interface SlashCommand_Data {
-    userCache: UserCache;
-    guildCache: GuildCache;
-    optionsArray?: CommandInteractionOption[];
-}
-
-// export interface SlashCommand_Category {
-//     name: string;
-//     commands: SlashCommand[];
-// }
-
 //#endregion
 
 //#region //- Client
@@ -176,14 +108,10 @@ export interface Config {
 
 //#region //- Filter
 
-interface Evaluate {
-    (client: Client, message: Message): Promise<boolean>;
-}
-
 export interface Filter {
     name: string;
     enabled: boolean;
-    evaluate: Evaluate;
+    evaluate: (client: Client, message: Message) => Promise<boolean>;
 }
 
 //#endregion

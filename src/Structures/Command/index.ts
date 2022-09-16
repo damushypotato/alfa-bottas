@@ -1,5 +1,20 @@
-import { PermissionString, ApplicationCommandData, Message } from 'discord.js';
-import { SlashCommand, TextCommand } from '../../Types';
+import {
+    PermissionString,
+    ApplicationCommandData,
+    Message,
+    InteractionReplyOptions,
+    MessagePayload,
+    Interaction,
+    CommandInteraction,
+    MessageEmbed,
+    MessageOptions,
+    MessageEditOptions,
+    ApplicationCommandOptionData,
+} from 'discord.js';
+import Client from '../Client';
+import { GuildCache, UserCache } from '../Database/Cache';
+import { SlashCommand } from './Slash';
+import { TextCommand } from './Text';
 
 interface CommandConfig {
     name: string;
@@ -14,32 +29,20 @@ interface CommandConfig {
 }
 
 export default class Command {
-    constructor(config: CommandConfig) {
-        this.name = config.name;
-        this.description = config.description;
-        this.category = config.category;
-        this.textCommand = config.textCommand;
-        this.slashCommand = config.slashCommand;
+    constructor(
+        public name: string,
+        public description: string,
+        public options: CommandOptions,
+        public textCommand?: TextCommand,
+        public slashCommand?: SlashCommand,
+        public memberPerms: PermissionString[] = [],
+        public clientPerms: PermissionString[] = [],
+        public ownerOnly: boolean = false,
+        public opOnly: boolean = false,
+        public category?: string
+    ) {}
 
-        this.memberPerms = config.memberPerms || [];
-        this.clientPerms = config.clientPerms || [];
-        this.ownerOnly = config.ownerOnly || false;
-        this.opOnly = config.opOnly || false;
-    }
-
-    public name: string;
-    public description: string;
-
-    public textCommand: TextCommand;
-    public slashCommand: SlashCommand;
-
-    public memberPerms: PermissionString[];
-    public clientPerms: PermissionString[];
-
-    public ownerOnly: boolean;
-    public opOnly: boolean;
-
-    public category: string;
+    public run: (ctx: CommandContext) => Promise<any>;
 
     public toApplicationCommand() {
         if (!this.slashCommand) {
@@ -52,7 +55,7 @@ export default class Command {
             name: this.name,
             description: this.description,
             type: this.slashCommand.type,
-            options: this.slashCommand.options,
+            options: this.options.options,
         } as ApplicationCommandData;
     }
 
@@ -76,4 +79,74 @@ export default class Command {
         if (!edit) return message.channel.send(this.getUsage(prefix));
         else return message.edit(this.getUsage(prefix));
     }
+}
+
+export class CommandContext {
+    constructor(
+        public context: CommandInteraction | Message,
+        public client: Client,
+        public userCache: UserCache,
+        public guildCache: GuildCache
+    ) {
+        if (this.isInteraction()) {
+            this.interactionSender = (this.context as CommandInteraction).followUp || null;
+        } else {
+            this.messageSender = (this.context as Message).channel?.send || null;
+        }
+    }
+
+    messageSender: Message['channel']['send'] | Message['reply'] | Message['edit'];
+    interactionSender: CommandInteraction['followUp'] | Message['edit'];
+    args: CommandOptions;
+
+    async send(
+        content:
+            | string
+            | MessageOptions
+            | InteractionReplyOptions
+            | MessagePayload
+            | MessageEditOptions,
+        setEditMode = false
+    ) {
+        if (this.isInteraction()) {
+            const sent = await (this.context as CommandInteraction).followUp(
+                content as InteractionReplyOptions | string
+            );
+            if (setEditMode) {
+                this.interactionSender = (sent as Message).edit;
+            }
+            return sent;
+        } else {
+            const sent = await this.messageSender(content as string | MessagePayload);
+            if (setEditMode) this.messageSender = sent.edit;
+            return sent;
+        }
+    }
+
+    sendEmbed(embeds: MessageEmbed | MessageEmbed[], setEditMode = false) {
+        if (!Array.isArray(embeds)) {
+            embeds = [embeds];
+        }
+        return this.send({ embeds }, setEditMode);
+    }
+
+    sendFetchingEmbed(setEditMode = false) {
+        return this.sendEmbed(this.client.fetchingEmbed(), setEditMode);
+    }
+
+    sendApiFailEmbed(setEditMode = false) {
+        return this.sendEmbed(this.client.apiFailEmbed(), setEditMode);
+    }
+
+    isInteraction() {
+        return this.context instanceof Interaction;
+    }
+
+    isMessage() {
+        return this.context instanceof Message;
+    }
+}
+
+export class CommandOptions {
+    constructor(public options: ApplicationCommandOptionData[]) {}
 }

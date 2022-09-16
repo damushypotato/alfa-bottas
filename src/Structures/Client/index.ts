@@ -18,7 +18,6 @@ import Database from '../Database';
 import CustomEmojiManager from '../Emojis';
 import Command from '../Command';
 import { Mentions } from '../../Modules/Tools';
-import { DiscordTogether } from 'discord-together';
 import * as glob from 'glob';
 import { promisify } from 'util';
 import { Player } from 'discord-player';
@@ -58,7 +57,6 @@ class Client extends _client {
     public tools: ClientTools = {
         mentions: Mentions,
     };
-    public discordTogether = new DiscordTogether(this);
     public filters: Collection<string, Filter> = new Collection();
     public player: Player = new Player(this, {
         ytdlOptions: {

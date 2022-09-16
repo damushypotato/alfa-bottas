@@ -8,7 +8,7 @@ import Client from '../../Client';
 
 export class SlashCommand {
     type: ApplicationCommandType;
-    options?: ApplicationCommandOptionData[];
+    // options?: ApplicationCommandOptionData[];
     ephemeralDefer?: (ctx: CommandContext) => Promise<boolean>;
     autocomplete?: (client: Client, interaction: AutocompleteInteraction) => Promise<unknown>;
 }

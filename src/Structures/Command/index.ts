@@ -9,6 +9,7 @@ import {
     MessageEmbed,
     MessageOptions,
     MessageEditOptions,
+    ApplicationCommandOptionData,
 } from 'discord.js';
 import Client from '../Client';
 import { GuildCache, UserCache } from '../Database/Cache';
@@ -28,32 +29,18 @@ interface CommandConfig {
 }
 
 export default class Command {
-    constructor(config: CommandConfig) {
-        this.name = config.name;
-        this.description = config.description;
-        this.category = config.category;
-        this.textCommand = config.textCommand;
-        this.slashCommand = config.slashCommand;
-
-        this.memberPerms = config.memberPerms || [];
-        this.clientPerms = config.clientPerms || [];
-        this.ownerOnly = config.ownerOnly || false;
-        this.opOnly = config.opOnly || false;
-    }
-
-    public name: string;
-    public description: string;
-
-    public textCommand: TextCommand;
-    public slashCommand: SlashCommand;
-
-    public memberPerms: PermissionString[];
-    public clientPerms: PermissionString[];
-
-    public ownerOnly: boolean;
-    public opOnly: boolean;
-
-    public category: string;
+    constructor(
+        public name: string,
+        public description: string,
+        public options: CommandOptions,
+        public textCommand?: TextCommand,
+        public slashCommand?: SlashCommand,
+        public memberPerms: PermissionString[] = [],
+        public clientPerms: PermissionString[] = [],
+        public ownerOnly: boolean = false,
+        public opOnly: boolean = false,
+        public category?: string
+    ) {}
 
     public run: (ctx: CommandContext) => Promise<any>;
 
@@ -68,7 +55,7 @@ export default class Command {
             name: this.name,
             description: this.description,
             type: this.slashCommand.type,
-            options: this.slashCommand.options,
+            options: this.options.options,
         } as ApplicationCommandData;
     }
 
@@ -101,12 +88,16 @@ export class CommandContext {
         public userCache: UserCache,
         public guildCache: GuildCache
     ) {
-        this.messageSender = (this.context as Message)?.channel.send;
-        this.interactionSender = (this.context as CommandInteraction).followUp;
+        if (this.isInteraction()) {
+            this.interactionSender = (this.context as CommandInteraction).followUp || null;
+        } else {
+            this.messageSender = (this.context as Message).channel?.send || null;
+        }
     }
 
     messageSender: Message['channel']['send'] | Message['reply'] | Message['edit'];
     interactionSender: CommandInteraction['followUp'] | Message['edit'];
+    args: CommandOptions;
 
     async send(
         content:
@@ -124,6 +115,7 @@ export class CommandContext {
             if (setEditMode) {
                 this.interactionSender = (sent as Message).edit;
             }
+            return sent;
         } else {
             const sent = await this.messageSender(content as string | MessagePayload);
             if (setEditMode) this.messageSender = sent.edit;
@@ -153,4 +145,8 @@ export class CommandContext {
     isMessage() {
         return this.context instanceof Message;
     }
+}
+
+export class CommandOptions {
+    constructor(public options: ApplicationCommandOptionData[]) {}
 }

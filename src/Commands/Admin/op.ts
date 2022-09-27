@@ -1,68 +1,29 @@
-import {} from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 import Command from '../../Structures/Command';
 
-const command = new Command({
+export default new Command({
     name: 'op',
-    description: 'Set op status for a user.',
+    description: 'Set OP status for a user.',
     ownerOnly: true,
-});
-
-command.textCommand = {
-    usage: '<@User> <true | false>',
-    async run(client, message, [mention, opStatus], data) {
-        const target = client.tools.mentions.getUserFromMention(
-            mention,
-            client
-        );
-        if (!target) return command.sendUsage(message, data.prefix);
-
-        const sent_fetching = message.channel.send('Fetching user...');
-
-        const db_req = client.database.fetchUserDB(target);
-
-        const [sent, userDB] = await Promise.all([sent_fetching, db_req]);
-
-        if (opStatus == null) {
-            return sent.edit(`${target} is ${userDB.OP ? '' : 'not '}OP.`);
-        }
-
-        if (opStatus != 'true' && opStatus != 'false') {
-            return command.sendUsage(sent, data.prefix, true);
-        }
-
-        const op = opStatus == 'true';
-
-        if (op == userDB.OP) return sent.edit(`Already set!`);
-
-        userDB.OP = op;
-        await userDB.save();
-        client.database.cache.fetchAndUpdateUser(userDB);
-
-        sent.edit(`${target} now set to ${userDB.OP ? '' : 'not '}OP.`);
-    },
-};
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
     options: [
         {
             name: 'user',
-            description: 'The user to set.',
-            type: 'USER',
+            description: 'The user to set OP status for.',
+            type: ApplicationCommandOptionType.User,
             required: true,
         },
         {
-            name: 'op',
-            description: 'OP status.',
-            type: 'BOOLEAN',
-            required: false,
+            name: 'status',
+            description: 'The status to set for the user.',
+            type: ApplicationCommandOptionType.Boolean,
+            required: true,
         },
     ],
-    async run(client, interaction, options, data) {
+    run: async (client, interaction, options, ctx, userCache, guildCache) => {
         const target = options.getUser('user');
 
         if (!target) {
-            return interaction.followUp('User not found.');
+            return ctx.send('User not found.');
         }
 
         const opStatus = options.getBoolean('op');
@@ -70,21 +31,17 @@ command.slashCommand = {
         const userDB = await client.database.fetchUserDB(target);
 
         if (opStatus == null) {
-            return interaction.followUp(
-                `${target} is ${userDB.OP ? '' : 'not '}OP.`
-            );
+            return ctx.send(`${target} is ${userDB.OP ? '' : 'not '}OP.`);
         }
 
-        if (opStatus == userDB.OP) return interaction.followUp(`Already set!`);
+        if (opStatus == userDB.OP) return ctx.send(`Already set!`);
 
         userDB.OP = opStatus;
+
         await userDB.save();
+
         client.database.cache.fetchAndUpdateUser(userDB);
 
-        interaction.followUp(
-            `${target} now set to ${userDB.OP ? '' : 'not '}OP.`
-        );
+        ctx.send(`${target} now set to ${userDB.OP ? '' : 'not '}OP.`);
     },
-};
-
-export default command;
+});

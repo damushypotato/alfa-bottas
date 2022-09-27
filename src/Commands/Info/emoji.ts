@@ -1,41 +1,45 @@
+import { ApplicationCommandOptionType, Emoji } from 'discord.js';
+import Client from '../../Structures/Client';
 import Command from '../../Structures/Command';
 
-const command = new Command({
-    name: 'emoji',
-    description: "The bot's custom emojis.",
-});
+let emojis: string[];
 
-command.textCommand = {
-    usage: '<name>',
-    async run(client, message, [emoji], data) {
-        if (emoji == '$reload') {
-            client.customEmojis.setEmojis();
-            return message.channel.send('Emojis Reloaded.');
-        }
-        message.channel.send(client.customEmojis.get(emoji));
-    },
+const resetEmojis = (client: Client) => {
+    emojis = client.customEmojis.emojis.map(e => e.name);
 };
 
-command.slashCommand = {
-    type: 'CHAT_INPUT',
+export default new Command({
+    name: 'emoji',
+    description: "The bot's custom emoji.",
+    ownerOnly: false,
     options: [
         {
             name: 'name',
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             required: true,
             description: 'The name of the emoji to send',
+            autocomplete: true,
         },
     ],
-    async run(client, interaction, options, data) {
+    memberPerms: [],
+    autocomplete: async (client, interaction) => {
+        const val = interaction.options.getString('name');
+
+        if (!emojis) resetEmojis(client);
+
+        const filtered = emojis.filter(c => c.match(new RegExp(val, 'gi'))).slice(0, 25);
+
+        interaction.respond(filtered.map(c => ({ name: c, value: c })));
+    },
+    run: async (client, int, options, ctx, userCache, guildCache) => {
         const emoji = options.getString('name');
 
         if (emoji == '$reload') {
             client.customEmojis.setEmojis();
-            return interaction.followUp('Emojis Reloaded.');
+            resetEmojis(client);
+            return ctx.send('Emojis Reloaded.');
         }
 
-        interaction.followUp(client.customEmojis.get(emoji));
+        ctx.send(client.customEmojis.get(emoji));
     },
-};
-
-export default command;
+});

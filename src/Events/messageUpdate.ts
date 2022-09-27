@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { ChannelType, Message } from 'discord.js';
 import { Event } from '../Types';
 
 export const event: Event = {
@@ -6,7 +6,7 @@ export const event: Event = {
     once: false,
     async run(client, oldMessage: Message, newMessage: Message) {
         if (newMessage.author.bot) return;
-        if (newMessage.channel.type != 'GUILD_TEXT') return;
+        if (newMessage.channel.type != ChannelType.GuildText) return;
         if (oldMessage.content == newMessage.content) return;
         if (!client.services.editSnipe) return;
         await client.database.createEditedMessage(oldMessage, newMessage);

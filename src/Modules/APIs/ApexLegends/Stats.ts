@@ -182,12 +182,7 @@ export namespace Stats {
         };
     }
 
-    export const getEmbed: ApexStatsEmbed = async (
-        platform,
-        pId,
-        token,
-        client
-    ) => {
+    export const getEmbed: ApexStatsEmbed = async (platform, pId, token, client) => {
         const api = await fetchStats(platform, pId, token);
 
         if (!api)
@@ -200,8 +195,8 @@ export namespace Stats {
         const selectedLegend = stats.legends.selected;
 
         const badges = selectedLegend.gameInfo.badges
-            .filter((b) => b.name != null)
-            .map((b) => `*${b.name}*`)
+            .filter(b => b.name != null)
+            .map(b => `*${b.name}*`)
             .join('\n');
 
         const statsEmbed = client.newEmbed({
@@ -229,8 +224,8 @@ export namespace Stats {
         });
 
         if (stats.legends.selected.data) {
-            statsEmbed.fields.push(
-                ...stats.legends.selected.data.map((s) => {
+            statsEmbed.addFields(
+                ...stats.legends.selected.data.map(s => {
                     return {
                         name: s.name,
                         value: s.value.toString(),
@@ -239,7 +234,7 @@ export namespace Stats {
                 })
             );
         } else {
-            statsEmbed.fields.push({
+            statsEmbed.addFields({
                 name: 'Legend Stats',
                 value: 'No Legend Stats Shown',
                 inline: false,

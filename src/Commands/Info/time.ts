@@ -1,16 +1,16 @@
-import {} from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
+import { Time, Timezones } from '../../Modules/APIs/WorldTime';
 import Command from '../../Structures/Command';
-import { Timezones, Time } from '../../Modules/APIs/WorldTime';
 
 const api: { tzs: false | { raw: string; lc: string }[]; ready: boolean } = {
     ready: false,
     tzs: false,
 };
 
-Timezones.getTimezones().then((tzs) => {
+Timezones.getTimezones().then(tzs => {
     api.ready = true;
     if (tzs) {
-        api.tzs = tzs.map((t) => {
+        api.tzs = tzs.map(t => {
             return {
                 raw: t,
                 lc: t.toLowerCase(),
@@ -19,23 +19,21 @@ Timezones.getTimezones().then((tzs) => {
     }
 });
 
-const command = new Command({
+export default new Command({
     name: 'time',
-    description: 'Get time from different time zones',
-});
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
+    description: 'Get the current time in a timezone',
+    ownerOnly: false,
     options: [
         {
             name: 'location',
             description: 'The location. It will autocomplete.',
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             required: true,
             autocomplete: true,
         },
     ],
-    async autocomplete(client, interaction) {
+    memberPerms: [],
+    autocomplete: async (client, interaction) => {
         const val = interaction.options.getString('location');
 
         if (!api.ready || !api.tzs) return interaction.respond([]);
@@ -43,33 +41,26 @@ command.slashCommand = {
         const choices = api.tzs;
 
         const filtered = choices
-            .filter((choice) => choice.lc.match(new RegExp(val, 'gi')))
+            .filter(choice => choice.lc.match(new RegExp(val, 'gi')))
             .slice(0, 25);
 
-        interaction.respond(
-            filtered.map((choice) => ({ name: choice.raw, value: choice.lc }))
-        );
+        interaction.respond(filtered.map(choice => ({ name: choice.raw, value: choice.lc })));
     },
-    async run(client, interaction, options, data) {
+    run: async (client, int, options, ctx, userCache, guildCache) => {
         if (!api.ready || !api.tzs) {
-            return interaction.followUp({ embeds: [client.apiFailEmbed()] });
+            return ctx.sendApiFailEmbed();
         }
 
         const location = options.getString('location').toLowerCase();
 
-        const timezone = api.tzs.find((t) => t.lc == location);
+        const timezone = api.tzs.find(t => t.lc == location);
 
         if (!timezone)
-            return interaction.followUp({
-                embeds: [
-                    client.newEmbed({ title: 'That is not a valid timezone.' }),
-                ],
-            });
+            return ctx.sendEmbed(client.newEmbed({ title: 'That is not a valid timezone.' }));
 
         const time = await Time.getTime(timezone.raw);
 
-        if (!time)
-            return interaction.followUp({ embeds: [client.apiFailEmbed()] });
+        if (!time) return ctx.send({ embeds: [client.apiFailEmbed()] });
 
         const date = new Date();
 
@@ -80,7 +71,7 @@ command.slashCommand = {
         const t = date.toLocaleTimeString('en-UK', dateOpts);
         const d = date.toLocaleDateString('en-UK', dateOpts);
 
-        interaction.followUp({
+        ctx.send({
             embeds: [
                 client.newEmbed({
                     author: {
@@ -92,6 +83,4 @@ command.slashCommand = {
             ],
         });
     },
-};
-
-export default command;
+});

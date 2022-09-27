@@ -1,55 +1,45 @@
-import {} from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 import Command from '../../Structures/Command';
 
 const maxLength = 8;
 
-const command = new Command({
+export default new Command({
     name: 'setprefix',
-    description: 'Set a new prefix for the server.',
-    memberPerms: ['ADMINISTRATOR'],
-});
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
+    description: 'Set the prefix for the server',
+    memberPerms: ['Administrator'],
     options: [
         {
             name: 'prefix',
             description: 'The new prefix (max 8 characters)',
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             required: true,
         },
         {
             name: 'addspace',
-            description:
-                "Add a space after the prefix? (example prefix='bot ')",
-            type: 'BOOLEAN',
+            description: "Add a space after the prefix? (example prefix='bot ')",
+            type: ApplicationCommandOptionType.Boolean,
             required: false,
         },
     ],
-    async run(client, interaction, options, data) {
+    run: async (client, int, options, ctx, userCache, guildCache) => {
         const prefixInput = options.getString('prefix');
         const addSpace = options.getBoolean('addspace');
 
         let prefix = prefixInput.toLowerCase();
 
         if (prefix.length > maxLength) {
-            return interaction.followUp(
-                `Prefix must be shorter than ${maxLength} characters!`
-            );
+            return ctx.send(`Prefix must be shorter than ${maxLength} characters!`);
         }
 
         if (addSpace) prefix += ' ';
 
-        if (prefix == data.guildCache.prefix)
-            return interaction.followUp(`Prefix already set!`);
+        if (prefix == guildCache.prefix) return ctx.send(`Prefix already set!`);
 
-        const guildDB = await client.database.fetchGuildDB(interaction.guild);
+        const guildDB = await client.database.fetchGuildDB(int.guild);
         guildDB.prefix = prefix;
         await guildDB.save();
         client.database.cache.fetchAndUpdateGuild(guildDB);
 
-        interaction.followUp(`The new prefix is set to \`${prefix}\` !`);
+        ctx.send(`The new prefix is set to \`${prefix}\` !`);
     },
-};
-
-export default command;
+});

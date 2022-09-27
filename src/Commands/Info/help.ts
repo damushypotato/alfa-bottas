@@ -1,286 +1,151 @@
 import {
-    SelectMenuInteraction,
+    ActionRowBuilder,
+    ApplicationCommandOptionType,
+    ButtonBuilder,
     ButtonInteraction,
-    MessageActionRow,
+    ButtonStyle,
+    ComponentType,
+    EmbedBuilder,
     Message,
-    MessageEmbed,
+    SelectMenuBuilder,
+    SelectMenuInteraction,
 } from 'discord.js';
+import { Chunk } from '../../Modules/Tools';
 import Command from '../../Structures/Command';
 import { CommandCategory } from '../../Types';
-import { Chunk } from '../../Modules/Tools';
-import Client from '../../Structures/Client';
 
-const menu = (
-    categories: CommandCategory[],
-    disabled: boolean,
-    placeholder?: string
-) =>
-    new MessageActionRow({
-        components: [
-            {
-                customId: 'help-menu',
-                placeholder: placeholder || 'Select one...',
-                disabled,
-                options: categories.map(c => {
+const menu = (categories: CommandCategory[], disabled: boolean, placeholder?: string) =>
+    new ActionRowBuilder<SelectMenuBuilder>().addComponents(
+        new SelectMenuBuilder()
+            .setCustomId('help-menu')
+            .setPlaceholder(placeholder ?? 'Select one...')
+            .setDisabled(disabled)
+            .addOptions(
+                categories.map(c => {
                     return {
                         label: c.name,
                         value: c.name.toLowerCase(),
                         description: `Commands from the ${c.name} category`,
                     };
-                }),
-                type: 'SELECT_MENU',
-            },
-        ],
-    });
-const buttons = (disabled: boolean) =>
-    new MessageActionRow({
-        components: [
-            {
-                emoji: '◀',
-                customId: 'back-btn',
-                disabled,
-                style: 'PRIMARY',
-                type: 'BUTTON',
-            },
-            {
-                emoji: '▶',
-                customId: 'next-btn',
-                disabled,
-                style: 'PRIMARY',
-                type: 'BUTTON',
-            },
-        ],
-    });
-
-const getEmbeds = (category: CommandCategory, client: Client) => {
-    const commands = [...category.commands];
-
-    return Chunk.default<Command>(commands, 5).map((cmds, i, a) =>
-        client.newEmbed({
-            title: `${category.name} Commands`,
-            footer: {
-                text: `${client.config.embed_footer} | Page ${i + 1} of ${
-                    a.length
-                }`,
-            },
-            fields: cmds.map(c => {
-                return {
-                    name: `\`${c.name}\` (*${[
-                        c.textCommand ? 'prefixed' : null,
-                        c.slashCommand ? 'slash' : null,
-                    ]
-                        .filter(Boolean)
-                        .join(', ')}*)`,
-                    value: c.description,
-                    inline: false,
-                };
-            }),
-        })
+                })
+            )
     );
-};
 
-const newIndex = (
-    currentIndex: number,
-    btnId: string,
-    embedsLength: number
-) => {
-    if (btnId == 'back-btn') {
-        currentIndex--;
-    } else if (btnId == 'next-btn') {
-        currentIndex++;
-    }
+const buttons = (disabled: boolean) =>
+    new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+            .setEmoji('◀️')
+            .setCustomId('back-btn')
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(disabled),
+        new ButtonBuilder()
+            .setEmoji('▶️')
+            .setCustomId('next-btn')
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(disabled)
+    );
 
-    return Math.abs(embedsLength + currentIndex) % embedsLength;
-};
-
-const filter = (
-    interaction: ButtonInteraction | SelectMenuInteraction,
-    userId: string
-) => {
-    if (interaction.user.id == userId) return true;
-    else {
-        interaction.reply({ content: 'This is not for you!', ephemeral: true });
-        return false;
-    }
-};
-
-const command = new Command({
+export default new Command({
     name: 'help',
-    description: 'Shows all the commands.',
-});
-
-command.textCommand = {
-    usage: '',
-    async run(client, message, args, data) {
-        const allCategories = [
-            ...new Set(client.commands.map(c => c.category)),
-        ];
-
-        const categories = allCategories.map(cat => {
-            return {
-                name: cat,
-                commands: client.commands
-                    .filter(cmd => cmd.category == cat)
-                    .map(c => c),
-            } as CommandCategory;
-        });
-
-        const embed = client.newEmbed({ title: 'Choose a category:' });
-
-        const sent = await message.channel.send({
-            embeds: [embed],
-            components: [menu(categories, false), buttons(true)],
-        });
-
-        let currentPageIndex = 0;
-        let embeds: MessageEmbed[];
-
-        sent.createMessageComponentCollector({
-            filter: (int: SelectMenuInteraction) =>
-                filter(int, message.author.id),
-            componentType: 'SELECT_MENU',
-            time: 30000,
-        })
-            .on('collect', int => {
-                currentPageIndex = 0;
-                const [catInput] = int.values;
-                const category = categories.find(
-                    c => c.name.toLowerCase() == catInput
-                );
-                embeds = getEmbeds(category, client);
-                const needPagination = embeds.length > 1;
-
-                int.update({
-                    embeds: [embeds[0]],
-                    components: [
-                        menu(categories, false, category.name),
-                        buttons(!needPagination),
-                    ],
-                });
-            })
-            .on('end', () => {
-                sent.edit({
-                    components: [
-                        menu(categories, false, 'Interaction Timed Out'),
-                        buttons(true),
-                    ],
-                });
-            });
-
-        sent.createMessageComponentCollector({
-            filter: (int: ButtonInteraction) => {
-                if (int.user.id == message.author.id) return true;
-                else {
-                    int.reply({
-                        content: 'This is not for you!',
-                        ephemeral: true,
-                    });
-                    return false;
-                }
-            },
-            componentType: 'BUTTON',
-            time: 30000,
-        }).on('collect', int => {
-            if (!embeds) return;
-
-            currentPageIndex = newIndex(
-                currentPageIndex,
-                int.customId,
-                embeds.length
-            );
-
-            int.update({ embeds: [embeds[currentPageIndex]] });
-        });
-    },
-};
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
+    description: 'Shows the list of commands.',
+    ownerOnly: false,
     options: [],
-    async run(client, interaction, options, data) {
-        const allCategories = [
-            ...new Set(client.commands.map(c => c.category)),
-        ];
+    memberPerms: [],
+    run: async (client, int, options, ctx, userCache, guildCache) => {
+        const allCategories = [...new Set(client.commands.map(c => c.category))];
 
         const categories = allCategories.map(cat => {
             return {
                 name: cat,
-                commands: client.commands
-                    .filter(cmd => cmd.category == cat)
-                    .map(c => c),
+                commands: client.commands.filter(cmd => cmd.category == cat).map(c => c),
             } as CommandCategory;
         });
 
         const embed = client.newEmbed({ title: 'Choose a category:' });
 
-        const message = (await interaction.editReply({
+        const message = await int.editReply({
             embeds: [embed],
             components: [menu(categories, false), buttons(true)],
-        })) as Message;
+        });
 
         let currentPageIndex = 0;
-        let embeds: MessageEmbed[];
+        let embeds: EmbedBuilder[];
 
         message
             .createMessageComponentCollector({
-                filter: (int: SelectMenuInteraction) =>
-                    filter(int, interaction.user.id),
-                componentType: 'SELECT_MENU',
-                time: 30000,
+                filter: (sInt: SelectMenuInteraction) => {
+                    if (sInt.user.id == int.user.id) return true;
+                    else {
+                        sInt.reply({ content: 'This is not for you!', ephemeral: true });
+                        return false;
+                    }
+                },
+                componentType: ComponentType.SelectMenu,
+                time: 60000,
             })
-            .on('collect', int => {
+            .on('collect', sInt => {
                 currentPageIndex = 0;
-                const [catInput] = int.values;
-                const category = categories.find(
-                    c => c.name.toLowerCase() == catInput
+                const [catInput] = sInt.values;
+                const category = categories.find(c => c.name.toLowerCase() == catInput);
+
+                const commands = [...category.commands];
+
+                embeds = Chunk.default<Command>(commands, 5).map((cmds, i, a) =>
+                    client.newEmbed({
+                        title: `${category.name} Commands`,
+                        footer: {
+                            text: `${client.config.embed_footer} | Page ${i + 1} of ${a.length}`,
+                        },
+                        fields: cmds.map(c => {
+                            return {
+                                name: `\`${c.name}\``,
+                                value: c.description,
+                                inline: false,
+                            };
+                        }),
+                    })
                 );
-                embeds = getEmbeds(category, client);
                 const needPagination = embeds.length > 1;
 
-                int.update({
+                sInt.update({
                     embeds: [embeds[0]],
-                    components: [
-                        menu(categories, false, category.name),
-                        buttons(!needPagination),
-                    ],
+                    components: [menu(categories, false, category.name), buttons(!needPagination)],
                 });
             })
             .on('end', () => {
-                interaction.editReply({
-                    components: [
-                        menu(categories, false, 'Interaction Timed Out'),
-                        buttons(true),
-                    ],
+                int.editReply({
+                    components: [menu(categories, false, 'Interaction Timed Out'), buttons(true)],
                 });
             });
 
         message
             .createMessageComponentCollector({
-                filter: (int: ButtonInteraction) => {
-                    if (int.user.id == interaction.user.id) return true;
+                filter: (bInt: ButtonInteraction) => {
+                    if (bInt.user.id == int.user.id) return true;
                     else {
-                        int.reply({
+                        bInt.reply({
                             content: 'This is not for you!',
                             ephemeral: true,
                         });
                         return false;
                     }
                 },
-                componentType: 'BUTTON',
-                time: 30000,
+                componentType: ComponentType.Button,
+                time: 60000,
             })
-            .on('collect', int => {
+            .on('collect', bInt => {
                 if (!embeds) return;
 
-                currentPageIndex = newIndex(
-                    currentPageIndex,
-                    int.customId,
-                    embeds.length
-                );
+                let i = currentPageIndex;
+                if (bInt.customId == 'back-btn') {
+                    i--;
+                } else if (bInt.customId == 'next-btn') {
+                    i++;
+                }
 
-                int.update({ embeds: [embeds[currentPageIndex]] });
+                currentPageIndex = Math.abs(embeds.length + i) % embeds.length;
+
+                bInt.update({ embeds: [embeds[currentPageIndex]] });
             });
     },
-};
-
-export default command;
+});

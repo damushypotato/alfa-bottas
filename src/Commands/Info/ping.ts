@@ -1,49 +1,39 @@
-import {} from 'discord.js';
-import Client from '../../Structures/Client';
+import { ApplicationCommandOptionType } from 'discord.js';
 import Command from '../../Structures/Command';
 
-const getEmbed = (createdTimestamp: number, client: Client) => {
-    const latencyPing = Math.floor(Date.now() - createdTimestamp);
-
-    const pingEmbed = client.newEmbed({
-        author: {
-            name: client.user.username,
-            iconURL: client.user.displayAvatarURL(),
-        },
-        fields: [
-            { name: 'Bot Latency -', value: `${latencyPing}ms`, inline: true },
-            {
-                name: 'API Latency -',
-                value: `${client.ws.ping}ms`,
-                inline: true,
-            },
-        ],
-    });
-
-    return pingEmbed;
-};
-
-const command = new Command({
+export default new Command({
     name: 'ping',
-    description: "Show the bot's ping.",
+    description: "Test the bot's latency",
+    ownerOnly: false,
+    options: [],
+    memberPerms: [],
+    run: async (client, int, options, ctx, userCache, guildCache) => {
+        const latencyPing = Math.floor(Date.now() - int.createdTimestamp);
+
+        const embed = client.newEmbed({
+            author: {
+                name: client.user.username,
+                iconURL: client.user.displayAvatarURL(),
+            },
+            fields: [
+                { name: 'Bot Latency -', value: `${latencyPing}ms`, inline: true },
+                {
+                    name: 'API Latency -',
+                    value: `${client.ws.ping}ms`,
+                    inline: true,
+                },
+            ],
+        });
+
+        ctx.sendEmbed(embed);
+    },
 });
 
-command.textCommand = {
-    usage: '',
-    async run(client, message, args, data) {
-        message.channel.send({
-            embeds: [getEmbed(message.createdTimestamp, client)],
-        });
-    },
-};
+// import {} from 'discord.js';
+// import Client from '../../Structures/Client';
+// import Command from '../../Structures/Command';
 
-command.slashCommand = {
-    type: 'CHAT_INPUT',
-    async run(client, interaction, options, data) {
-        interaction.followUp({
-            embeds: [getEmbed(interaction.createdTimestamp, client)],
-        });
-    },
-};
+// const getEmbed = (createdTimestamp: number, client: Client) => {
 
-export default command;
+//     return pingEmbed;
+// };

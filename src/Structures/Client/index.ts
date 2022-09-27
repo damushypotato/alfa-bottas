@@ -1,4 +1,10 @@
-import { Client as _client, Collection, MessageEmbed, MessageEmbedOptions } from 'discord.js';
+import {
+    ApplicationCommandType,
+    Client as _client,
+    Collection,
+    EmbedBuilder,
+    EmbedData,
+} from 'discord.js';
 import { clientIntents } from './intents';
 import { join as joinPath } from 'path';
 import { readdirSync, existsSync } from 'fs';
@@ -47,7 +53,7 @@ class Client extends _client {
     };
     public services: ClientServices = {
         commands: true,
-        slashCommands: true,
+        filters: true,
         snipe: true,
         editSnipe: true,
     };
@@ -80,15 +86,14 @@ class Client extends _client {
 
             for (const file of commands) {
                 const command: Command = require(file).default;
-                if (!command.textCommand && !command.slashCommand) {
-                    throw new Error(
-                        `Command '${command.name}' must have a valid textCommand or slashCommand property.`
-                    );
-                }
                 command.category ||= dir;
 
-                if (['MESSAGE', 'USER'].includes(command.slashCommand?.type))
-                    delete command.description;
+                // if (
+                //     [ApplicationCommandType.Message, ApplicationCommandType.User].includes(
+                //         command.type
+                //     )
+                // )
+                //     delete command.description;
 
                 this.commands.set(command.name, command);
             }
@@ -155,9 +160,7 @@ class Client extends _client {
     }
 
     public async getAllSlashCommands() {
-        return this.commands
-            .filter(c => c.slashCommand != undefined)
-            .map(c => c.toApplicationCommand());
+        return this.commands.map(c => c.toApplicationCommand());
     }
 
     //slash commands
@@ -175,15 +178,15 @@ class Client extends _client {
     }
 
     //utils
-    public newEmbed(options: MessageEmbedOptions, footer?: boolean): MessageEmbed {
+    public newEmbed(options: EmbedData, footer?: boolean): EmbedBuilder {
         options.color ||= this.config.color;
         if (footer) options.footer.text ||= this.config.embed_footer;
-        return new MessageEmbed(options);
+        return new EmbedBuilder(options);
     }
-    public fetchingEmbed(): MessageEmbed {
+    public fetchingEmbed(): EmbedBuilder {
         return this.newEmbed({ title: 'Fetching...' });
     }
-    public apiFailEmbed(): MessageEmbed {
+    public apiFailEmbed(): EmbedBuilder {
         return this.newEmbed({ title: 'API Unavailable.' });
     }
 }

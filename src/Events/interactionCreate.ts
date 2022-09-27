@@ -1,11 +1,10 @@
-import { Interaction, PermissionString, CommandInteractionOption } from 'discord.js';
-import { SlashCommandContext } from '../Structures/Command/Slash';
+import { Interaction, PermissionsString } from 'discord.js';
+import { CommandContext } from '../Structures/Command';
 import { Event } from '../Types';
 
 export const event: Event = {
     name: 'interactionCreate',
     async run(client, interaction: Interaction) {
-        // Slash Command Handling
         if (!interaction.isCommand() && !interaction.isAutocomplete()) return;
 
         const command = client.commands.get(interaction.commandName);
@@ -13,70 +12,66 @@ export const event: Event = {
 
         if (interaction.isAutocomplete()) {
             try {
-                command.slashCommand.autocomplete(client, interaction);
+                command.autocomplete(client, interaction);
             } catch (err) {
                 const errMsg = `Error While Executing command '${command.name}'. Error: ${err}`;
                 console.log(errMsg);
             }
-        } else {
-            if (!command.slashCommand) {
-                const { prefix } = await client.database.cache.fetchGuildCache(interaction.guild);
-                return interaction.reply(
-                    `That is not a command. Use \`${prefix}${command.name}\` instead.`
-                );
+        } else if (interaction.isChatInputCommand()) {
+            if (!client.services.commands) {
+                if (command.name != 'services')
+                    return interaction.reply('This feature is currently out of service.');
             }
 
-            if (!client.services.slashCommands) {
-                return interaction.reply('This feature is currently out of service.');
-            }
-
-            const optionsArray: CommandInteractionOption[] = [];
-
-            for (const option of interaction.options.data) {
-                optionsArray.push(option);
-            }
             interaction.member = interaction.guild.members.cache.get(interaction.user.id);
 
-            const userCache = await client.database.cache.fetchUserCache(interaction.user);
-            const guildCache = await client.database.cache.fetchGuildCache(interaction.guild);
+            const [guildCache, userCache] = await Promise.all([
+                client.database.cache.fetchGuildCache(interaction.guild),
+                client.database.cache.fetchUserCache(interaction.user),
+            ]);
 
-            const ctx = new SlashCommandContext(client, interaction, userCache, guildCache);
+            const ctx = new CommandContext(interaction, client);
 
-            if (command.slashCommand.ephemeralDefer) {
+            if (command.ephemeralDefer) {
                 await interaction
                     .deferReply({
-                        ephemeral: await command.slashCommand.ephemeralDefer(ctx),
+                        ephemeral: await command.ephemeralDefer(
+                            client,
+                            interaction,
+                            interaction.options,
+                            ctx,
+                            userCache,
+                            guildCache
+                        ),
                     })
                     .catch(() => {});
             } else {
                 await interaction.deferReply();
             }
 
-            //If command is owner only and author isn't owner return
             if (command.ownerOnly && interaction.user.id !== client.secrets.OWNER_ID) {
                 return;
             }
-            //If command is op only and author isn't op return
-            if (command.opOnly && !ctx.userCache.OP) {
+            if (command.opOnly && !userCache.OP) {
                 return;
             }
 
-            const userPerms: PermissionString[] = command.memberPerms?.filter(perm => {
+            const userPerms: PermissionsString[] = command.memberPerms?.filter(perm => {
                 return !interaction.guild.members.cache
                     .get(interaction.user.id)
                     .permissions.has(perm);
             });
-            if (userPerms.length > 0) {
+            if (userPerms?.length > 0) {
                 return interaction.followUp(
                     "Looks like you're missing the following permissions:\n" +
                         userPerms.map(p => `\`${p}\``).join(', ')
                 );
             }
 
-            const clientPerms: PermissionString[] = command.clientPerms?.filter(perm => {
-                return !interaction.guild.me.permissions.has(perm);
+            const clientPerms: PermissionsString[] = command.clientPerms?.filter(async perm => {
+                return !(await interaction.guild.members.fetchMe()).permissions.has(perm);
             });
-            if (clientPerms.length > 0) {
+            if (clientPerms?.length > 0) {
                 return interaction.followUp(
                     "Looks like I'm missing the following permissions:\n" +
                         clientPerms.map(p => `\`${p}\``).join(', ')
@@ -84,7 +79,7 @@ export const event: Event = {
             }
 
             try {
-                command.slashCommand.run(ctx);
+                command.run(client, interaction, interaction.options, ctx, userCache, guildCache);
             } catch (err) {
                 const errMsg = `Error While Executing command '${command.name}'. Error: ${err}`;
                 console.log(errMsg);

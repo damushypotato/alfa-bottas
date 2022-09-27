@@ -1,47 +1,37 @@
-import { TextChannel } from 'discord.js';
+import { ApplicationCommandOptionType, ChannelType, TextChannel } from 'discord.js';
 import Command from '../../Structures/Command';
 
-const command = new Command({
+export default new Command({
     name: 'message',
-    description: 'Send a message in a channel.',
+    description: 'Send a message.',
     ownerOnly: true,
-});
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
-    ephemeralDefer: async () => true,
     options: [
         {
             name: 'text',
             description: 'The text to send.',
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             required: true,
         },
         {
-            type: 'CHANNEL',
+            type: ApplicationCommandOptionType.Channel,
             name: 'channel',
-            channelTypes: ['GUILD_TEXT'],
+            channelTypes: [ChannelType.GuildText],
             required: false,
-            description:
-                'The channel to send the message in. Defaults to current channel.',
+            description: 'The channel to send the message in. Defaults to current channel.',
         },
     ],
-    async run(client, interaction, options, data) {
+    ephemeralDefer: async () => true,
+    run: async (client, int, options, ctx, userCache, guildCache) => {
         const text = options.getString('text');
 
         const channelOpt = options.getChannel('channel') as TextChannel;
-        const channel: TextChannel =
-            channelOpt == null
-                ? (interaction.channel as TextChannel)
-                : channelOpt;
+        const channel: TextChannel = channelOpt == null ? (int.channel as TextChannel) : channelOpt;
 
         try {
             channel.send(text);
         } catch (error) {
-            return interaction.followUp('Failed to send.');
+            return ctx.send('Failed to send.');
         }
-        interaction.followUp('✓');
+        ctx.send('✓');
     },
-};
-
-export default command;
+});

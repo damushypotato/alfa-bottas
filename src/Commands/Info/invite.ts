@@ -1,38 +1,23 @@
-import {} from 'discord.js';
-import Client from '../../Structures/Client';
+import { ApplicationCommandOptionType } from 'discord.js';
 import Command from '../../Structures/Command';
 
-const getEmbed = (client: Client) => {
-    const inviteURL = `https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands`;
-
-    const embed = client.newEmbed({
-        author: {
-            name: client.user.username,
-            iconURL: client.user.displayAvatarURL(),
-        },
-        description: `To Invite Me To A Server, [Click Here!](${inviteURL})`,
-    });
-
-    return embed;
-};
-
-const command = new Command({
+export default new Command({
     name: 'invite',
-    description: 'The link to invite this bot to other servers.',
+    description: 'Invite link for the bot',
+    ownerOnly: false,
+    options: [],
+    memberPerms: [],
+    run: async (client, int, options, ctx, userCache, guildCache) => {
+        const inviteURL = `https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands`;
+
+        ctx.sendEmbed(
+            client.newEmbed({
+                author: {
+                    name: client.user.username,
+                    iconURL: client.user.displayAvatarURL(),
+                },
+                description: `To Invite Me To A Server, [Click Here!](${inviteURL})`,
+            })
+        );
+    },
 });
-
-command.textCommand = {
-    usage: '',
-    async run(client, message, args, data) {
-        message.channel.send({ embeds: [getEmbed(client)] });
-    },
-};
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
-    async run(client, interaction, options, data) {
-        interaction.followUp({ embeds: [getEmbed(client)] });
-    },
-};
-
-export default command;

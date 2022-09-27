@@ -1,25 +1,23 @@
+import { ApplicationCommandOptionType } from 'discord.js';
+import { MapRotation, Stats } from '../../Modules/APIs/ApexLegends';
 import Command from '../../Structures/Command';
-import { Stats, MapRotation } from '../../Modules/APIs/ApexLegends';
 import { ApexPlatform } from '../../Types';
 
 const validCmd = ['stats', 'maps'] as const;
 type Cmd = typeof validCmd[number];
 
-const command = new Command({
+export default new Command({
     name: 'apexlegends',
-    description: 'Apex Legends Stats and Info',
-});
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
+    description: 'Get Apex Legends stats',
+    ownerOnly: false,
     options: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'stats',
             description: 'Get player stats.',
             options: [
                 {
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     name: 'platform',
                     description: 'PlayStation, Xbox or Origin',
                     choices: [
@@ -39,7 +37,7 @@ command.slashCommand = {
                     required: true,
                 },
                 {
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     name: 'username',
                     description: 'Your name on the chosen platform.',
                     required: true,
@@ -47,12 +45,13 @@ command.slashCommand = {
             ],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'maps',
             description: 'Get the current map rotations.',
         },
     ],
-    async run(client, interaction, options, data) {
+    memberPerms: [],
+    run: async (client, int, options, ctx, userCache, guildCache) => {
         const command = options.getSubcommand() as Cmd;
 
         const token = client.secrets.API_KEYS.APEX;
@@ -61,17 +60,15 @@ command.slashCommand = {
             const platform = options.getString('platform') as ApexPlatform;
             const pId = options.getString('username');
 
-            return interaction.followUp({
+            return ctx.send({
                 embeds: [await Stats.getEmbed(platform, pId, token, client)],
             });
         }
         if (command == 'maps') {
-            return interaction.followUp({
+            return ctx.send({
                 embeds: await MapRotation.getEmbed(token, client),
                 content: '**Current map rotations for Apex Legends:**',
             });
         }
     },
-};
-
-export default command;
+});

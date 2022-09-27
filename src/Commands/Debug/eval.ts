@@ -1,70 +1,32 @@
-import { Message } from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 import { inspect } from 'util';
 import Command from '../../Structures/Command';
 
-const command = new Command({
+export default new Command({
     name: 'eval',
-    description: 'Evaluate some code. (OWNER ONLY)',
+    description: 'Evaluate code.',
     ownerOnly: true,
-});
-
-// command.textCommand = {
-//     usage: '<JS code>',
-//     async run(client, message, args, { fullArgs, prefix }) {
-//         if (!fullArgs) return command.sendUsage(message, prefix);
-
-//         const code = fullArgs;
-
-//         let output;
-//         try {
-//             let result;
-//             try {
-//                 result = await eval(code);
-//             } catch (error) {
-//                 result = error;
-//             }
-//             output = result;
-//             if (typeof result != 'string') {
-//                 output = inspect(result);
-//             }
-
-//             output = `\`\`\`JS\n${output}\n\`\`\``;
-
-//             await message.author.send(output);
-//         } catch (error) {
-//             message.author.send('Evaluated content is too long to display.');
-//         }
-//     },
-// };
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
     options: [
         {
             name: 'code',
             description: 'The JS code to evaluate.',
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             required: true,
         },
         {
             name: 'secret',
             description: 'Hide in chat? Default true',
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             required: false,
         },
         {
             name: 'output',
             description: 'Show output? Default true',
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             required: false,
         },
     ],
-    async ephemeralDefer(client, interaction) {
-        const secret = interaction.options.getBoolean('secret');
-
-        return secret == null ? true : secret;
-    },
-    async run(client, interaction, options, data) {
+    run: async (client, int, options, ctx, userCache, guildCache) => {
         const code = options.getString('code');
 
         const outputOpt = options.getBoolean('output');
@@ -84,16 +46,12 @@ command.slashCommand = {
             }
             const final = `\`\`\`JS\n${output}\n\`\`\``;
             if (final.length <= 2000) {
-                interaction.followUp(final);
+                ctx.send(final);
             } else {
-                interaction.followUp(
-                    'Evaluated content is too long to display.'
-                );
+                ctx.send('Evaluated content is too long to display.');
             }
         } else {
-            interaction.followUp('Done.');
+            ctx.send('Done.');
         }
     },
-};
-
-export default command;
+});

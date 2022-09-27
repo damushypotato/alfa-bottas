@@ -1,30 +1,26 @@
+import { ApplicationCommandOptionType } from 'discord.js';
 import Command from '../../Structures/Command';
 
-const command = new Command({
+export default new Command({
     name: 'timeout',
-    description: 'Timeout a user for a set amount of time.',
-    memberPerms: ['MUTE_MEMBERS'],
-});
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
+    description: 'Timeout a user for a certain amount of time',
+    ownerOnly: false,
     options: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'set',
             description: 'Set a timeout for a user.',
             options: [
                 {
                     name: 'user',
                     description: 'The user to timeout.',
-                    type: 'USER',
+                    type: ApplicationCommandOptionType.User,
                     required: true,
                 },
                 {
                     name: 'duration',
-                    description:
-                        'The amount of time to timeout the user for. (in minutes)',
-                    type: 'INTEGER',
+                    description: 'The amount of time to timeout the user for. (in minutes)',
+                    type: ApplicationCommandOptionType.Integer,
                     minValue: 1,
                     maxValue: 1440,
                     required: true,
@@ -33,38 +29,36 @@ command.slashCommand = {
                     name: 'reason',
                     required: false,
                     description: 'The reason for the timeout.',
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                 },
             ],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'remove',
             description: 'Remove a timeout for a user.',
             options: [
                 {
                     name: 'user',
-                    type: 'USER',
+                    type: ApplicationCommandOptionType.User,
                     description: 'The user to remove the timeout from.',
                     required: true,
                 },
             ],
         },
     ],
-    async run(client, interaction, options, data) {
+    memberPerms: ['Administrator'],
+    run: async (client, int, options, ctx, userCache, guildCache) => {
         const command = options.getSubcommand() as 'set' | 'remove';
 
         if (command == 'set') {
-            const target = interaction.guild.members.cache.get(
-                options.getUser('user').id
-            );
+            const target = int.guild.members.cache.get(options.getUser('user').id);
 
             if (!target) {
-                return interaction.followUp('User not found.');
+                return ctx.send('User not found.');
             }
 
-            if (target.id == interaction.guild.ownerId)
-                return interaction.followUp('Unable to timeout owner.');
+            if (target.id == int.guild.ownerId) return ctx.send('Unable to timeout owner.');
 
             const duration = options.getInteger('duration');
 
@@ -73,28 +67,24 @@ command.slashCommand = {
             try {
                 await target.timeout(duration * 60000, reason);
             } catch {
-                return interaction.followUp('Unable to timeout user.');
+                return ctx.send('Unable to timeout user.');
             }
 
-            interaction.followUp(
-                `Timed out ${target} for ${duration} minute${
-                    duration != 1 ? 's' : ''
-                }${reason ? ` (${reason})` : ''}!`
+            ctx.send(
+                `Timed out ${target} for ${duration} minute${duration != 1 ? 's' : ''}${
+                    reason ? ` (${reason})` : ''
+                }!`
             );
         } else {
-            const target = interaction.guild.members.cache.get(
-                options.getUser('user').id
-            );
+            const target = int.guild.members.cache.get(options.getUser('user').id);
 
             try {
                 await target.timeout(null, 'Remove timeout.');
             } catch {
-                return interaction.followUp('Unable to remove timeout.');
+                return ctx.send('Unable to remove timeout.');
             }
 
-            interaction.followUp(`Removed timeout from ${target}!`);
+            ctx.send(`Removed timeout from ${target}!`);
         }
     },
-};
-
-export default command;
+});

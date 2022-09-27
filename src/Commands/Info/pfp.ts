@@ -1,54 +1,30 @@
-import { User } from 'discord.js';
-import Client from '../../Structures/Client';
+import { ApplicationCommandOptionType } from 'discord.js';
 import Command from '../../Structures/Command';
 
-const getEmbed = (target: User, client: Client) => {
-    const embed = client.newEmbed({
-        title: 'heres ur pfp',
-        description: `<@${target.id}>`,
-        image: {
-            url: `${target.displayAvatarURL({ dynamic: true })}?size=1024`,
-        },
-    });
-
-    return embed;
-};
-
-const command = new Command({
+export default new Command({
     name: 'pfp',
-    description: "Shows a user's profile picture.",
-});
-
-command.textCommand = {
-    usage: '<@User>',
-    async run(client, message, [mention], data) {
-        let target: User;
-        if (mention) {
-            target = client.tools.mentions.getUserFromMention(mention, client);
-            if (!target) return command.sendUsage(message, data.prefix);
-        } else {
-            target = message.author;
-        }
-
-        message.channel.send({ embeds: [getEmbed(target, client)] });
-    },
-};
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
+    description: 'Profile picture of a user',
+    ownerOnly: false,
     options: [
         {
-            type: 'USER',
+            type: ApplicationCommandOptionType.User,
             name: 'target',
             description: 'The user whose pfp you want to get.',
             required: false,
         },
     ],
-    async run(client, interaction, options, data) {
-        const target = options.getUser('target') || interaction.user;
+    memberPerms: [],
+    run: async (client, int, options, ctx, userCache, guildCache) => {
+        const target = options.getUser('target') || int.user;
 
-        interaction.followUp({ embeds: [getEmbed(target, client)] });
+        const embed = client.newEmbed({
+            title: 'heres ur pfp',
+            description: `<@${target.id}>`,
+            image: {
+                url: `${target.displayAvatarURL()}?size=1024`,
+            },
+        });
+
+        ctx.sendEmbed(embed);
     },
-};
-
-export default command;
+});

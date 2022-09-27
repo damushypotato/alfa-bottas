@@ -5,7 +5,7 @@ import Client from '../../Structures/Client';
 
 export const getUserFromMention = (mention: string, client: Client) => {
     // The id is the first and only match found by the RegEx.
-    const matches = mention.match(MessageMentions.USERS_PATTERN);
+    const matches = mention.match(MessageMentions.UsersPattern);
 
     // If supplied variable was not a mention, matches will be null instead of an array.
     if (!matches) return;

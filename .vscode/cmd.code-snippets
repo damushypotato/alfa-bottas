@@ -1,0 +1,22 @@
+{
+	"": {
+		"prefix": "cmd",
+		"body": [
+		  "import { ApplicationCommandOptionType } from 'discord.js';",
+		  "import Command from '../../Structures/Command';",
+		  "",
+		  "export default new Command({",
+		  "    name: '${1}',",
+		  "    description: '${2}',",
+		  "    ownerOnly: false,",
+		  "    options: [],",
+		  "    memberPerms: [],",
+		  "    run: async (client, int, options, ctx, userCache, guildCache) => {",
+		  "        ",
+		  "    },",
+		  "});",
+		  ""
+		],
+		"description": ""
+	  }
+}

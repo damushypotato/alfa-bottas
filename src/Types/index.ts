@@ -1,4 +1,4 @@
-import { MessageEmbed, ClientEvents, Message } from 'discord.js';
+import { EmbedBuilder, ClientEvents, Message, AttachmentBuilder } from 'discord.js';
 import Client from '../Structures/Client';
 import { Mentions } from '../Modules/Tools';
 import Command from '../Structures/Command';
@@ -50,10 +50,10 @@ export type CurrentLegends =
     | 'Newcastle';
 
 export interface ApexStatsEmbed {
-    (platform: ApexPlatform, pId: string, token: string, client: Client): Promise<MessageEmbed>;
+    (platform: ApexPlatform, pId: string, token: string, client: Client): Promise<EmbedBuilder>;
 }
 export interface ApexRotationEmbed {
-    (token: string, client: Client): Promise<MessageEmbed[]>;
+    (token: string, client: Client): Promise<EmbedBuilder[]>;
 }
 
 //#endregion
@@ -70,9 +70,9 @@ export interface CommandCategory {
 //#region //- Client
 
 export interface ClientServices {
-    slashCommands: boolean;
     commands: boolean;
     snipe: boolean;
+    filters: boolean;
     editSnipe: boolean;
 }
 

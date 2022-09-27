@@ -10,16 +10,14 @@ export namespace WCC {
         );
 
         const embed = client.newEmbed({
-            title: `${wcc.season} Constructor Standings (as of Round ${wcc.completedRounds})`,
+            title: `F1 ${wcc.season} Constructor Standings (as of Round ${wcc.completedRounds})`,
             fields: wcc.standings.map(c => {
                 return {
-                    name: `\`${c.position}\` - ${client.customEmojis.get(
-                        c.team.id
-                    )} *${c.team.name}*`,
+                    name: `\`${c.position}\` - ${client.customEmojis.get(c.team.id)} *${
+                        c.team.name
+                    }*`,
                     value: `**${c.points}** point${c.points != 1 ? 's' : ''}${
-                        c.wins > 0
-                            ? ` | **${c.wins}** win${c.wins > 1 ? 's' : ''}`
-                            : ''
+                        c.wins > 0 ? ` | **${c.wins}** win${c.wins > 1 ? 's' : ''}` : ''
                     }`,
                 };
             }),

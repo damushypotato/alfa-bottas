@@ -1,70 +1,18 @@
+import { ApplicationCommandOptionType } from 'discord.js';
 import Command from '../../Structures/Command';
 
-const command = new Command({
+export default new Command({
     name: 'services',
-    description: "The client's services.",
+    description: "The client's services",
     ownerOnly: true,
-});
-
-command.textCommand = {
-    usage: '[<service> <on | off> || --list]',
-    async run(client, message, [service, status], data) {
-        const keys = Object.keys(client.services);
-
-        if (service == '--list') {
-            return message.channel.send({
-                embeds: [
-                    client.newEmbed(
-                        {
-                            title: 'Current Services Status:',
-                            fields: keys.map((s) => {
-                                return {
-                                    name: `*${s.toUpperCase()}*`,
-                                    value: client.services[s]
-                                        ? '`ON`'
-                                        : '`OFF`',
-                                    inline: true,
-                                };
-                            }),
-                        },
-                        true
-                    ),
-                ],
-            });
-        }
-
-        if (
-            (status != 'on' && status != 'off') ||
-            !keys.map((s) => s.toLowerCase()).includes(service)
-        ) {
-            return command.sendUsage(message, data.prefix);
-        }
-
-        const newStatus =
-            status == 'on' ? true : status == 'off' ? false : null;
-
-        client.services[keys.find((s) => s.toLowerCase() == service)] =
-            newStatus;
-        message.channel.send({
-            embeds: [
-                client.newEmbed({
-                    title: `\`${service.toUpperCase()}\` is now \`${status.toUpperCase()}\``,
-                }),
-            ],
-        });
-    },
-};
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
     options: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'set',
             description: 'Set a service.',
             options: [
                 {
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     name: 'service',
                     description: 'The service to set.',
                     choices: [
@@ -88,7 +36,7 @@ command.slashCommand = {
                     required: true,
                 },
                 {
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     name: 'status',
                     description: 'Set the new status of the service',
                     choices: [
@@ -106,12 +54,12 @@ command.slashCommand = {
             ],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'list',
             description: 'List all services.',
         },
     ],
-    async run(client, interaction, options, data) {
+    run: async (client, int, options, ctx, userCache, guildCache) => {
         const keys = Object.keys(client.services);
 
         const action = options.getSubcommand();
@@ -119,17 +67,15 @@ command.slashCommand = {
         const status = options.getString('status');
 
         if (action == 'list') {
-            return interaction.followUp({
+            return ctx.send({
                 embeds: [
                     client.newEmbed(
                         {
                             title: 'Current Services Status:',
-                            fields: keys.map((s) => {
+                            fields: keys.map(s => {
                                 return {
                                     name: `*${s.toUpperCase()}*`,
-                                    value: client.services[s]
-                                        ? '`ON`'
-                                        : '`OFF`',
+                                    value: client.services[s] ? '`ON`' : '`OFF`',
                                     inline: true,
                                 };
                             }),
@@ -140,12 +86,10 @@ command.slashCommand = {
             });
         }
 
-        const newStatus =
-            status == 'on' ? true : status == 'off' ? false : null;
+        const newStatus = status == 'on' ? true : status == 'off' ? false : null;
 
-        client.services[keys.find((s) => s.toLowerCase() == service)] =
-            newStatus;
-        interaction.followUp({
+        client.services[keys.find(s => s.toLowerCase() == service)] = newStatus;
+        ctx.send({
             embeds: [
                 client.newEmbed({
                     title: `\`${service.toUpperCase()}\` is now \`${status.toUpperCase()}\``,
@@ -153,6 +97,4 @@ command.slashCommand = {
             ],
         });
     },
-};
-
-export default command;
+});

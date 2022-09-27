@@ -1,61 +1,45 @@
-import { Message, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionType, TextChannel } from 'discord.js';
 import Command from '../../Structures/Command';
 
 const max = 50;
 
-const command = new Command({
+export default new Command({
     name: 'prune',
-    description:
-        'Bulk delete messages. Note: you can only bulk delete messages under 14 days old.',
-});
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
+    description: 'Bulk delete messages. (Note: only works in the last 14 days)',
+    ownerOnly: false,
+    memberPerms: ['Administrator'],
     options: [
         {
             name: 'num',
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             description: `Number of messages to delete (Default is 1) (Maximum is ${max})`,
             required: false,
         },
         {
             name: 'deletepinned',
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             description: 'Delete pinned messages? Default is true.',
             required: false,
         },
     ],
-    async run(client, interaction, options, data) {
-        const num = Math.floor(
-            Math.min(max, Math.max(1, options.getInteger('num'))) || 1
-        );
+    run: async (client, interaction, options, ctx) => {
+        const num = Math.floor(Math.min(max, Math.max(1, options.getInteger('num'))) || 1);
 
         const pinnedOption = options.getBoolean('deletepinned');
-
         const delPinned = pinnedOption == null ? true : pinnedOption;
 
         const fetched = await interaction.channel.messages.fetch({
             limit: num + 1,
         });
-        const notPinned = fetched.filter((fetchedMsg) => !fetchedMsg.pinned);
 
+        const notPinned = fetched.filter(fetchedMsg => !fetchedMsg.pinned);
         const toDelete = delPinned ? fetched : notPinned;
-
-        const del = await (interaction.channel as TextChannel).bulkDelete(
-            toDelete,
-            true
+        const del = await interaction.channel.bulkDelete(toDelete, true);
+        const msg = await ctx.sendEmbed(
+            client.newEmbed({
+                title: `Deleted ${Math.max(del.size - 1, 0)} messages.`,
+            })
         );
-
-        const msg = (await interaction.channel.send({
-            embeds: [
-                client.newEmbed({
-                    title: `Deleted ${Math.max(del.size - 1, 0)} messages.`,
-                }),
-            ],
-        })) as Message;
-
         setTimeout(() => msg.delete(), 5000);
     },
-};
-
-export default command;
+});

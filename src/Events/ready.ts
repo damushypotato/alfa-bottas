@@ -1,3 +1,4 @@
+import { ActivityType } from 'discord.js';
 import { Event } from '../Types';
 
 export const event: Event = {
@@ -5,6 +6,6 @@ export const event: Event = {
     once: true,
     async run(client) {
         console.log(`${client.user.tag} has entered the chat.`);
-        client.user.setActivity('your mom', { type: 'PLAYING' });
+        client.user.setActivity('with your mom', { type: ActivityType.Playing });
     },
 };

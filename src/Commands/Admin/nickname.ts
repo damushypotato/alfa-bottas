@@ -1,54 +1,47 @@
+import { ApplicationCommandOptionType } from 'discord.js';
 import Command from '../../Structures/Command';
 
-const command = new Command({
+export default new Command({
     name: 'nickname',
     description: "Change a user's nickname.",
-    memberPerms: ['ADMINISTRATOR'],
-});
-
-command.slashCommand = {
-    type: 'CHAT_INPUT',
+    ownerOnly: false,
     options: [
         {
             name: 'user',
             description: 'The user to nick.',
-            type: 'USER',
+            type: ApplicationCommandOptionType.User,
             required: true,
         },
         {
             name: 'nickname',
             description: 'The new nickname.',
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             required: true,
         },
     ],
-    async run(client, interaction, options, data) {
-        const target = interaction.guild.members.cache.get(
-            options.getUser('user').id
-        );
+    memberPerms: ['ManageNicknames'],
+    run: async (client, interaction, options, ctx, userCache, guildCache) => {
+        const target = interaction.guild.members.cache.get(options.getUser('user').id);
 
         if (!target) {
-            return interaction.followUp('User not found.');
+            return ctx.send('User not found.');
         }
 
         if (target.id == interaction.guild.ownerId)
-            return interaction.followUp("Unable to change owner's nickname.");
+            return ctx.send("Unable to change owner's nickname.");
 
         const nickInput = options.getString('nickname');
 
         if (nickInput.length > 32) {
-            return interaction.followUp(
+            return ctx.send(
                 'That nickname is too long. The nickname must be shorter than 32 characters.'
             );
         }
 
-        if (nickInput == target.nickname)
-            return interaction.followUp('Nickname already set!');
+        if (nickInput == target.nickname) return ctx.send('Nickname already set!');
 
         await target.setNickname(nickInput);
 
-        interaction.followUp(`Set ${target}'s nickname to \`${nickInput}\` !`);
+        ctx.send(`Set ${target}'s nickname to \`${nickInput}\` !`);
     },
-};
-
-export default command;
+});

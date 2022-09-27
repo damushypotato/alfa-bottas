@@ -12,7 +12,7 @@
         "build": "tsc",
         "dev": "tsnd --respawn --transpile-only --rs src/index.ts",
         "testbuild": "npm run build && npm start",
-        "remotelogs": "heroku logs -a='alfa-bottas-2' -t",
+        "remotelogs": "heroku logs -t",
         "deploy": "git push heroku && npm run remotelogs"
     },
     "repository": {

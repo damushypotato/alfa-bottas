@@ -1,27 +1,49 @@
 import { Filter } from '../Types';
 
-const LMAO = (): string => {
-    const responses = [
-        'LMAO',
-        'ROFL',
-        'LOL!!!!',
-        'bro im dying rn LMAOOOOO',
-        'lol',
-        ':joy:',
-        ':rofl:',
-        ':joy::joy::joy:',
-        ':rofl::rofl::rofl::joy:',
-    ];
+// stfu this is for that one guy who keeps saying lol for everything
 
-    return responses[Math.floor(Math.random() * responses.length)];
+const emojis = [':joy:', ':rofl:', ':skull:'];
+
+const responses = [
+    'LMAO',
+    'ROFL',
+    'LOL!!!!',
+    'bro im dying rn LMAOOOOO',
+    'lol',
+    'lmao',
+    'LMAO!!!!!!!!',
+    'LOLOLOLOLOL',
+    'LEL!',
+    'XDDDZXSS',
+];
+
+const emojiLmao = (length: number): string => {
+    let response = '';
+    for (let i = 0; i < length; i++) {
+        response += emojis[Math.floor(Math.random() * emojis.length)];
+    }
+    return response;
+};
+
+const LMAO = (): string => {
+    let response = '';
+    // 1/3 chance of text
+    if (Math.random() < 0.33) {
+        response = responses[Math.floor(Math.random() * responses.length)];
+    } else {
+        // 2/3 chance of emoji
+        response = emojiLmao(Math.floor(Math.random() * 6) + 1);
+    }
+    return response;
 };
 
 export const filter: Filter = {
     name: 'lol',
     enabled: true,
     async evaluate(client, message) {
+        const n = Math.floor(Math.random() * 8) + 5;
         if (message.content.toLowerCase() == 'lol')
-            for (let i = 0; i < 10; i++) await message.channel.send(LMAO());
+            for (let i = 0; i < n; i++) await message.channel.send(LMAO());
         return true;
     },
 };

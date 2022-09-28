@@ -4,9 +4,8 @@ import { Event } from '../Types';
 export const event: Event = {
     name: 'messageCreate',
     async run(client, message: Message) {
-        if (message.author.bot) return;
-        if (!message.guild) return;
-        if (!(message.channel.type == ChannelType.GuildText)) return;
+        if (message.author.bot || !message.guild || message.channel.type != ChannelType.GuildText)
+            return;
 
         // const guildCache = await client.database.cache.fetchGuildCache(message.guild);
 
@@ -20,8 +19,6 @@ export const event: Event = {
         //     ) {
         //         return message.channel.send(`What? btw the prefix is \'${prefix}\'.`);
         //     }
-
-        //     // validate message / other stuff
 
         if (client.services.filters) {
             let pass = true;

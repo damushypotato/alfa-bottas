@@ -27,11 +27,11 @@ const emojiLmao = (length: number): string => {
 
 const LMAO = (): string => {
     let response = '';
-    // 1/3 chance of text
-    if (Math.random() < 0.33) {
+    // chance of text
+    if (Math.random() < 0.5) {
         response = responses[Math.floor(Math.random() * responses.length)];
     } else {
-        // 2/3 chance of emoji
+        // chance of emoji
         response = emojiLmao(Math.floor(Math.random() * 6) + 1);
     }
     return response;

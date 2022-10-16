@@ -42,7 +42,7 @@ export const filter: Filter = {
     enabled: true,
     async evaluate(client, message) {
         const n = Math.floor(Math.random() * 8) + 5;
-        if (message.content.toLowerCase().split(" ").join("").includes('lol'))
+        if (message.content.toLowerCase().split(' ').join('').includes('lol'))
             for (let i = 0; i < n; i++) await message.channel.send(LMAO());
         return true;
     },

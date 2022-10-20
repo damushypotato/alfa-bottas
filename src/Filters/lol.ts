@@ -51,7 +51,8 @@ export const filter: Filter = {
                 .split(' ')
                 .join('')
                 .includes('lol') &&
-            message.author.id != client.secrets.OWNER_ID
+            // message.author.id != client.secrets.OWNER_ID
+            true
         )
             for (let i = 0; i < n; i++) await message.channel.send(LMAO());
         return true;

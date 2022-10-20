@@ -8,9 +8,8 @@ export const event: Event = {
         if (newMessage.author.bot) return;
         if (newMessage.channel.type != ChannelType.GuildText) return;
         if (oldMessage.content == newMessage.content) return;
+        client.filters.find(f => f.name == 'lol')?.evaluate(client, newMessage);
         if (!client.services.editSnipe) return;
         await client.database.createEditedMessage(oldMessage, newMessage);
-
-        client.filters.find(f => f.name == 'lol')?.evaluate(client, newMessage);
     },
 };

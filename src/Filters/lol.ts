@@ -46,6 +46,7 @@ export const filter: Filter = {
             message.content
                 .toLowerCase()
                 .replace(/[0e]/g, 'o')
+                .replace(/[\/]/g, 'l')
                 .replace(/[.,]/g, '')
                 .split(' ')
                 .join('')

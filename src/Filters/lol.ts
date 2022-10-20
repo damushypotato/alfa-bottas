@@ -50,7 +50,8 @@ export const filter: Filter = {
                 .replace(/[.,]/g, '')
                 .split(' ')
                 .join('')
-                .includes('lol')
+                .includes('lol') &&
+            message.author.id != client.secrets.OWNER_ID
         )
             for (let i = 0; i < n; i++) await message.channel.send(LMAO());
         return true;

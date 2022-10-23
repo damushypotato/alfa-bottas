@@ -44,9 +44,10 @@ export const filter: Filter = {
         const n = Math.floor(Math.random() * 8) + 5;
         if (
             message.content
+                .replace('I', 'l')
                 .toLowerCase()
                 .replace(/[0e]/g, 'o')
-                .replace(/[\/\\!\(\)\[\]\{\}\|i1]/g, 'l')
+                .replace(/[\/\\!\(\)\[\]\{\}\|1]/g, 'l')
                 .replace(/[.,]/g, '')
                 .split(' ')
                 .join('')
